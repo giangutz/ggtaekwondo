@@ -10,12 +10,12 @@ const Header = () => {
   return (
     <header className="w-full border-b">
       <div className="wrapper flex items-center justify-between">
-        <Link href="/" className="w-8">
+        <Link href="/" className="w-36">
           <Image
             src="/assets/images/logo.png"
-            width={30}
-            height={30}
-            alt="Evently logo"
+            width={128}
+            height={38}
+            alt="Grit & Glory Taekwondo logo"
           />
         </Link>
 
