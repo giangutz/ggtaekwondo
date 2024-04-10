@@ -13,14 +13,16 @@ import { revalidatePath } from "next/cache";
 
 // import { CreateUserParams, UpdateUserParams } from "@/types";
 
-export async function createUser(user: CreateUserParams) {
+export async function createUser(userData: CreateUserParams) {
   try {
-    await connectToDatabase();
+    connectToDatabase();
 
-    const newUser = await User.create(user);
-    return JSON.parse(JSON.stringify(newUser));
+    const newUser = await User.create(userData);
+
+    return newUser;
   } catch (error) {
-    handleError(error);
+    console.log(error);
+    throw error;
   }
 }
 

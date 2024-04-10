@@ -4,13 +4,13 @@ export default authMiddleware({
   publicRoutes: [
     "/",
     "/profile/:id",
-    "/api/webhook/clerk",
+    "/api/webhook",
   ],
   ignoredRoutes: [
-    "/api/webhook/clerk",
+    "/api/webhook",
   ],
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };
