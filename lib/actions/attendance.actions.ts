@@ -5,7 +5,7 @@ import { CreateAttendanceParams, UpdateAttendanceParams, getAttendanceByIdParams
 import Attendance from "@/lib/database/models/attendance.model";
 
 // CREATE a new attendance record
-export async function createAttendance({attendanceData}: CreateAttendanceParams) {
+export async function createAttendance({ attendanceData }: CreateAttendanceParams) {
   try {
     await connectToDatabase();
     const newAttendance = await Attendance.create(attendanceData);
@@ -27,10 +27,10 @@ export async function createAttendance({attendanceData}: CreateAttendanceParams)
 // }
 
 // GET an attendance record by ID
-export async function getAttendanceById({attendanceId}: getAttendanceByIdParams) {
+export async function getAttendanceById({ attendanceId }: getAttendanceByIdParams) {
   try {
     await connectToDatabase();
-    const attendance = await Attendance.findById(attendanceId);
+    const attendance = await Attendance.findById(attendanceId).populate("students.studentId"); // Populate student data
     if (!attendance) throw new Error("Attendance not found");
     return JSON.parse(JSON.stringify(attendance));
   } catch (error) {
@@ -39,7 +39,7 @@ export async function getAttendanceById({attendanceId}: getAttendanceByIdParams)
 }
 
 // UPDATE an attendance record
-export async function updateAttendance({attendanceId, updatedAttendanceData}: UpdateAttendanceParams) {
+export async function updateAttendance({ attendanceId, updatedAttendanceData }: UpdateAttendanceParams) {
   try {
     await connectToDatabase();
     const updatedAttendance = await Attendance.findByIdAndUpdate(

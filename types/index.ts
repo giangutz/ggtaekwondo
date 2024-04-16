@@ -56,22 +56,20 @@ export type DeletePackageParams = {
 };
 
 // ====== ATTENDANCE PARAMS
-
 export type CreateAttendanceParams = {
   attendanceData: {
     eventId: string;
-    studentId: string;
-    attendanceStatus: string;
+    students: { studentId: string; attendanceStatus: string }[]; // Array of student attendance objects
     attendanceDate: Date;
-  }
+  };
 };
 
 export type UpdateAttendanceParams = {
   attendanceId: string;
   updatedAttendanceData: {
-    attendanceStatus: string;
-    attendanceDate: Date;
-  }
+    students?: { studentId: string; attendanceStatus: string }[]; // Optional array for updating student attendance
+    attendanceDate?: Date; // Optional update for attendance date
+  };
 };
 
 export type getAttendanceByIdParams = {
