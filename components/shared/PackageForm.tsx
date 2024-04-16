@@ -42,8 +42,8 @@ const formSchema = z.object({
   username: z.string().min(2).max(50),
 });
 
-const PackageForm = () => {
-
+const PackageForm = ({ users }: any) => {
+  // console.log(users);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -84,11 +84,13 @@ const PackageForm = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
+                            {users.map(({ _id, firstName, lastName }: any) => (
+                              <SelectItem key={_id} value={_id}>
+                                <SelectLabel>
+                                  {firstName} {lastName}
+                                </SelectLabel>
+                              </SelectItem>
+                            ))}
                           </SelectGroup>
                         </SelectContent>
                       </Select>
