@@ -15,6 +15,69 @@ export type UpdateUserParams = {
   photo: string;
 };
 
+// ====== PACKAGE PARAMS
+
+export type CreatePackageParams = {
+  packageData: {
+    studentId: string;
+    name: string;
+    price: number;
+    duration: number;
+    classesPerWeek: number;
+    startDate: Date;
+    endDate: Date;
+    isActive: boolean;
+  }
+};
+
+export type UpdatePackageParams = {
+  packageId: string;
+  updatedPackageData: {
+    name: string;
+    price: number;
+    duration: number;
+    classesPerWeek: number;
+    startDate: Date;
+    endDate: Date;
+    isActive: boolean;
+  }
+};
+
+export type GetPackageByIdParams = {
+  packageId: string;
+};
+
+export type GetPackagesByUserParams = {
+  studentId: string;
+};
+
+export type DeletePackageParams = {
+  packageId: string;
+};
+
+// ====== ATTENDANCE PARAMS
+
+export type CreateAttendanceParams = {
+  attendanceData: {
+    eventId: string;
+    studentId: string;
+    attendanceStatus: string;
+    attendanceDate: Date;
+  }
+};
+
+export type UpdateAttendanceParams = {
+  attendanceId: string;
+  updatedAttendanceData: {
+    attendanceStatus: string;
+    attendanceDate: Date;
+  }
+};
+
+export type getAttendanceByIdParams = {
+  attendanceId: string;
+};
+
 // ====== EVENT PARAMS
 export type CreateEventParams = {
   userId: string
