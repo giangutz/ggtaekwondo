@@ -4,15 +4,49 @@ import { handleError } from "@/lib/utils";
 import { CreatePackageParams, DeletePackageParams, GetPackageByIdParams, UpdatePackageParams } from "@/types";
 
 // CREATE a new package
-export async function createPackage({packageData}: CreatePackageParams) {
+export async function createPackage({ studentId, name, classesPerWeek, startDate, endDate, isActive }: CreatePackageParams) {
   try {
     await connectToDatabase();
-    const newPackage = await Package.create(packageData);
+    const newPackage = await Package.create({
+      studentId,
+      name,
+      classesPerWeek,
+      startDate,
+      endDate,
+      isActive,
+    });
+
+    if(!newPackage) throw new Error("Package not created");
     return JSON.parse(JSON.stringify(newPackage));
   } catch (error) {
     handleError(error);
   }
 }
+
+// GET ALL package details
+// export async function getAllPackageDetails() {
+//   try {
+//   //   return as static data name: { type: String, required: true },
+//   // price: { type: Number, required: true },
+//   // duration: { type: Number, required: true },
+//   // classesPerWeek: { type: Number, required: true },
+//   // startDate: { type: Date, required: true },
+//   // endDate: { type: Date, required: true },
+//   const pkg = [
+//     {
+//       name: "12 Sessions",
+//       price: 2500,
+//     },
+//     {
+//       name: "6 sessions",
+//       price: 1500,
+//     },
+//   ];
+//     return pkg;
+//   } catch (error) {
+//     handleError(error);
+//   }
+// }
 
 // GET ALL packages
 // export async function getAllPackages(filter) {

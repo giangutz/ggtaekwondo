@@ -9,7 +9,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const users = await getAllUser();
+  // const users = await getAllUser();
   return (
     <div className="flex h-screen flex-col">
       <Header />
@@ -18,7 +18,8 @@ export default async function RootLayout({
         <AttendanceForm />
       </div>
       <div className="fixed right-8 bottom-16">
-        <PackageForm users={users} />
+        {/* <PackageForm users={users} /> */}
+        <PackageForm />
       </div>
       <Footer />
     </div>

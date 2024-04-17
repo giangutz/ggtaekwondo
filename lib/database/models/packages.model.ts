@@ -15,8 +15,6 @@ export interface IPackage extends Document {
   _id: string;
   studentId: string; // Reference to User ID 
   name: string;
-  price: number;
-  duration: number; // Duration in months
   classesPerWeek: number;
   startDate: Date;
   endDate: Date;
@@ -27,14 +25,12 @@ export interface IPackage extends Document {
 const PackageSchema = new Schema({
   studentId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   name: { type: String, required: true },
-  price: { type: Number, required: true },
-  duration: { type: Number, required: true },
   classesPerWeek: { type: Number, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   isActive: { type: Boolean, required: true, default: true },
 });
 
-const Package = models.Package || model("Package", PackageSchema);
+const Package = model("Package", PackageSchema);
 
 export default Package;

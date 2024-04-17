@@ -18,24 +18,18 @@ export type UpdateUserParams = {
 // ====== PACKAGE PARAMS
 
 export type CreatePackageParams = {
-  packageData: {
     studentId: string;
     name: string;
-    price: number;
-    duration: number;
     classesPerWeek: number;
     startDate: Date;
     endDate: Date;
     isActive: boolean;
-  }
 };
 
 export type UpdatePackageParams = {
   packageId: string;
   updatedPackageData: {
     name: string;
-    price: number;
-    duration: number;
     classesPerWeek: number;
     startDate: Date;
     endDate: Date;
