@@ -61,14 +61,6 @@ export async function POST(req: Request) {
   if (eventType === "user.created") {
     const { id, email_addresses, image_url, first_name, last_name, username } =
       evt.data;
-    console.log(
-      "evt.data: " + id,
-      "email:" + email_addresses,
-      image_url,
-      username,
-      "fName:" + first_name,
-      "lName:" + last_name
-    );
 
     const user = await createUser({
       clerkId: id,
@@ -77,16 +69,9 @@ export async function POST(req: Request) {
       firstName: first_name,
       lastName: last_name,
       photo: image_url,
+      userType: "Student",
     });
 
-    // if (user) {
-    //   await clerkClient.users.updateUserMetadata(id, {
-    //     publicMetadata: {
-    //       userId: user._id,
-    //     },
-    //   });
-    // }
-    console.log("mongoUser: " + user);
     return NextResponse.json({ message: "OK", user: user });
   }
 

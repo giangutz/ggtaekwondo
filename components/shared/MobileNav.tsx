@@ -1,3 +1,4 @@
+'use client'
 import {
   Sheet,
   SheetContent,
@@ -9,8 +10,10 @@ import {
 import Image from "next/image";
 import { Separator } from "../ui/separator";
 import NavItems from "./NavItems";
+import { useState } from "react";
 
-const MobileNav = () => {
+const MobileNav = (userType: any) => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <nav className="md:hidden">
       <Sheet>
@@ -31,7 +34,10 @@ const MobileNav = () => {
             height={30}
           />
           <Separator className="border border-gray-50" />
-          <NavItems />
+          <NavItems
+            userType={userType}
+            onNavClick={() => setIsOpen(false)}
+          />
         </SheetContent>
       </Sheet>
     </nav>

@@ -49,8 +49,8 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   // const organizedEvents = await getEventsByUser({ userId, page: eventsPage });
 
   // get all training date and status from attendance
-  const attendance = await getAttendanceByStudent(userId);
-
+  let attendance = await getAttendanceByStudent(userId);
+  attendance = attendance.sort((a:any, b:any) => new Date(b.trainingDate).getTime() - new Date(a.trainingDate).getTime());
   // get Current Package from the database
   const currentPackage = await getPackageById({ userId });
 
