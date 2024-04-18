@@ -63,11 +63,11 @@ export async function POST(req: Request) {
       evt.data;
     console.log(
       "evt.data: " + id,
-      email_addresses,
+      "email:" + email_addresses,
       image_url,
       username,
-      first_name,
-      last_name
+      "fName:" + first_name,
+      "lName:" + last_name
     );
 
     const user = await createUser({
