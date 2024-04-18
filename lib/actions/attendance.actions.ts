@@ -1,11 +1,11 @@
-import { Document, Schema, model, models } from "mongoose";
+"use server";
 import { connectToDatabase } from "@/lib/database";
 import { handleError } from "@/lib/utils";
 import { CreateAttendanceParams, UpdateAttendanceParams, getAttendanceByIdParams } from "@/types";
 import Attendance from "@/lib/database/models/attendance.model";
 
 // CREATE a new attendance record
-export async function createAttendance({ attendanceData }: CreateAttendanceParams) {
+export async function createAttendance(attendanceData: CreateAttendanceParams) {
   try {
     await connectToDatabase();
     const newAttendance = await Attendance.create(attendanceData);
@@ -49,6 +49,42 @@ export async function updateAttendance({ attendanceId, updatedAttendanceData }: 
     );
     if (!updatedAttendance) throw new Error("Attendance not found");
     return JSON.parse(JSON.stringify(updatedAttendance));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function computeSessionsLeft(studentId: string, startDate: Date, endDate: Date, totalSessions: string) {
+  try {
+    await connectToDatabase();
+    const numSessions = parseInt(totalSessions);
+    const attendanceRecords = await Attendance.find({
+      "students.studentId": studentId,
+      trainingDate: { $gte: startDate, $lte: endDate }
+    });
+    const availedSessions = attendanceRecords.length;
+    const sessionsLeft = numSessions - availedSessions;
+    // find last date of attendance
+    const lastAttendance = attendanceRecords[attendanceRecords.length - 1].trainingDate;
+    return { sessionsLeft, lastAttendance };
+    // return JSON.parse(JSON.stringify(sessionsLeft));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function getAttendanceByStudent(studentId: string) {
+  try {
+    await connectToDatabase();
+    const attendanceRecords = await Attendance.find({ "students.studentId": studentId });
+    const attendanceWithStatus = attendanceRecords.map(record => {
+      const student = record.students.find((student: any) => student.studentId.toString() === studentId);
+      return {
+        ...record._doc,
+        studentStatus: student ? student.status : null
+      };
+    });
+    return JSON.parse(JSON.stringify(attendanceWithStatus));
   } catch (error) {
     handleError(error);
   }

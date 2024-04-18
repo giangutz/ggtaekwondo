@@ -32,8 +32,19 @@ export async function getAllUser() {
 
     const users = await User.find();
 
-    if(!users) throw new Error("No user found");
-    return users;
+    return JSON.parse(JSON.stringify(users));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function getUsersByClass(classId: string) {
+  try {
+    await connectToDatabase();
+
+    const users = await User.find({ class: classId });
+
+    return JSON.parse(JSON.stringify(users));
   } catch (error) {
     handleError(error);
   }

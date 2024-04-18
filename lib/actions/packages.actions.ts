@@ -1,10 +1,26 @@
+"use server";
+
 import { connectToDatabase } from "@/lib/database";
 import Package from "@/lib/database/models/packages.model";
 import { handleError } from "@/lib/utils";
-import { CreatePackageParams, DeletePackageParams, GetPackageByIdParams, UpdatePackageParams } from "@/types";
+import {
+  CreatePackageParams,
+  DeletePackageParams,
+  GetPackageByIdParams,
+  UpdatePackageParams,
+} from "@/types";
+import { revalidatePath } from "next/cache";
 
 // CREATE a new package
-export async function createPackage({ studentId, name, classesPerWeek, startDate, endDate, isActive }: CreatePackageParams) {
+export async function createPackage({
+  studentId,
+  name,
+  classesPerWeek,
+  startDate,
+  endDate,
+  isActive,
+  path,
+}: CreatePackageParams) {
   try {
     await connectToDatabase();
     const newPackage = await Package.create({
@@ -15,8 +31,8 @@ export async function createPackage({ studentId, name, classesPerWeek, startDate
       endDate,
       isActive,
     });
+    revalidatePath(path);
 
-    if(!newPackage) throw new Error("Package not created");
     return JSON.parse(JSON.stringify(newPackage));
   } catch (error) {
     handleError(error);
@@ -60,10 +76,11 @@ export async function createPackage({ studentId, name, classesPerWeek, startDate
 // }
 
 // GET a package by ID
-export async function getPackageById({packageId}: GetPackageByIdParams) {
+export async function getPackageById({ userId }: GetPackageByIdParams) {
   try {
     await connectToDatabase();
-    const pkg = await Package.findById(packageId);
+    // const pkg = await Package.findById(packageId);
+    const pkg = await Package.find({ studentId: userId });
     if (!pkg) throw new Error("Package not found");
     return JSON.parse(JSON.stringify(pkg));
   } catch (error) {
@@ -72,7 +89,10 @@ export async function getPackageById({packageId}: GetPackageByIdParams) {
 }
 
 // UPDATE a package
-export async function updatePackage({packageId, updatedPackageData}: UpdatePackageParams) {
+export async function updatePackage({
+  packageId,
+  updatedPackageData,
+}: UpdatePackageParams) {
   try {
     await connectToDatabase();
     const updatedPackage = await Package.findByIdAndUpdate(
@@ -88,7 +108,7 @@ export async function updatePackage({packageId, updatedPackageData}: UpdatePacka
 }
 
 // DELETE a package
-export async function deletePackage({packageId}: DeletePackageParams) {
+export async function deletePackage({ packageId }: DeletePackageParams) {
   try {
     await connectToDatabase();
     await Package.findByIdAndDelete(packageId);

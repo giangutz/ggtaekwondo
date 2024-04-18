@@ -13,7 +13,7 @@ export const headerLinks = [
   },
   {
     label: "Packages",
-    route: "/packages",
+    route: "/packages/create",
   }
 ];
 

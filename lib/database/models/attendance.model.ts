@@ -10,14 +10,14 @@ export interface IAttendance extends Document {
 
 // Attendance Schema
 const AttendanceSchema = new Schema({
-  eventId: { type: Schema.Types.ObjectId, ref: "Event", required: true },
+  class: { type: Schema.Types.ObjectId, ref: "Class", required: true },
   students: [
     {
       studentId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-      attendanceStatus: { type: String, required: true }, // Present, Absent, Late
+      status: { type: String, required: true }, // Present, Absent, Late
     },
   ],
-  attendanceDate: { type: Date, required: true },
+  trainingDate: { type: Date, required: true },
 });
 
 const Attendance = models.Attendance || model("Attendance", AttendanceSchema);

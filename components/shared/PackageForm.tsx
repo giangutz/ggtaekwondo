@@ -1,46 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Package2 } from "lucide-react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { getAllUser } from "@/lib/actions/user.actions";
-import UserDropdown from "./UserDropdown";
-import PackageDropdown from "./PackageDropdown";
+import UserDropdown from "@/components/shared/UserDropdown";
+import PackageDropdown from "@/components/shared/PackageDropdown";
 import { createPackage } from "@/lib/actions/packages.actions";
 
 const formSchema = z.object({
@@ -51,11 +27,6 @@ const formSchema = z.object({
 });
 
 const PackageForm = () => {
-  const [classesPerWeek, setClassesPerWeek] = useState<number | undefined>(
-    undefined
-  );
-
-  // console.log(users);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,9 +38,6 @@ const PackageForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    // parse the classes per week to number
     const perWeek = parseInt(values.classesPerWeek);
     let endDate = new Date(values.startDateTime);
 
@@ -87,122 +55,124 @@ const PackageForm = () => {
       endDate.setDate(endDate.getDate() + weeks * 7);
     }
 
-    let studentPkg = {
+    const packageData = {
       studentId: values.studentId,
       name: values.availPackage,
       startDate: values.startDateTime,
       endDate: endDate,
       classesPerWeek: perWeek,
       isActive: true,
+      path: "/profile",
     };
-
-    const newPackage = await createPackage(studentPkg);
-    console.log(newPackage);
-    console.log(values);
+    console.log(packageData);
+    try {
+      const newPackage = await createPackage(packageData);
+  
+      if (newPackage) {
+        form.reset();
+        alert("Student package updated successfully");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
+
   return (
     <>
-      <Sheet key={"bottom"}>
-        <SheetTrigger>
-          <Package2 className="s-8 text-muted-foreground" />
-        </SheetTrigger>
-        <SheetContent side={"bottom"}>
-          <SheetHeader>
-            <SheetTitle>Student Package</SheetTitle>
-            <SheetDescription>
-              Fill out the form below to update your student package.
-            </SheetDescription>
-          </SheetHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="studentId"
-                render={({ field }) => (
-                  <FormItem className="w-full mt-3">
-                    <FormControl>
-                      <UserDropdown
-                        onChangeHandler={field.onChange}
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="availPackage"
-                render={({ field }) => (
-                  <FormItem className="w-full mt-3">
-                    <FormControl>
-                      <PackageDropdown
-                        onChangeHandler={field.onChange}
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="classesPerWeek"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="How many times per week?"
-                        {...field}
-                        className="input-field"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="startDateTime"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
-                        <Image
-                          src="/assets/icons/calendar.svg"
-                          alt="calendar"
-                          width={24}
-                          height={24}
-                          className="filter-grey"
-                        />
-                        <p className="ml-3 whitespace-nowrap text-grey-600">
-                          Start Date:
-                        </p>
-                        <DatePicker
-                          selected={field.value}
-                          onChange={(date: Date) => field.onChange(date)}
-                          showTimeSelect
-                          timeInputLabel="Time:"
-                          dateFormat="MM/dd/yyyy h:mm aa"
-                          wrapperClassName="datePicker"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-5"
+        >
+          <FormField
+            control={form.control}
+            name="studentId"
+            render={({ field }) => (
+              <FormItem className="w-full mt-4">
+                <FormControl>
+                  <UserDropdown
+                    onChangeHandler={field.onChange}
+                    value={field.value}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="availPackage"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl>
+                  <PackageDropdown
+                    onChangeHandler={field.onChange}
+                    value={field.value}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="classesPerWeek"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="How many times per week?"
+                    {...field}
+                    className="input-field"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="startDateTime"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl>
+                  <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                    <Image
+                      src="/assets/icons/calendar.svg"
+                      alt="calendar"
+                      width={24}
+                      height={24}
+                      className="filter-grey"
+                    />
+                    <p className="ml-3 whitespace-nowrap text-grey-600">
+                      Start Date:
+                    </p>
+                    <DatePicker
+                      selected={field.value}
+                      onChange={(date: Date) => field.onChange(date)}
+                      showTimeSelect
+                      timeInputLabel="Time:"
+                      dateFormat="MM/dd/yyyy h:mm aa"
+                      wrapperClassName="datePicker"
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <SheetFooter>
-                <SheetClose asChild>
-                  <Button type="submit">Submit</Button>
-                </SheetClose>
-              </SheetFooter>
-            </form>
-          </Form>
-        </SheetContent>
-      </Sheet>
+          <Button
+            type="submit"
+            size="lg"
+            disabled={form.formState.isSubmitting}
+            className="button w-full"
+          >
+            {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
+        </form>
+      </Form>
     </>
   );
 };

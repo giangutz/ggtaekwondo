@@ -24,6 +24,7 @@ export type CreatePackageParams = {
     startDate: Date;
     endDate: Date;
     isActive: boolean;
+    path: string;
 };
 
 export type UpdatePackageParams = {
@@ -38,7 +39,7 @@ export type UpdatePackageParams = {
 };
 
 export type GetPackageByIdParams = {
-  packageId: string;
+  userId: string;
 };
 
 export type GetPackagesByUserParams = {
@@ -51,11 +52,9 @@ export type DeletePackageParams = {
 
 // ====== ATTENDANCE PARAMS
 export type CreateAttendanceParams = {
-  attendanceData: {
-    eventId: string;
-    students: { studentId: string; attendanceStatus: string }[]; // Array of student attendance objects
-    attendanceDate: Date;
-  };
+  class: string;
+  trainingDate: Date;
+  students: { studentId: string; status: string }[];
 };
 
 export type UpdateAttendanceParams = {

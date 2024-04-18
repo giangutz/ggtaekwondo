@@ -28,18 +28,50 @@ import {
   Users,
   Hash,
 } from "lucide-react";
+import { getPackageById } from "@/lib/actions/packages.actions";
+import {
+  computeSessionsLeft,
+  getAttendanceByStudent,
+} from "@/lib/actions/attendance.actions";
 
 const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId as string;
+  let hasPackage = false;
+  let numberOfSessions = null;
 
-  const ordersPage = Number(searchParams?.ordersPage) || 1;
-  const eventsPage = Number(searchParams?.eventsPage) || 1;
+  // const ordersPage = Number(searchParams?.ordersPage) || 1;
+  // const eventsPage = Number(searchParams?.eventsPage) || 1;
 
-  const orders = await getOrdersByUser({ userId, page: ordersPage });
+  // const orders = await getOrdersByUser({ userId, page: ordersPage });
 
-  const orderedEvents = orders?.data.map((order: IOrder) => order.event) || [];
-  const organizedEvents = await getEventsByUser({ userId, page: eventsPage });
+  // const orderedEvents = orders?.data.map((order: IOrder) => order.event) || [];
+  // const organizedEvents = await getEventsByUser({ userId, page: eventsPage });
+
+  // get all training date and status from attendance
+  const attendance = await getAttendanceByStudent(userId);
+
+  // get Current Package from the database
+  const currentPackage = await getPackageById({ userId });
+
+  // create a variable to track if the user has a package or not based on todays date and the package start date and end date
+  if (currentPackage.length > 0) {
+    const today = new Date();
+    const packageStartDate = new Date(currentPackage[0].startDate);
+    const packageEndDate = new Date(currentPackage[0].endDate);
+    hasPackage = today >= packageStartDate && today <= packageEndDate;
+  }
+
+  if (hasPackage) {
+    numberOfSessions = await computeSessionsLeft(
+      userId,
+      new Date(currentPackage[0].startDate),
+      new Date(currentPackage[0].endDate),
+      currentPackage[0].name
+    );
+  }
+
+  // init currentPackage to latest package based on start date
 
   return (
     <>
@@ -54,10 +86,22 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
             {/* <DollarSign className="h-4 w-4 text-muted-foreground" /> */}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12 Sessions</div>
-            <p className="text-xs text-muted-foreground">
-              availed April 4, 2024
-            </p>
+            {hasPackage ? (
+              <>
+                <div className="text-2xl font-bold">
+                  {currentPackage[0].name}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  availed{" "}
+                  {new Date(currentPackage[0].startDate).toLocaleDateString(
+                    "en-US",
+                    { month: "long", day: "numeric", year: "numeric" }
+                  )}
+                </p>
+              </>
+            ) : (
+              <div className="text-2xl font-bold">No Active Package</div>
+            )}
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-1">
@@ -69,10 +113,25 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
             <Hash className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground">
-              last session availed April 4, 2024
-            </p>
+            {hasPackage ? (
+              <>
+                <div className="text-2xl font-bold">
+                  {numberOfSessions?.sessionsLeft}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  last session availed{" "}
+                  {new Date(
+                    numberOfSessions?.lastAttendance
+                  ).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+              </>
+            ) : (
+              <div className="text-2xl font-bold">No Active Package</div>
+            )}
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-2">
@@ -83,10 +142,21 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">April 31, 2024</div>
-            {/* <p className="text-xs text-muted-foreground">
-              +19% from last month
-            </p> */}
+            {hasPackage ? (
+              <>
+                <div className="text-2xl font-bold">
+                  {new Date(currentPackage[0].endDate).toLocaleDateString(
+                    "en-US",
+                    { month: "long", day: "numeric", year: "numeric" }
+                  )}
+                </div>
+                {/* <p className="text-xs text-muted-foreground">
+                  +19% from last month
+                </p> */}
+              </>
+            ) : (
+              <div className="text-2xl font-bold">No Active Package</div>
+            )}
           </CardContent>
         </Card>
         {/* <Card x-chunk="dashboard-01-chunk-3">
@@ -128,30 +198,50 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
       </section>
 
       <div className="wrapper overflow-x-auto">
-  <table className="w-full border-collapse border-t">
-    <thead>
-      <tr className="p-medium-14 border-b text-grey-500">
-        <th className="py-3">Date</th>
-        {/* <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">Event Title</th>
+        <table className="w-full border-collapse border-t">
+          <thead>
+            <tr className="p-medium-14 border-b text-grey-500">
+              <th className="py-3">Date</th>
+              {/* <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">Event Title</th>
         <th className="min-w-[150px] py-3 text-left">Buyer</th>
         <th className="min-w-[100px] py-3 text-left">Created</th> */}
-        <th className="py-3">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        className="p-regular-14 lg:p-regular-16 border-b justify-between"
-        style={{ boxSizing: "border-box" }}
-      >
-        <td className="py-4 text-center">321321</td>
-        {/* <td className="min-w-[200px] flex-1 py-4 pr-4">321</td>
-        <td className="min-w-[150px] py-4">321321</td>
-        <td className="min-w-[100px] py-4">321321</td> */}
-        <td className="py-4 text-center">321321</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+              <th className="py-3">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {attendance.map((data: any) => (
+              <tr
+                key={data._id}
+                className="p-regular-14 lg:p-regular-16 border-b justify-between"
+                style={{ boxSizing: "border-box" }}
+              >
+                <td className="py-4 text-center">
+                  {new Date(data.trainingDate).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </td>
+                <td className="py-4 text-center">
+                  {data.studentStatus === "present" ? (
+                    <span className="text-green-500 bg-green-100 px-2 py-1 rounded-full border border-green-500">
+                      Present
+                    </span>
+                  ) : data.studentStatus === "late" ? (
+                    <span className="text-yellow-500 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-500">
+                      Late
+                    </span>
+                  ) : (
+                    <span className="text-red-500 bg-red-100 px-2 py-1 rounded-full border border-red-500">
+                      Absent
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* <section className="wrapper my-4">
         <Collection
           data={orderedEvents}

@@ -15,7 +15,7 @@ const Footer = () => {
           />
         </Link>
 
-        <p>{currentYear} Evently. All Rights reserved.</p>
+        <p>{currentYear} Grit & Glory Taekwondo. All Rights reserved.</p>
       </div>
     </footer>
   );
