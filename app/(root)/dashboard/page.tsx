@@ -183,52 +183,54 @@ const ProfilePage = async () => {
           </Button> */}
         </div>
       </section>
-
-      <div className="wrapper overflow-x-auto">
-        <table className="w-full border-collapse border-t">
-          <thead>
-            <tr className="p-medium-14 border-b text-grey-500">
-              <th className="py-3">Date</th>
-              {/* <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">Event Title</th>
-        <th className="min-w-[150px] py-3 text-left">Buyer</th>
-        <th className="min-w-[100px] py-3 text-left">Created</th> */}
-              <th className="py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attendance.map((data: any) => (
-              <tr
-                key={data._id}
-                className="p-regular-14 lg:p-regular-16 border-b justify-between hover:bg-gray-200 transition-colors duration-100 ease-in-out"
-                style={{ boxSizing: "border-box" }}
-              >
-                <td className="py-4 text-center">
-                  {new Date(data.trainingDate).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </td>
-                <td className="py-4 text-center">
-                  {data.studentStatus === "present" ? (
-                    <span className="text-green-500 bg-green-100 px-2 py-1 rounded-full border border-green-500">
-                      Present
-                    </span>
-                  ) : data.studentStatus === "late" ? (
-                    <span className="text-yellow-500 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-500">
-                      Late
-                    </span>
-                  ) : (
-                    <span className="text-red-500 bg-red-100 px-2 py-1 rounded-full border border-red-500">
-                      Absent
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {attendance.length > 0 ? (
+          <div className="wrapper overflow-x-auto">
+            <table className="w-full border-collapse border-t">
+              <thead>
+                <tr className="p-medium-14 border-b text-grey-500">
+                  <th className="py-3">Date</th>
+                  <th className="py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {attendance.map((data: any) => (
+                  <tr
+                    key={data._id}
+                    className="p-regular-14 lg:p-regular-16 border-b justify-between hover:bg-gray-200 transition-colors duration-100 ease-in-out"
+                    style={{ boxSizing: "border-box" }}
+                  >
+                    <td className="py-4 text-center">
+                      {new Date(data.trainingDate).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="py-4 text-center">
+                      {data.studentStatus === "present" ? (
+                        <span className="text-green-500 bg-green-100 px-2 py-1 rounded-full border border-green-500">
+                          Present
+                        </span>
+                      ) : data.studentStatus === "late" ? (
+                        <span className="text-yellow-500 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-500">
+                          Late
+                        </span>
+                      ) : (
+                        <span className="text-red-500 bg-red-100 px-2 py-1 rounded-full border border-red-500">
+                          Absent
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="wrapper overflow-x-auto flex justify-center">
+            <p>You have not attended a training session yet.</p>
+          </div>
+        )}
       {/* <section className="wrapper my-4">
         <Collection
           data={orderedEvents}

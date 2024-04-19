@@ -1,7 +1,11 @@
 "use server";
 import { connectToDatabase } from "@/lib/database";
 import { handleError } from "@/lib/utils";
-import { CreateAttendanceParams, UpdateAttendanceParams, getAttendanceByIdParams } from "@/types";
+import {
+  CreateAttendanceParams,
+  UpdateAttendanceParams,
+  getAttendanceByIdParams,
+} from "@/types";
 import Attendance from "@/lib/database/models/attendance.model";
 import { revalidatePath } from "next/cache";
 
@@ -29,10 +33,14 @@ export async function createAttendance(attendanceData: CreateAttendanceParams) {
 // }
 
 // GET an attendance record by ID
-export async function getAttendanceById({ attendanceId }: getAttendanceByIdParams) {
+export async function getAttendanceById({
+  attendanceId,
+}: getAttendanceByIdParams) {
   try {
     await connectToDatabase();
-    const attendance = await Attendance.findById(attendanceId).populate("students.studentId"); // Populate student data
+    const attendance = await Attendance.findById(attendanceId).populate(
+      "students.studentId"
+    ); // Populate student data
     if (!attendance) throw new Error("Attendance not found");
     return JSON.parse(JSON.stringify(attendance));
   } catch (error) {
@@ -41,7 +49,12 @@ export async function getAttendanceById({ attendanceId }: getAttendanceByIdParam
 }
 
 // UPDATE an attendance record
-export async function updateAttendance({ _id, classId, trainingDate, students }: UpdateAttendanceParams) {
+export async function updateAttendance({
+  _id,
+  classId,
+  trainingDate,
+  students,
+}: UpdateAttendanceParams) {
   try {
     await connectToDatabase();
     const updatedAttendance = await Attendance.findByIdAndUpdate(
@@ -57,20 +70,29 @@ export async function updateAttendance({ _id, classId, trainingDate, students }:
   }
 }
 
-export async function computeSessionsLeft(studentId: string, startDate: Date, endDate: Date, totalSessions: string) {
+export async function computeSessionsLeft(
+  studentId: string,
+  startDate: Date,
+  endDate: Date,
+  totalSessions: string
+) {
   try {
     await connectToDatabase();
     const numSessions = parseInt(totalSessions);
     const attendanceRecords = await Attendance.find({
       "students.studentId": studentId,
-      trainingDate: { $gte: startDate, $lte: endDate }
+      trainingDate: { $gte: startDate, $lte: endDate },
     });
     const availedSessions = attendanceRecords.length;
     const sessionsLeft = numSessions - availedSessions;
     // // find last date of attendance
-    console.log(attendanceRecords);
-    // const lastAttendance = attendanceRecords[attendanceRecords.length - 1].trainingDate;
-    // return { sessionsLeft, lastAttendance };
+    let lastAttendance;
+    if (attendanceRecords.length > 0) {
+      lastAttendance =
+        attendanceRecords[attendanceRecords.length - 1].trainingDate;
+        return { sessionsLeft, lastAttendance };
+    }
+    return { sessionsLeft, lastAttendance: null };
     // return JSON.parse(JSON.stringify(sessionsLeft));
   } catch (error) {
     handleError(error);
@@ -80,12 +102,16 @@ export async function computeSessionsLeft(studentId: string, startDate: Date, en
 export async function getAttendanceByStudent(studentId: string) {
   try {
     await connectToDatabase();
-    const attendanceRecords = await Attendance.find({ "students.studentId": studentId });
-    const attendanceWithStatus = attendanceRecords.map(record => {
-      const student = record.students.find((student: any) => student.studentId.toString() === studentId);
+    const attendanceRecords = await Attendance.find({
+      "students.studentId": studentId,
+    });
+    const attendanceWithStatus = attendanceRecords.map((record) => {
+      const student = record.students.find(
+        (student: any) => student.studentId.toString() === studentId
+      );
       return {
         ...record._doc,
-        studentStatus: student ? student.status : null
+        studentStatus: student ? student.status : null,
       };
     });
     return JSON.parse(JSON.stringify(attendanceWithStatus));
