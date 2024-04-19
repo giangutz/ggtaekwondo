@@ -3,12 +3,14 @@ import { connectToDatabase } from "@/lib/database";
 import { handleError } from "@/lib/utils";
 import { CreateAttendanceParams, UpdateAttendanceParams, getAttendanceByIdParams } from "@/types";
 import Attendance from "@/lib/database/models/attendance.model";
+import { revalidatePath } from "next/cache";
 
 // CREATE a new attendance record
 export async function createAttendance(attendanceData: CreateAttendanceParams) {
   try {
     await connectToDatabase();
     const newAttendance = await Attendance.create(attendanceData);
+    revalidatePath("/attendance");
     return JSON.parse(JSON.stringify(newAttendance));
   } catch (error) {
     handleError(error);
@@ -39,15 +41,16 @@ export async function getAttendanceById({ attendanceId }: getAttendanceByIdParam
 }
 
 // UPDATE an attendance record
-export async function updateAttendance({ attendanceId, updatedAttendanceData }: UpdateAttendanceParams) {
+export async function updateAttendance({ _id, classId, trainingDate, students }: UpdateAttendanceParams) {
   try {
     await connectToDatabase();
     const updatedAttendance = await Attendance.findByIdAndUpdate(
-      attendanceId,
-      updatedAttendanceData,
+      _id,
+      { class: classId, trainingDate, students },
       { new: true }
     );
     if (!updatedAttendance) throw new Error("Attendance not found");
+    revalidatePath("/attendance");
     return JSON.parse(JSON.stringify(updatedAttendance));
   } catch (error) {
     handleError(error);
@@ -64,9 +67,10 @@ export async function computeSessionsLeft(studentId: string, startDate: Date, en
     });
     const availedSessions = attendanceRecords.length;
     const sessionsLeft = numSessions - availedSessions;
-    // find last date of attendance
-    const lastAttendance = attendanceRecords[attendanceRecords.length - 1].trainingDate;
-    return { sessionsLeft, lastAttendance };
+    // // find last date of attendance
+    console.log(attendanceRecords);
+    // const lastAttendance = attendanceRecords[attendanceRecords.length - 1].trainingDate;
+    // return { sessionsLeft, lastAttendance };
     // return JSON.parse(JSON.stringify(sessionsLeft));
   } catch (error) {
     handleError(error);
@@ -85,6 +89,28 @@ export async function getAttendanceByStudent(studentId: string) {
       };
     });
     return JSON.parse(JSON.stringify(attendanceWithStatus));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function getAllAttendance() {
+  try {
+    await connectToDatabase();
+    const attendanceRecords = await Attendance.find();
+    return JSON.parse(JSON.stringify(attendanceRecords));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function deleteAttendance(attendanceId: string) {
+  try {
+    await connectToDatabase();
+    const deletedAttendance = await Attendance.findByIdAndDelete(attendanceId);
+    if (!deletedAttendance) throw new Error("Attendance not found");
+    revalidatePath("/attendance");
+    return JSON.parse(JSON.stringify(deletedAttendance));
   } catch (error) {
     handleError(error);
   }

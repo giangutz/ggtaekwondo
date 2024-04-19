@@ -17,7 +17,9 @@ import { z } from "zod";
 import ClassDropdown from "@/components/shared/ClassDropdown";
 import UserCheckbox from "@/components/shared/UserCheckbox";
 import Image from "next/image";
-import { createAttendance } from "@/lib/actions/attendance.actions";
+import { createAttendance, updateAttendance } from "@/lib/actions/attendance.actions";
+import { IAttendance } from "@/lib/database/models/attendance.model";
+import { attendanceDefaultValues } from "@/constants";
 
 const formSchema = z.object({
   class: z.string(),
@@ -30,13 +32,21 @@ const formSchema = z.object({
   trainingDate: z.date(),
 });
 
-const AttendanceForm = () => {
+type AttendanceFormProps = {
+  attendance?: IAttendance;
+};
+
+const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
+  const initialValues = attendance
+    ? {
+        ...attendance,
+        trainingDate: new Date(attendance.trainingDate),
+      }
+    : attendanceDefaultValues;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      students: [],
-      trainingDate: new Date(Date.now()),
-    },
+    defaultValues: initialValues,
   });
   const selectedClass = form.watch("class");
 
@@ -46,18 +56,36 @@ const AttendanceForm = () => {
   }, [selectedClass, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const attendance = await createAttendance(values);
-
-      if (attendance) {
-        form.reset();
-        alert("Attendance created successfully");
+    if (attendance) {
+      // console.log(values);
+      // Update attendance
+      try {
+        const newData = {
+          _id: attendance._id,
+          classId: values.class,
+          trainingDate: values.trainingDate,
+          students: values.students,
+        };
+        const attendanceData = await updateAttendance(newData);
+        if (attendanceData) {
+          alert("Attendance updated successfully");
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
+    } else {
+      try {
+        const attendance = await createAttendance(values);
+
+        if (attendance) {
+          form.reset();
+          alert("Attendance created successfully");
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
 
-    console.log(values);
   }
   return (
     <>
@@ -122,6 +150,7 @@ const AttendanceForm = () => {
                     onChangeHandler={field.onChange}
                     value={field.value}
                     selectedClass={selectedClass}
+                    attendance={attendance}
                   />
                 </FormControl>
                 <FormMessage />

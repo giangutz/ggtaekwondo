@@ -5,7 +5,7 @@ export interface IAttendance extends Document {
   _id: string;
   eventId: string; // Reference to event ID (class)
   students: { studentId: string; attendanceStatus: string }[]; // Array of student attendance objects
-  attendanceDate: Date;
+  trainingDate: Date;
 }
 
 // Attendance Schema

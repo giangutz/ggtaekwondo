@@ -59,11 +59,10 @@ export type CreateAttendanceParams = {
 };
 
 export type UpdateAttendanceParams = {
-  attendanceId: string;
-  updatedAttendanceData: {
-    students?: { studentId: string; attendanceStatus: string }[]; // Optional array for updating student attendance
-    attendanceDate?: Date; // Optional update for attendance date
-  };
+  _id: string;
+  classId: string;
+  trainingDate: Date;
+  students: { studentId: string; status: string }[];
 };
 
 export type getAttendanceByIdParams = {

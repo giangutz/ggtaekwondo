@@ -28,8 +28,8 @@ const NavItems = ({ userType, onNavClick }: NavItemsProps) => {
             <li
               key={link.route}
               className={`${
-                isActive && "text-primary-500"
-              } flex-center p-medium-16 whitespace-nowrap`}
+                isActive ? "text-orange-500" : "text-primary-500"
+              } flex-center p-medium-16 whitespace-nowrap transition-colors duration-200 ease-in-out hover:bg-primary-200 hover:text-primary-500 cursor-pointer`}
               onClick={onNavClick}
             >
               <Link href={link.route}>{link.label}</Link>

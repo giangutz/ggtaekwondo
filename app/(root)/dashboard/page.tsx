@@ -1,12 +1,6 @@
-import Collection from "@/components/shared/Collection";
-import { Button } from "@/components/ui/button";
-import { getCategoryById } from "@/lib/actions/category.actions";
-import { getEventsByUser } from "@/lib/actions/event.actions";
-import { getOrdersByUser } from "@/lib/actions/order.actions";
-import { IOrder } from "@/lib/database/models/order.model";
+
 import { SearchParamProps } from "@/types";
 import { auth } from "@clerk/nextjs";
-import Link from "next/link";
 import React from "react";
 import {
   Card,
@@ -18,14 +12,7 @@ import {
 
 import {
   Activity,
-  ArrowUpRight,
-  CircleUser,
   CreditCard,
-  DollarSign,
-  Menu,
-  Package2,
-  Search,
-  Users,
   Hash,
 } from "lucide-react";
 import { getPackageById } from "@/lib/actions/packages.actions";
@@ -34,7 +21,7 @@ import {
   getAttendanceByStudent,
 } from "@/lib/actions/attendance.actions";
 
-const ProfilePage = async ({ searchParams }: SearchParamProps) => {
+const ProfilePage = async () => {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId as string;
   let hasPackage = false;
@@ -212,7 +199,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
             {attendance.map((data: any) => (
               <tr
                 key={data._id}
-                className="p-regular-14 lg:p-regular-16 border-b justify-between"
+                className="p-regular-14 lg:p-regular-16 border-b justify-between hover:bg-gray-200 transition-colors duration-100 ease-in-out"
                 style={{ boxSizing: "border-box" }}
               >
                 <td className="py-4 text-center">

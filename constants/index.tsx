@@ -14,6 +14,11 @@ export const headerLinks = [
     route: "/dashboard",
     allowedUsers: ['Student', 'Admin']
   },
+  {
+    label: "Manage Attendance",
+    route: "/attendance",
+    allowedUsers: ['Admin']
+  }
   // {
   //   label: "Packages",
   //   route: "/packages/create",
@@ -32,4 +37,9 @@ export const eventDefaultValues = {
   price: "",
   isFree: false,
   url: "",
+};
+
+export const attendanceDefaultValues = {
+  students: [],
+  trainingDate: new Date(),
 };
