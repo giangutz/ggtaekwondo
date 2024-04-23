@@ -22,7 +22,7 @@ export default async function RootLayout({
     <div className="flex h-screen flex-col">
       <Header userType={userType} />
       <main className="flex-1">{children}</main>
-      {userType === "Admin" ? (
+      {/* {userType === "Admin" ? ( */}
         <>
           <div className="fixed right-4 bottom-3">
             <CreateAttendance />
@@ -33,7 +33,7 @@ export default async function RootLayout({
             <CreatePackage />
           </div>
         </>
-      ) : null}
+      {/* ) : null} */}
       <Footer />
     </div>
   );
