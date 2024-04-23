@@ -21,6 +21,8 @@ import { createAttendance, updateAttendance } from "@/lib/actions/attendance.act
 import { IAttendance } from "@/lib/database/models/attendance.model";
 import { attendanceDefaultValues } from "@/constants";
 import "react-datepicker/dist/react-datepicker.css";
+import { useToast } from "@/components/ui/use-toast"
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
   class: z.string(),
@@ -38,6 +40,7 @@ type AttendanceFormProps = {
 };
 
 const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
+  const { toast } = useToast();
   const initialValues = attendance
     ? {
         ...attendance,
@@ -80,8 +83,12 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
 
         if (attendance) {
           form.reset();
-          alert("Attendance created successfully");
+          // alert("Attendance created successfully");
+          toast({
+            description: "Attendance created successfully.",
+          })
         }
+        redirect('/managegym');
       } catch (error) {
         console.error(error);
       }

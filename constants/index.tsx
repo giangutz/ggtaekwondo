@@ -2,28 +2,28 @@ export const headerLinks = [
   {
     label: "Home",
     route: "/",
-    allowedUsers: ["6626ffe2ca9888dab9ebdd31", "662700b1ca9888dab9ebdd3d"],
+    allowedUsers: ["Admin", "Student"],
   },
   {
     label: "Create Event",
     route: "/events/create",
-    allowedUsers: ["662700b1ca9888dab9ebdd3d"],
+    allowedUsers: ["Admin"],
   },
   {
     label: "Dashboard",
     route: "/dashboard",
-    allowedUsers: ["6626ffe2ca9888dab9ebdd31", "662700b1ca9888dab9ebdd3d"],
+    allowedUsers: ["Admin", "Student"],
   },
   {
-    label: "Manage Attendance",
-    route: "/attendance",
-    allowedUsers: ["662700b1ca9888dab9ebdd3d"],
+    label: "Manage Gym",
+    route: "/managegym",
+    allowedUsers: ["Admin"],
   },
-  {
-    label: "Manage Users",
-    route: "/users",
-    allowedUsers: ["662700b1ca9888dab9ebdd3d"],
-  },
+  // {
+  //   label: "Manage Users",
+  //   route: "/users",
+  //   allowedUsers: ["Admin"],
+  // },
 ];
 
 export const eventDefaultValues = {

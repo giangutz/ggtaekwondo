@@ -14,7 +14,7 @@ export async function createAttendance(attendanceData: CreateAttendanceParams) {
   try {
     await connectToDatabase();
     const newAttendance = await Attendance.create(attendanceData);
-    revalidatePath("/attendance");
+    revalidatePath("/managegym");
     return JSON.parse(JSON.stringify(newAttendance));
   } catch (error) {
     handleError(error);
@@ -63,7 +63,7 @@ export async function updateAttendance({
       { new: true }
     );
     if (!updatedAttendance) throw new Error("Attendance not found");
-    revalidatePath("/attendance");
+    revalidatePath("/managegym");
     return JSON.parse(JSON.stringify(updatedAttendance));
   } catch (error) {
     handleError(error);
@@ -135,7 +135,7 @@ export async function deleteAttendance(attendanceId: string) {
     await connectToDatabase();
     const deletedAttendance = await Attendance.findByIdAndDelete(attendanceId);
     if (!deletedAttendance) throw new Error("Attendance not found");
-    revalidatePath("/attendance");
+    revalidatePath("/managegym");
     return JSON.parse(JSON.stringify(deletedAttendance));
   } catch (error) {
     handleError(error);

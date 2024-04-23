@@ -25,10 +25,6 @@ const CreateAttendance = ({ attendance }: attendanceProps) => {
       <Dialog>
         <DialogTrigger className="cursor-pointer" asChild>
           {attendance ? (
-            // <Button
-            //   // variant="outline"
-            //   className="bg-transparent flex items-center justify-center"
-            // >
             <Image
               src="/assets/icons/edit.svg"
               alt="edit"
@@ -36,7 +32,6 @@ const CreateAttendance = ({ attendance }: attendanceProps) => {
               height={20}
             />
           ) : (
-            // </Button>
             <Button
               variant="outline"
               className="rounded-full border-2 border-orange-500 p-2 flex items-center justify-center"
