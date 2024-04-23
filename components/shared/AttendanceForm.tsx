@@ -20,6 +20,7 @@ import Image from "next/image";
 import { createAttendance, updateAttendance } from "@/lib/actions/attendance.actions";
 import { IAttendance } from "@/lib/database/models/attendance.model";
 import { attendanceDefaultValues } from "@/constants";
+import "react-datepicker/dist/react-datepicker.css";
 
 const formSchema = z.object({
   class: z.string(),
@@ -129,8 +130,8 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
                     <DatePicker
                       selected={field.value}
                       onChange={(date: Date) => field.onChange(date)}
-                      showTimeSelect
-                      timeInputLabel="Time:"
+                      // showTimeSelect
+                      // timeInputLabel="Time:"
                       dateFormat="MM/dd/yyyy"
                       wrapperClassName="datePicker"
                     />

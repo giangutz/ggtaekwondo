@@ -18,6 +18,7 @@ import {
 import UserDropdown from "@/components/shared/UserDropdown";
 import PackageDropdown from "@/components/shared/PackageDropdown";
 import { createPackage } from "@/lib/actions/packages.actions";
+import "react-datepicker/dist/react-datepicker.css";
 
 const formSchema = z.object({
   studentId: z.string(),
@@ -151,9 +152,9 @@ const PackageForm = () => {
                     <DatePicker
                       selected={field.value}
                       onChange={(date: Date) => field.onChange(date)}
-                      showTimeSelect
-                      timeInputLabel="Time:"
-                      dateFormat="MM/dd/yyyy h:mm aa"
+                      // showTimeSelect
+                      // timeInputLabel="Time:"
+                      dateFormat="MM/dd/yyyy"
                       wrapperClassName="datePicker"
                     />
                   </div>
