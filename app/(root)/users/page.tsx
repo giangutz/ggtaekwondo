@@ -1,17 +1,11 @@
 "use client";
 import ChangeUserType from "@/components/shared/ChangeUserType";
-import CreateAttendance from "@/components/shared/CreateAttendance";
-import DeleteAttendance from "@/components/shared/DeleteAttendance";
 import { deleteUser, getAllUser } from "@/lib/actions/user.actions";
 import { getAllUserTypes } from "@/lib/actions/usertype.actions";
-import {
-  getAllAttendance,
-  getAttendanceById,
-} from "@/lib/actions/attendance.actions";
-import { getAllClass } from "@/lib/actions/class.actions";
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -23,38 +17,36 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { IUser } from "@/lib/database/models/user.model";
 
-const ManageUsersAndAttendance = () => {
+const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [userTypes, setUserTypes] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
-  const [attendance, setAttendance] = useState([]);
-  const [classes, setClasses] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUserTypes = async () => {
       const fetchedUserTypes = await getAllUserTypes();
-      const fetchedUsers = await getAllUser();
-      const fetchedAttendance = await getAllAttendance();
-      const fetchedClasses = await getAllClass();
-      setUsers(fetchedUsers);
+      const fetchUsers = await getAllUser();
+      setUsers(fetchUsers);
       setUserTypes(fetchedUserTypes);
-      setAttendance(fetchedAttendance);
-      setClasses(fetchedClasses);
     };
 
-    fetchData();
+    fetchUserTypes();
   }, []);
 
   const handleDelete = async (userToDelete: IUser) => {
     try {
+      // console.log(userToDelete);
       const deletedUser = await deleteUser(userToDelete._id);
+      // Remove the user from the users state
       setUsers(users.filter((user: IUser) => user._id !== userToDelete._id));
+      // Close the dialog
       setUserToDelete(null);
     } catch (error) {
       console.error("Failed to delete user:", error);
     }
   };
+
   return (
     <>
       <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
@@ -124,58 +116,8 @@ const ManageUsersAndAttendance = () => {
           </tbody>
         </table>
       </div>
-      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
-        <div className="wrapper flex items-center justify-center sm:justify-between">
-          <h3 className="h3-bold text-center sm:text-left">
-            Manage Attendance
-          </h3>
-        </div>
-      </section>
-
-      <div className="wrapper overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="p-medium-14 border-b text-grey-500">
-              <th className="w-1/2 sm:w-3/8 py-3">Date</th>
-              <th className="w-1/2 sm:w-3/8 py-3">Class</th>
-              <th className="w-1/4 sm:w-1/8 py-3 text-center pr-4">Edit</th>
-              <th className="w-1/4 sm:w-1/8 py-3 text-center pr-4">Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attendance.map((data: any) => (
-              <tr
-                key={data._id}
-                className="p-regular-14 lg:p-regular-16 border-b"
-                style={{ boxSizing: "border-box" }}
-              >
-                <td className="py-4 text-center">
-                  {new Date(data.trainingDate).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </td>
-                <td className="py-4 text-center">
-                    {(classes.find((cls: any) => cls._id === data.class) as any)?.name}
-                </td>
-                <td className="py-4 text-center w-20 pr-4">
-                  <div className="flex justify-center ml-auto">
-                    <CreateAttendance attendance={data} />
-                  </div>
-                </td>
-                <td className="py-4 text-center w-20 pr-4">
-                  <div className="flex justify-center ml-auto">
-                    <DeleteAttendance attendance={data} />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </>
   );
 };
 
-export default ManageUsersAndAttendance;
+export default ManageUsers;
