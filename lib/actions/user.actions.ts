@@ -7,6 +7,7 @@ import { handleError } from "@/lib/utils";
 import Training from "@/lib/database/models/event.model";
 import { revalidatePath } from "next/cache";
 import { clerkClient } from "@clerk/nextjs";
+import UserType from "../database/models/usertype.model";
 
 // import Order from "@/lib/database/models/order.model";
 
@@ -36,7 +37,7 @@ export async function getUserType(userId: string) {
     if (!user) {
       return '';
     }
-    return user.userType;
+    return JSON.parse(JSON.stringify(user.userType));
   } catch (error) {
     handleError(error);
   }
@@ -126,6 +127,22 @@ export async function deleteUser(userId: string) {
     revalidatePath("/users");
 
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function CheckUserType(userId: string) {
+  try {
+    await connectToDatabase();
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return false;
+    }
+
+    const userType = await UserType.findById(user.userType);
+    return JSON.parse(JSON.stringify(userType));
   } catch (error) {
     handleError(error);
   }
