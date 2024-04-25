@@ -5,7 +5,7 @@ export interface IPackage extends Document {
   _id: string;
   studentId: string; // Reference to User ID
   name: string;
-  classesPerWeek: number;
+  // classesPerWeek: number;
   startDate: Date;
   endDate: Date;
   isActive: boolean;
@@ -15,7 +15,7 @@ export interface IPackage extends Document {
 const PackageSchema = new Schema({
   studentId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   name: { type: String, required: true },
-  classesPerWeek: { type: Number, required: true },
+  // classesPerWeek: { type: Number, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   isActive: { type: Boolean, required: true, default: true },

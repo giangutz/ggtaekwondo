@@ -24,20 +24,27 @@ import { getAllUser } from "@/lib/actions/user.actions";
 type UserDropdownProps = {
   value?: string;
   onChangeHandler?: () => void;
+  classId?: string;
 };
 
-const UserDropdown = ({ value, onChangeHandler }: UserDropdownProps) => {
+const UserDropdown = ({
+  value,
+  onChangeHandler,
+  classId,
+}: UserDropdownProps) => {
   const [users, setUsers] = useState<IUser[]>([]);
 
   useEffect(() => {
     const getUsers = async () => {
       const userList = await getAllUser();
-      // console.log(userList);
-      userList && setUsers(userList as IUser[]);
+      const filteredUsers = userList.filter(
+        (user: IUser) => user.class === classId
+      );
+      setUsers(filteredUsers as IUser[]);
     };
 
     getUsers();
-  }, []);
+  }, [classId]); // Add classId to the dependency array
 
   return (
     <Select onValueChange={onChangeHandler} defaultValue={value}>
@@ -45,7 +52,7 @@ const UserDropdown = ({ value, onChangeHandler }: UserDropdownProps) => {
         <SelectValue placeholder="Select a Student" />
       </SelectTrigger>
       <SelectContent>
-        {users.length > 0 &&
+        {users.length > 0 ? (
           users.map((user) => (
             <SelectItem
               key={user._id}
@@ -54,7 +61,16 @@ const UserDropdown = ({ value, onChangeHandler }: UserDropdownProps) => {
             >
               {user.firstName} {user.lastName}
             </SelectItem>
-          ))}
+          ))
+        ) : (
+          <SelectItem
+            value="noStudents"
+            className="select-item p-regular-14"
+            disabled
+          >
+            No students found
+          </SelectItem>
+        )}
 
         {/* <AlertDialog>
           <AlertDialogTrigger className="p-medium-14 flex w-full rounded-sm py-3 pl-8 text-primary-500 hover:bg-primary-50 focus:text-primary-500">

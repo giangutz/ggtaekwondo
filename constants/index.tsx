@@ -43,3 +43,11 @@ export const attendanceDefaultValues = {
   students: [],
   trainingDate: new Date(),
 };
+
+export const packageDefaultValues = {
+  classId: "", // Add this line
+  studentId: "",
+  availPackage: "",
+  startDateTime: new Date(Date.now()),
+  classesPerWeek: "",
+};

@@ -15,7 +15,6 @@ import { revalidatePath } from "next/cache";
 export async function createPackage({
   studentId,
   name,
-  classesPerWeek,
   startDate,
   endDate,
   isActive,
@@ -26,7 +25,6 @@ export async function createPackage({
     const newPackage = await Package.create({
       studentId,
       name,
-      classesPerWeek,
       startDate,
       endDate,
       isActive,
@@ -112,6 +110,31 @@ export async function deletePackage({ packageId }: DeletePackageParams) {
   try {
     await connectToDatabase();
     await Package.findByIdAndDelete(packageId);
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function checkExistingPackage(studentId: string, startDate: Date) {
+  try {
+    await connectToDatabase();
+    // Get the latest package for the student
+    const latestPackage = await Package.findOne({
+      studentId,
+    }).sort({ endDate: -1 }); // Sort in descending order to get the latest package
+
+    // If there is no existing package, return false
+    if (!latestPackage) {
+      return false;
+    }
+
+    // If the startDate of the new package is before the endDate of the latest package, return true
+    if (startDate < latestPackage.endDate) {
+      return true;
+    }
+
+    // Otherwise, return false
+    return false;
   } catch (error) {
     handleError(error);
   }

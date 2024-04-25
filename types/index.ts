@@ -21,7 +21,6 @@ export type UpdateUserParams = {
 export type CreatePackageParams = {
     studentId: string;
     name: string;
-    classesPerWeek: number;
     startDate: Date;
     endDate: Date;
     isActive: boolean;

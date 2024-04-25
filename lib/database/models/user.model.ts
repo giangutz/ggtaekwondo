@@ -6,6 +6,7 @@ export interface IUser extends Document {
   firstName: string;
   lastName: string;
   clerkId?: string;
+  class?: string;
 }
 
 const UserSchema = new Schema({
