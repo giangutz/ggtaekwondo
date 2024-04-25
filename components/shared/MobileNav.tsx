@@ -35,7 +35,7 @@ const MobileNav = (userType: any) => {
           />
           <Separator className="border border-gray-50" />
           <NavItems
-            userType={userType}
+            userType={userType.userType}
             onNavClick={() => setIsOpen(false)}
           />
         </SheetContent>

@@ -1,3 +1,5 @@
+"use server";
+
 import { connectToDatabase } from "@/lib/database";
 import PackageDetails from "@/lib/database/models/packagedetails.model";
 import { handleError } from "@/lib/utils";

@@ -22,6 +22,9 @@ import {
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { IUser } from "@/lib/database/models/user.model";
+import { getAllPackages } from "@/lib/actions/packages.actions";
+import { IClass } from "@/lib/database/models/class.model";
+import CreatePackage from "@/components/shared/CreatePackage";
 
 const ManageUsersAndAttendance = () => {
   const [users, setUsers] = useState([]);
@@ -30,6 +33,7 @@ const ManageUsersAndAttendance = () => {
   const [userToDelete, setUserToDelete] = useState(null);
   const [attendance, setAttendance] = useState([]);
   const [classes, setClasses] = useState([]);
+  const [packages, setPackages] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,10 +41,12 @@ const ManageUsersAndAttendance = () => {
       const fetchedUsers = await getAllUser();
       const fetchedAttendance = await getAllAttendance();
       const fetchedClasses = await getAllClass();
+      const fetchedPackages = await getAllPackages();
       setUsers(fetchedUsers);
       setUserTypes(fetchedUserTypes);
       setAttendance(fetchedAttendance);
       setClasses(fetchedClasses);
+      setPackages(fetchedPackages);
     };
 
     fetchData();
@@ -124,6 +130,84 @@ const ManageUsersAndAttendance = () => {
           </tbody>
         </table>
       </div>
+
+      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+        <div className="wrapper flex items-center justify-center sm:justify-between">
+          <h3 className="h3-bold text-center sm:text-left">Manage Packages</h3>
+        </div>
+      </section>
+
+      <div className="wrapper grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {packages.map((data: any) => {
+          const user = users.find(
+            (user: IUser) => user._id === data.studentId
+          ) as IUser | undefined;
+          const userClass = classes.find(
+            (cls: IClass) => cls._id === user?.class
+          ) as IClass | undefined;
+          const classId = userClass?._id;
+
+          return (
+            <div
+              key={data._id}
+              className="rounded overflow-hidden shadow-lg p-6 bg-white relative"
+            >
+              <div className="absolute top-4 right-4 flex flex-col space-y-3">
+                <CreatePackage pkg={data} classId={classId} />
+                <DeleteAttendance attendance={data} />
+              </div>
+              <h2 className="font-bold text-xl mb-2">
+                {
+                  (
+                    users.find((user: IUser) => user._id === data.studentId) as
+                      | IUser
+                      | undefined
+                  )?.firstName
+                }{" "}
+                {
+                  (
+                    users.find((user: IUser) => user._id === data.studentId) as
+                      | IUser
+                      | undefined
+                  )?.lastName
+                }
+              </h2>
+              <div className="flex space-x-8">
+                <p className="text-gray-700 text-base">
+                  {packages.map((pkg: any) => {
+                    if (pkg.studentId === data.studentId) {
+                      return pkg.name;
+                    }
+                    return null;
+                  })}
+                </p>
+                <p className="text-gray-700 text-base">
+                  {
+                    (
+                      classes.find(
+                        (cls: IClass) =>
+                          cls._id ===
+                          (
+                            users.find(
+                              (user: IUser) => user._id === data.studentId
+                            ) as IUser | undefined
+                          )?.class
+                      ) as IClass | undefined
+                    )?.name
+                  }
+                </p>
+              </div>
+              <p className="text-gray-500 text-sm mt-2">
+                Start Date: {new Date(data.startDate).toLocaleDateString()}
+              </p>
+              <p className="text-gray-500 text-sm">
+                End Date: {new Date(data.endDate).toLocaleDateString()}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
       <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
           <h3 className="h3-bold text-center sm:text-left">
@@ -157,7 +241,10 @@ const ManageUsersAndAttendance = () => {
                   })}
                 </td>
                 <td className="py-4 text-center">
-                    {(classes.find((cls: any) => cls._id === data.class) as any)?.name}
+                  {
+                    (classes.find((cls: any) => cls._id === data.class) as any)
+                      ?.name
+                  }
                 </td>
                 <td className="py-4 text-center w-20 pr-4">
                   <div className="flex justify-center ml-auto">

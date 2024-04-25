@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -20,25 +20,53 @@ import PackageDropdown from "@/components/shared/PackageDropdown";
 import {
   checkExistingPackage,
   createPackage,
+  updatePackage,
 } from "@/lib/actions/packages.actions";
 import "react-datepicker/dist/react-datepicker.css";
 import { packageDefaultValues } from "@/constants";
 import ClassDropdown from "./ClassDropdown";
 import { getClassById } from "@/lib/actions/class.actions";
+import { IPackage } from "@/lib/database/models/packages.model";
 
 const formSchema = z.object({
-  classId: z.string().nonempty("Class is required"),
+  classId: z.string().optional(),
   studentId: z.string().nonempty("Student is required"),
   availPackage: z.string().nonempty("Package is required"),
   startDateTime: z.date(),
+  endDateTime: z.date().optional(),
 });
 
-const PackageForm = () => {
+type packageProps = {
+  pkg?: IPackage;
+  classId: any;
+};
+
+const PackageForm = ({ pkg, classId }: packageProps) => {
+  const initialValues = pkg
+    ? {
+        ...pkg,
+        classId: classId,
+        startDateTime: new Date(pkg.startDate),
+        endDateTime: new Date(pkg.endDate),
+        availPackage: pkg.name,
+      }
+    : packageDefaultValues;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: packageDefaultValues,
+    defaultValues: initialValues,
   });
   const selectedClassId = form.watch("classId");
+
+  useEffect(() => {
+    if (pkg) {
+      form.reset({
+        ...pkg,
+        startDateTime: new Date(pkg.startDate),
+        endDateTime: new Date(pkg.endDate),
+      });
+    }
+  }, [pkg, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -59,55 +87,92 @@ const PackageForm = () => {
         "An error occurred while checking for existing package. Please try again."
       );
     }
-    let endDate = new Date(values.startDateTime);
 
-    // Fetch the class data from MongoDB
-    const classData = await getClassById(values.classId);
+    // if (pkg) {
+    //   // Update package
+    //   try {
+    //     const updatedPackageData = {
+    //       name: values.availPackage,
+    //       startDate: values.startDateTime,
+    //       endDate: values.endDateTime,
+    //       isActive: true,
+    //     };
+    //     const updatedPackage = await updatePackage({
+    //       packageId: pkg._id,
+    //       updatedPackageData,
+    //     });
+    //     if (updatedPackage) {
+    //       alert("Package updated successfully");
+    //     }
+    //   } catch (error) {
+    //     console.error("Failed to update package:", error);
+    //     // Replace this with your preferred method of error feedback
+    //     alert(
+    //       "An error occurred while updating the package. Please try again."
+    //     );
+    //   }
+    // } else {
+      let endDate = new Date(values.startDateTime);
 
-    if (
-      values.availPackage === "12 Sessions" ||
-      values.availPackage === "6 Sessions"
-    ) {
-      // Compute for end date of package based on start date and the class days
-      const sessions = values.availPackage === "12 Sessions" ? 12 : 6;
-      let count = 0;
-
-      // Check if the start day is a class day
-      let day = endDate.toLocaleString("en-us", { weekday: "long" });
-      if (classData.days.includes(day)) {
-        count++;
+      // Fetch the class data from MongoDB
+      let classData;
+      if (pkg) {
+        classData = await getClassById(classId);
+      } else {
+        if (values.classId) {
+          classData = await getClassById(values.classId);
+        } else {
+          // Handle the case where classId is undefined
+          // For example, you might want to show an error message to the user
+          alert("Class ID is required.");
+          return;
+        }
       }
+      if (
+        values.availPackage === "12 Sessions" ||
+        values.availPackage === "6 Sessions"
+      ) {
+        // Compute for end date of package based on start date and the class days
+        const sessions = values.availPackage === "12 Sessions" ? 12 : 6;
+        let count = 0;
 
-      while (count < sessions) {
-        endDate.setDate(endDate.getDate() + 1);
-
-        // Check if the current day is a class day
-        const day = endDate.toLocaleString("en-us", { weekday: "long" });
+        // Check if the start day is a class day
+        let day = endDate.toLocaleString("en-us", { weekday: "long" });
         if (classData.days.includes(day)) {
           count++;
         }
-      }
-    }
 
-    const packageData = {
-      studentId: values.studentId,
-      name: values.availPackage,
-      startDate: values.startDateTime,
-      endDate: endDate,
-      isActive: true,
-      path: "/profile",
-    };
-    // console.log(packageData);
-    try {
-      const newPackage = await createPackage(packageData);
+        while (count < sessions) {
+          endDate.setDate(endDate.getDate() + 1);
 
-      if (newPackage) {
-        form.reset();
-        alert("Student package updated successfully");
+          // Check if the current day is a class day
+          const day = endDate.toLocaleString("en-us", { weekday: "long" });
+          if (classData.days.includes(day)) {
+            count++;
+          }
+        }
       }
-    } catch (error) {
-      console.log(error);
-    }
+
+      const packageData = {
+        studentId: values.studentId,
+        name: values.availPackage,
+        startDate: values.startDateTime,
+        endDate: endDate,
+        isActive: true,
+        path: "/profile",
+      };
+      // console.log(packageData);
+      try {
+        const newPackage = await createPackage(packageData);
+
+        if (newPackage) {
+          form.reset();
+          alert("Student package updated successfully");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    // }
   }
 
   return (
@@ -159,6 +224,7 @@ const PackageForm = () => {
                       <PackageDropdown
                         onChangeHandler={field.onChange}
                         value={field.value}
+                        pkgName={pkg?.name}
                       />
                     </FormControl>
                     <FormMessage />
@@ -196,6 +262,39 @@ const PackageForm = () => {
                   </FormItem>
                 )}
               />
+              {pkg && (
+                <FormField
+                  control={form.control}
+                  name="endDateTime"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                          <Image
+                            src="/assets/icons/calendar.svg"
+                            alt="calendar"
+                            width={24}
+                            height={24}
+                            className="filter-grey"
+                          />
+                          <p className="ml-3 whitespace-nowrap text-grey-600">
+                            Start Date:
+                          </p>
+                          <DatePicker
+                            selected={field.value}
+                            onChange={(date: Date) => field.onChange(date)}
+                            // showTimeSelect
+                            // timeInputLabel="Time:"
+                            dateFormat="MM/dd/yyyy"
+                            wrapperClassName="datePicker"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </>
           )}
 

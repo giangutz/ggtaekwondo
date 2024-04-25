@@ -37,41 +37,15 @@ export async function createPackage({
   }
 }
 
-// GET ALL package details
-// export async function getAllPackageDetails() {
-//   try {
-//   //   return as static data name: { type: String, required: true },
-//   // price: { type: Number, required: true },
-//   // duration: { type: Number, required: true },
-//   // classesPerWeek: { type: Number, required: true },
-//   // startDate: { type: Date, required: true },
-//   // endDate: { type: Date, required: true },
-//   const pkg = [
-//     {
-//       name: "12 Sessions",
-//       price: 2500,
-//     },
-//     {
-//       name: "6 sessions",
-//       price: 1500,
-//     },
-//   ];
-//     return pkg;
-//   } catch (error) {
-//     handleError(error);
-//   }
-// }
-
-// GET ALL packages
-// export async function getAllPackages(filter) {
-//   try {
-//     await connectToDatabase();
-//     const packages = await Package.find(filter || {});
-//     return JSON.parse(JSON.stringify(packages));
-//   } catch (error) {
-//     handleError(error);
-//   }
-// }
+export async function getAllPackages() {
+  try {
+    await connectToDatabase();
+    const packages = await Package.find();
+    return JSON.parse(JSON.stringify(packages));
+  } catch (error) {
+    handleError(error);
+  }
+}
 
 // GET a package by ID
 export async function getPackageById({ userId }: GetPackageByIdParams) {

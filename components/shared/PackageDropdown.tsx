@@ -31,22 +31,27 @@ import { IPackageDetails } from "@/lib/database/models/packagedetails.model";
 type PackageDropdownProps = {
   value?: string;
   onChangeHandler?: () => void;
+  pkgName?: string;
 };
 
-const PackageDropdown = ({ value, onChangeHandler }: PackageDropdownProps) => {
-  const pkg = [
-    {
-      _id: "1",
-      name: "12 Sessions",
-    },
-    {
-      _id: "2",
-      name: "6 Sessions",
-    },
-  ]
+const PackageDropdown = ({
+  value,
+  onChangeHandler,
+  pkgName,
+}: PackageDropdownProps) => {
+  const [pkg, setPkg] = useState<IPackageDetails[]>([]);
+
+  useEffect(() => {
+    const getPackages = async () => {
+      const packageList = await getAllPackageDetails();
+      setPkg(packageList as IPackageDetails[]);
+    };
+
+    getPackages();
+  }, []);
 
   return (
-    <Select onValueChange={onChangeHandler} defaultValue={value}>
+    <Select onValueChange={onChangeHandler} defaultValue={pkgName || value}>
       <SelectTrigger className="select-field">
         <SelectValue placeholder="Select a Package" />
       </SelectTrigger>
@@ -60,34 +65,6 @@ const PackageDropdown = ({ value, onChangeHandler }: PackageDropdownProps) => {
             {data.name}
           </SelectItem>
         ))}
-
-        {/* <AlertDialog>
-          <AlertDialogTrigger className="p-medium-14 flex w-full rounded-sm py-3 pl-8 text-primary-500 hover:bg-primary-50 focus:text-primary-500">
-            Add new category
-          </AlertDialogTrigger>
-          <AlertDialogContent className="bg-white">
-            <AlertDialogHeader>
-              <AlertDialogTitle>New Category</AlertDialogTitle>
-              <AlertDialogDescription>
-                <Input
-                  type="text"
-                  placeholder="Category name"
-                  className="input-field mt-3"
-                  //   onChange={(e) => setNewCategory(e.target.value)}
-                  onChange={(e) => e.target.value}
-                />
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => startTransition(handleAddCategory)}
-              >
-                Add
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog> */}
       </SelectContent>
     </Select>
   );

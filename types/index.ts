@@ -31,9 +31,8 @@ export type UpdatePackageParams = {
   packageId: string;
   updatedPackageData: {
     name: string;
-    classesPerWeek: number;
     startDate: Date;
-    endDate: Date;
+    endDate: Date | undefined;
     isActive: boolean;
   }
 };
