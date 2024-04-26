@@ -103,3 +103,19 @@ export const handleError = (error: unknown) => {
   console.error(error);
   throw new Error(typeof error === "string" ? error : JSON.stringify(error));
 };
+
+import { Roles } from "@/types/global";
+
+import { auth } from "@clerk/nextjs/server";
+
+export const checkRole = (role: Roles) => {
+  const { sessionClaims } = auth();
+
+  return sessionClaims?.metadata.role === role;
+};
+
+export const getRole = () => {
+  const { sessionClaims } = auth();
+
+  return sessionClaims?.metadata.role;
+}

@@ -17,7 +17,7 @@ import { IPackage } from "@/lib/database/models/packages.model";
 
 type packageProps = {
   pkg?: IPackage;
-  classId: string | undefined;
+  classId?: string | undefined;
 };
 
 const CreatePackage = ({ pkg, classId }: packageProps) => {

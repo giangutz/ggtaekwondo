@@ -2,7 +2,8 @@ import CreateAttendance from "@/components/shared/CreateAttendance";
 import CreatePackage from "@/components/shared/CreatePackage";
 import Footer from "@/components/shared/Footer";
 import Header from "@/components/shared/Header";
-import { CheckUserType} from "@/lib/actions/user.actions";
+import { CheckUserType } from "@/lib/actions/user.actions";
+import { getRole } from "@/lib/utils";
 import { auth } from "@clerk/nextjs";
 
 export default async function RootLayout({
@@ -10,14 +11,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { sessionClaims } = auth();
-  const userType = await CheckUserType(sessionClaims?.userId as string);
-  
+  const role = getRole();
   return (
     <div className="flex h-screen flex-col">
-      <Header userType={userType.name} />
+      <Header userType={role} />
       <main className="flex-1">{children}</main>
-      {userType.name === 'Admin' ? (
+      {role === "admin" ? (
         <>
           <div className="fixed right-4 bottom-3">
             <CreateAttendance />
@@ -27,7 +26,8 @@ export default async function RootLayout({
             <CreatePackage />
           </div>
         </>
-       ) : null }
+      ) : null}
+
       <Footer />
     </div>
   );

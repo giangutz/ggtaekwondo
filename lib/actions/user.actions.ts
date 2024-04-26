@@ -20,7 +20,7 @@ export async function createUser(userData: CreateUserParams) {
     await connectToDatabase();
 
     const newUser = await User.create(userData);
-    revalidatePath("/users");
+    revalidatePath("/admin/manageusers");
     return newUser;
   } catch (error) {
     console.log(error);
@@ -132,11 +132,11 @@ export async function deleteUser(userId: string) {
   }
 }
 
-export async function CheckUserType(userId: string) {
+export async function CheckUserType(clerkId: string) {
   try {
     await connectToDatabase();
 
-    const user = await User.findById(userId);
+    const user = await User.findOne({ clerkId: clerkId });
     if (!user) {
       return false;
     }

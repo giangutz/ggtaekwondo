@@ -90,7 +90,7 @@ export async function computeSessionsLeft(
     if (attendanceRecords.length > 0) {
       lastAttendance =
         attendanceRecords[attendanceRecords.length - 1].trainingDate;
-        return { sessionsLeft, lastAttendance };
+      return { sessionsLeft, lastAttendance };
     }
     return { sessionsLeft, lastAttendance: null };
     // return JSON.parse(JSON.stringify(sessionsLeft));

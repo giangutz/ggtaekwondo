@@ -2,28 +2,23 @@ export const headerLinks = [
   {
     label: "Home",
     route: "/",
-    allowedUsers: ["Admin", "Student"],
+    allowedUsers: ["admin", "student"],
   },
   {
     label: "Create Event",
     route: "/events/create",
-    allowedUsers: ["Admin"],
+    allowedUsers: ["admin"],
   },
   {
     label: "Dashboard",
     route: "/dashboard",
-    allowedUsers: ["Admin", "Student"],
+    allowedUsers: ["admin", "student"],
   },
   {
     label: "Manage Gym",
     route: "/managegym",
-    allowedUsers: ["Admin"],
+    allowedUsers: ["admin"],
   },
-  // {
-  //   label: "Manage Users",
-  //   route: "/users",
-  //   allowedUsers: ["Admin"],
-  // },
 ];
 
 export const eventDefaultValues = {
