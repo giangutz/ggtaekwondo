@@ -38,7 +38,7 @@ const formSchema = z.object({
 
 type packageProps = {
   pkg?: IPackage;
-  classId: any;
+  classId?: any;
 };
 
 const PackageForm = ({ pkg, classId }: packageProps) => {
