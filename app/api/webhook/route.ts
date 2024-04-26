@@ -71,17 +71,12 @@ export async function POST(req: Request) {
       photo: image_url,
     });
 
-    console.log("User created:", user);
-
     const update = await clerkClient.users.updateUserMetadata(id, {
       publicMetadata: {
         userId: user._id,
-        metadata: {
-          role: "student",
-        },
+        role: "student",
       },
     });
-    console.log("User metadata updated:", update);
     return NextResponse.json({ message: "OK", user: user });
   }
 
