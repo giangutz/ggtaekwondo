@@ -75,6 +75,7 @@ export async function POST(req: Request) {
       publicMetadata: {
         userId: user._id,
         role: "student",
+        class: "Beginner",
       },
     });
     return NextResponse.json({ message: "OK", user: user });

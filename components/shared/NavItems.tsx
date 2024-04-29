@@ -12,10 +12,6 @@ interface NavItemsProps {
 
 const NavItems = ({ userType, onNavClick }: NavItemsProps) => {
   const pathname = usePathname();
-  // get value of user type
-  // while (typeof userType === 'object' && userType !== null) {
-  //   userType = userType.userType;
-  // }
   
   return (
     <ul className="md:flex-between flex w-full flex-col items-start gap-5 md:flex-row">

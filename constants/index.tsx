@@ -12,7 +12,17 @@ export const headerLinks = [
   {
     label: "Dashboard",
     route: "/dashboard",
-    allowedUsers: ["admin", "student"],
+    allowedUsers: ["student"],
+  },
+  {
+    label: "Admin Dashboard",
+    route: "/admin/dashboard",
+    allowedUsers: ["admin"],
+  },
+  {
+    label: "Manage Users",
+    route: "/admin/manageusers",
+    allowedUsers: ["admin"],
   },
   {
     label: "Manage Gym",
@@ -46,3 +56,23 @@ export const packageDefaultValues = {
   startDateTime: new Date(Date.now()),
   classesPerWeek: "",
 };
+
+export const TransactionType = ["Income", "Expense"];
+
+export const IncomeSource = [
+  "Membership",
+  "Class Fees",
+  "Private Lessons",
+  "Equipment Sales",
+  "Competition Fees",
+  "Promotional Exam Fees",
+  // Add more sources as needed
+];
+
+export const ExpenseCategory = [
+  "Rent",
+  "Renovations",
+  "Equipment Costs",
+  "Instructor Salaries",
+  // Add more categories as needed
+];
