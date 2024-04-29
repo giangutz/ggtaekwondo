@@ -57,25 +57,48 @@ export const packageDefaultValues = {
   classesPerWeek: "",
 };
 
+export const transactionDefaultValues = {
+  studentId: "",
+  packageId: "",
+  attendanceId: "",
+  expenseCategory: "",
+  incomeSource: "",
+  remarks: "",
+  amount: "",
+  transactionDate: new Date(),
+  paidIn: "",
+  transactionType: "",
+};
+
 export const TransactionType = ["Income", "Expense"];
 
 export const IncomeSource = [
   "Membership",
-  "Class Fees",
-  "Private Lessons",
-  "Equipment Sales",
-  "Competition Fees",
-  "Promotional Exam Fees",
+  "Package",
+  "Per Session Fee",
+  "Equipments",
+  "Competition",
+  "Promotional Exam",
   // Add more sources as needed
 ];
 
 export const ExpenseCategory = [
   "Rent",
   "Renovations",
-  "Equipment Costs",
-  "Instructor Salaries",
+  "Equipments",
+  "Head Coach Salary",
+  "Assistant Coach Salary",
+  "Electricity",
+  "Marketing",
+  "Others",
   // Add more categories as needed
 ];
+
+export const paidInList = [
+  "GCASH",
+  "Cash",
+  "Bank Transfer",
+]
 
 export const classes = [
   "Beginner",

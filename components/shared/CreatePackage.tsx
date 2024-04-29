@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs";
 import {
   Sheet,
   SheetClose,

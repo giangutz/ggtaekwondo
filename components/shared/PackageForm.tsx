@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,31 +86,6 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
         "An error occurred while checking for existing package. Please try again."
       );
     }
-
-    // if (pkg) {
-    //   // Update package
-    //   try {
-    //     const updatedPackageData = {
-    //       name: values.availPackage,
-    //       startDate: values.startDateTime,
-    //       endDate: values.endDateTime,
-    //       isActive: true,
-    //     };
-    //     const updatedPackage = await updatePackage({
-    //       packageId: pkg._id,
-    //       updatedPackageData,
-    //     });
-    //     if (updatedPackage) {
-    //       alert("Package updated successfully");
-    //     }
-    //   } catch (error) {
-    //     console.error("Failed to update package:", error);
-    //     // Replace this with your preferred method of error feedback
-    //     alert(
-    //       "An error occurred while updating the package. Please try again."
-    //     );
-    //   }
-    // } else {
       let endDate = new Date(values.startDateTime);
 
       // Fetch the class data from MongoDB
