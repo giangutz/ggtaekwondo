@@ -76,3 +76,10 @@ export const ExpenseCategory = [
   "Instructor Salaries",
   // Add more categories as needed
 ];
+
+export const classes = [
+  "Beginner",
+  "Novice",
+  "Advanced",
+  "Elite",
+]
