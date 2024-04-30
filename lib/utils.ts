@@ -108,6 +108,12 @@ import { Roles } from "@/types/global";
 
 import { auth } from "@clerk/nextjs/server";
 
+export const getUserMetadata = () => {
+  const { sessionClaims } = auth();
+
+  return sessionClaims?.metadata;
+}
+
 export const checkRole = (role: Roles) => {
   const { sessionClaims } = auth();
 

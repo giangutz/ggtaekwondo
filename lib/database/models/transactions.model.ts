@@ -22,10 +22,11 @@ const TransactionSchema = new Schema({
   remarks: { type: String },
   amount: { type: Number, required: true },
   transactionDate: { type: Date, required: true },
-  transactionType: { type: String, enum: TransactionType, required: true },
-  incomeSource: { type: String, enum: IncomeSource },
-  expenseCategory: { type: String, enum: ExpenseCategory },
-  paidIn: { type: String, required: true, enum: paidInList },
+  transactionType: { type: String, required: true },
+  incomeSource: { type: String },
+  expenseCategory: { type: String },
+  paidIn: { type: String, required: true },
+  createdBy: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
 const Transaction = models.Transaction || model("Transaction", TransactionSchema);

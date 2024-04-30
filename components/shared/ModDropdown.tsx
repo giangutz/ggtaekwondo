@@ -6,24 +6,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TransactionType } from "@/constants";
+import { paidInList } from "@/constants";
 
-type TransactionDropdownProps = {
+type ModDropdownProps = {
   value?: string;
-  onChangeHandler?: (value: string) => void;
+  onChangeHandler?: () => void;
 };
 
-const TransactionTypeDropdown = ({
-  value,
-  onChangeHandler,
-}: TransactionDropdownProps) => {
+const ModDropdown = ({ value, onChangeHandler }: ModDropdownProps) => {
   return (
     <Select onValueChange={onChangeHandler} defaultValue={value}>
       <SelectTrigger className="select-field">
-        <SelectValue placeholder="Select a Transaction Type" />
+        <SelectValue placeholder="Mode of Payment" />
       </SelectTrigger>
       <SelectContent>
-        {TransactionType.map((data) => (
+        {paidInList.map((data) => (
           <SelectItem
             key={data}
             value={data}
@@ -37,4 +34,4 @@ const TransactionTypeDropdown = ({
   );
 };
 
-export default TransactionTypeDropdown;
+export default ModDropdown;

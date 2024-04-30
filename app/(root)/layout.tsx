@@ -4,21 +4,20 @@ import CreateTransactions from "@/components/shared/CreateTransactions";
 import Footer from "@/components/shared/Footer";
 import Header from "@/components/shared/Header";
 import HoverLabelComponent from "@/components/shared/HoverLabelComponent";
-import { CheckUserType } from "@/lib/actions/user.actions";
-import { getRole } from "@/lib/utils";
-import { auth } from "@clerk/nextjs";
+import { getUserMetadata } from "@/lib/utils";
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const role = getRole();
+  const user = getUserMetadata();
+  console.log(user);
   return (
     <div className="flex h-screen flex-col">
-      <Header userType={role} />
+      <Header userType={user?.role} />
       <main className="flex-1">{children}</main>
-      {role === "admin" ? (
+      {user?.role === "admin" ? (
         <>
           <div className="fixed right-4 bottom-4">
             <HoverLabelComponent label="Make Attendance" tooltipLeft="-left-36">
@@ -34,7 +33,7 @@ export default async function RootLayout({
 
           <div className="fixed right-4 bottom-28">
             <HoverLabelComponent label="Transactions" tooltipLeft="-left-28">
-              <CreateTransactions />
+              <CreateTransactions createdBy={user?.userId} />
             </HoverLabelComponent>
           </div>
         </>

@@ -6,30 +6,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TransactionType } from "@/constants";
+import { ExpenseCategory } from "@/constants";
 
-type TransactionDropdownProps = {
+type ExpenseSourceDropdownProps = {
   value?: string;
-  onChangeHandler?: (value: string) => void;
+  onChangeHandler?: () => void;
 };
 
-const TransactionTypeDropdown = ({
+const ExpenseDropdown = ({
   value,
   onChangeHandler,
-}: TransactionDropdownProps) => {
+}: ExpenseSourceDropdownProps) => {
   return (
     <Select onValueChange={onChangeHandler} defaultValue={value}>
       <SelectTrigger className="select-field">
-        <SelectValue placeholder="Select a Transaction Type" />
+        <SelectValue placeholder="Select an Expense Category" />
       </SelectTrigger>
       <SelectContent>
-        {TransactionType.map((data) => (
+        {ExpenseCategory.map((source) => (
           <SelectItem
-            key={data}
-            value={data}
+            key={source}
+            value={source}
             className="select-item p-regular-14"
           >
-            {data}
+            {source}
           </SelectItem>
         ))}
       </SelectContent>
@@ -37,4 +37,4 @@ const TransactionTypeDropdown = ({
   );
 };
 
-export default TransactionTypeDropdown;
+export default ExpenseDropdown;

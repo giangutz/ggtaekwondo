@@ -1,14 +1,15 @@
 import EventForm from "@/components/shared/EventForm";
 import { CheckUserType } from "@/lib/actions/user.actions";
+import { getRole } from "@/lib/utils";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-const CreateEvent = async () => {
+const CreateEvent = () => {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId as string;
-  const userType = await CheckUserType(userId);
-  if(userType.name !== 'Admin') {
-    redirect('/');
+  const role = getRole();
+  if (role !== "admin") {
+    redirect("/");
   }
   return (
     <>

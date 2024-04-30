@@ -196,3 +196,34 @@ export type SearchParamProps = {
   params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
+
+// ====== TRANSACTION PARAMS ====== //
+export type CreateTransactionParams = {
+  studentId?: string;
+  packageId?: string;
+  createdBy: string;
+  attendanceId?: string;
+  amount: number;
+  remarks?: string;
+  transactionDate: Date;
+  transactionType: string;
+  incomeSource?: string;
+  expenseCategory?: string;
+  paidIn: string;
+};
+
+export type UpdateTransactionParams = {
+  _id: string;
+  updatedTransactionData: {
+    studentId?: string;
+    packageId?: string;
+    attendanceId?: string;
+    amount: number;
+    remarks?: string;
+    transactionDate: Date;
+    transactionType: string;
+    incomeSource?: string;
+    expenseCategory?: string;
+    paidIn: string;
+  };
+};

@@ -17,12 +17,13 @@ import { ITransaction } from '@/lib/database/models/transactions.model';
 
 type transactionsProps = {
   transaction?: ITransaction;
+  createdBy?: string;
 }
 
-const CreateTransactions = ({ transaction }: transactionsProps ) => {
+const CreateTransactions = ({ transaction, createdBy }: transactionsProps) => {
   return (
     <>
-    <Sheet key={"bottom"}>
+      <Sheet key={"bottom"}>
         <SheetTrigger asChild>
           {transaction ? (
             <Image
@@ -36,7 +37,10 @@ const CreateTransactions = ({ transaction }: transactionsProps ) => {
               variant="outline"
               className="rounded-full border-2 border-orange-500 p-2 flex items-center justify-center hover:bg-slate-100"
             >
-              <ArrowLeftRight className="s-8 text-muted-foreground" color="#f97316" />
+              <ArrowLeftRight
+                className="s-8 text-muted-foreground"
+                color="#f97316"
+              />
             </Button>
           )}
         </SheetTrigger>
@@ -49,8 +53,9 @@ const CreateTransactions = ({ transaction }: transactionsProps ) => {
           </SheetHeader>
           <TransactionForm transaction={transaction} />
         </SheetContent>
-      </Sheet></>
-  )
-}
+      </Sheet>
+    </>
+  );
+};
 
 export default CreateTransactions

@@ -22,6 +22,10 @@ import PackageDropdown from "./PackageDropdown";
 import IncomeSourceDropdown from "./IncomeSourceDropdown";
 import { Input } from "../ui/input";
 import TransactionTypeDropdown from "./TransactionTypeDropdown";
+import { Textarea } from "../ui/textarea";
+import ExpenseDropdown from "./ExpenseDropdown";
+import ModDropdown from "./ModDropdown";
+import { createTransaction } from "@/lib/actions/transaction.actions";
 
 const formSchema = z.object({
   classId: z.string().optional(),
@@ -39,9 +43,10 @@ const formSchema = z.object({
 
 type transactionsProps = {
   transaction?: ITransaction;
+  createdBy?: string;
 };
 
-const TransactionForm = ({ transaction }: transactionsProps) => {
+const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
   const initialValues = transaction
     ? {
         ...transaction,
@@ -57,6 +62,18 @@ const TransactionForm = ({ transaction }: transactionsProps) => {
   const selectedTransactionType = form.watch("transactionType");
 
   useEffect(() => {
+    // reset the form when the transaction type changes
+    form.reset({
+      ...transactionDefaultValues,
+      transactionType: selectedTransactionType,
+    });
+  }, [selectedTransactionType, form]);
+
+  useEffect(() => {
+    form.setValue("studentId", "");
+  }, [selectedClassId, form]);
+
+  useEffect(() => {
     if (transaction) {
       form.reset({
         ...transaction,
@@ -66,7 +83,53 @@ const TransactionForm = ({ transaction }: transactionsProps) => {
   }, [transaction, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    const amount = Number(values.amount);
+    values.amount = amount;
+
+    // Only include `studentId` and `incomeSource` if they are not empty
+    if (values.studentId === "") {
+      delete values.studentId;
+    }
+    if (values.incomeSource === "") {
+      delete values.incomeSource;
+    }
+
+    // Only include `packageId`, `attendanceId`, and `expenseCategory` if they are not empty
+    if (values.packageId === "") {
+      delete values.packageId;
+    }
+    if (values.attendanceId === "") {
+      delete values.attendanceId;
+    }
+    if (values.expenseCategory === "") {
+      delete values.expenseCategory;
+    }
+
+    if (transaction) {
+      try {
+        const updatedTransaction = {
+          _id: transaction._id,
+          ...values,
+        };
+        console.log(updatedTransaction);
+        // const transactionData = await updateTransaction(updatedTransaction);
+        // if (transactionData) {
+        //   alert("Transaction updated successfully");
+        // }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      try {
+        const transactionData = await createTransaction({ ...values, createdBy: createdBy });
+        if (transactionData) {
+          form.reset();
+          alert("Transaction created successfully");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 
   return (
@@ -141,7 +204,6 @@ const TransactionForm = ({ transaction }: transactionsProps) => {
                       </FormItem>
                     )}
                   />
-                  {/* amount field */}
                   <FormField
                     control={form.control}
                     name="amount"
@@ -159,32 +221,65 @@ const TransactionForm = ({ transaction }: transactionsProps) => {
                       </FormItem>
                     )}
                   />
+                  <div className="flex flex-col items-center sm:flex-row">
+                    <FormField
+                      control={form.control}
+                      name="paidIn"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <ModDropdown
+                              onChangeHandler={field.onChange}
+                              value={field.value}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="transactionDate"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                              <Image
+                                src="/assets/icons/calendar.svg"
+                                alt="calendar"
+                                width={24}
+                                height={24}
+                                className="filter-grey"
+                              />
+                              <p className="ml-3 whitespace-nowrap text-grey-600">
+                                Transaction Date:
+                              </p>
+                              <DatePicker
+                                selected={field.value}
+                                onChange={(date: Date) => field.onChange(date)}
+                                // showTimeSelect
+                                // timeInputLabel="Time:"
+                                dateFormat="MM/dd/yyyy"
+                                wrapperClassName="datePicker"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <FormField
                     control={form.control}
-                    name="transactionDate"
+                    name="remarks"
                     render={({ field }) => (
                       <FormItem className="w-full">
                         <FormControl>
-                          <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
-                            <Image
-                              src="/assets/icons/calendar.svg"
-                              alt="calendar"
-                              width={24}
-                              height={24}
-                              className="filter-grey"
-                            />
-                            <p className="ml-3 whitespace-nowrap text-grey-600">
-                              Transaction Date:
-                            </p>
-                            <DatePicker
-                              selected={field.value}
-                              onChange={(date: Date) => field.onChange(date)}
-                              // showTimeSelect
-                              // timeInputLabel="Time:"
-                              dateFormat="MM/dd/yyyy"
-                              wrapperClassName="datePicker"
-                            />
-                          </div>
+                          <Textarea
+                            placeholder="Remarks"
+                            {...field}
+                            className="textarea rounded-2xl"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -195,10 +290,125 @@ const TransactionForm = ({ transaction }: transactionsProps) => {
             </>
           )}
 
+          {selectedTransactionType === "Expense" && (
+            <>
+              <FormField
+                control={form.control}
+                name="expenseCategory"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <ExpenseDropdown
+                        onChangeHandler={field.onChange}
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        placeholder="Amount"
+                        className="input-field"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex flex-col items-center sm:flex-row">
+                <FormField
+                  control={form.control}
+                  name="paidIn"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <ModDropdown
+                          onChangeHandler={field.onChange}
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="transactionDate"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                          <Image
+                            src="/assets/icons/calendar.svg"
+                            alt="calendar"
+                            width={24}
+                            height={24}
+                            className="filter-grey"
+                          />
+                          <p className="ml-3 whitespace-nowrap text-grey-600">
+                            Transaction Date:
+                          </p>
+                          <DatePicker
+                            selected={field.value}
+                            onChange={(date: Date) => field.onChange(date)}
+                            // showTimeSelect
+                            // timeInputLabel="Time:"
+                            dateFormat="MM/dd/yyyy"
+                            wrapperClassName="datePicker"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              {/* remarks form field */}
+              <FormField
+                control={form.control}
+                name="remarks"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Textarea
+                        placeholder="Remarks"
+                        {...field}
+                        className="textarea rounded-2xl"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+
           <Button
             type="submit"
             size="lg"
-            disabled={!form.formState.isValid || form.formState.isSubmitting}
+            disabled={
+              form.getValues("transactionType") === "" ||
+              (form.getValues("transactionType") === "Income" &&
+                (!form.getValues("incomeSource") ||
+                  !form.getValues("classId") ||
+                  !form.getValues("studentId") ||
+                  !form.getValues("amount") ||
+                  !form.getValues("transactionDate"))) ||
+              (form.getValues("transactionType") === "Expense" &&
+                (!form.getValues("expenseCategory") ||
+                  !form.getValues("amount") ||
+                  !form.getValues("transactionDate"))) ||
+              form.formState.isSubmitting
+            }
             className="button w-full"
           >
             {form.formState.isSubmitting ? "Submitting..." : "Submit"}

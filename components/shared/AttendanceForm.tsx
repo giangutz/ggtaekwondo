@@ -185,7 +185,7 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
           <Button
             type="submit"
             size="lg"
-            disabled={form.formState.isSubmitting}
+            disabled={!form.formState.isValid || form.formState.isSubmitting}
             className="button w-full"
           >
             {form.formState.isSubmitting ? "Submitting..." : "Submit"}
