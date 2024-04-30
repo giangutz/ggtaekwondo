@@ -201,7 +201,7 @@ export type SearchParamProps = {
 export type CreateTransactionParams = {
   studentId?: string;
   packageId?: string;
-  createdBy: string;
+  createdBy: string | undefined;
   attendanceId?: string;
   amount: number;
   remarks?: string;

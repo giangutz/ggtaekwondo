@@ -84,7 +84,6 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const amount = Number(values.amount);
-    values.amount = amount;
 
     // Only include `studentId` and `incomeSource` if they are not empty
     if (values.studentId === "") {
@@ -121,7 +120,11 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
       }
     } else {
       try {
-        const transactionData = await createTransaction({ ...values, createdBy: createdBy });
+        const transactionData = await createTransaction({
+          ...values,
+          amount: amount,
+          createdBy: createdBy,
+        });
         if (transactionData) {
           form.reset();
           alert("Transaction created successfully");

@@ -8,6 +8,7 @@ import Training from "@/lib/database/models/event.model";
 import { revalidatePath } from "next/cache";
 import { clerkClient } from "@clerk/nextjs";
 import UserType from "../database/models/usertype.model";
+import { redirect } from "next/navigation";
 
 // import Order from "@/lib/database/models/order.model";
 
@@ -138,7 +139,7 @@ export async function CheckUserType(clerkId: string) {
 
     const user = await User.findOne({ clerkId: clerkId });
     if (!user) {
-      return false;
+      redirect("/sign-in");
     }
 
     const userType = await UserType.findById(user.userType);
