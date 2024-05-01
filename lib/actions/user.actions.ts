@@ -12,8 +12,6 @@ import { redirect } from "next/navigation";
 
 // import Order from "@/lib/database/models/order.model";
 
-
-
 // import { CreateUserParams, UpdateUserParams } from "@/types";
 
 export async function createUser(userData: CreateUserParams) {
@@ -34,9 +32,9 @@ export async function getUserType(userId: string) {
     await connectToDatabase();
 
     const user = await User.findById(userId);
-    
+
     if (!user) {
-      return '';
+      return "";
     }
     return JSON.parse(JSON.stringify(user.userType));
   } catch (error) {

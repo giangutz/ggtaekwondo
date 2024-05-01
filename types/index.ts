@@ -6,6 +6,8 @@ export type CreateUserParams = {
   username: string;
   email: string;
   photo: string;
+  role: string;
+  class: string;
 };
 
 export type UpdateUserParams = {

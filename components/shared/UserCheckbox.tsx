@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IUser } from "@/lib/database/models/user.model";
-import { getAllUser } from "@/lib/actions/user.actions";
 import { getUsersByClass } from "@/lib/actions/user.actions";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { IAttendance } from "@/lib/database/models/attendance.model";
 
 type UserCheckboxProps = {

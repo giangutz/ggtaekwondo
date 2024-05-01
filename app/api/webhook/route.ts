@@ -69,7 +69,10 @@ export async function POST(req: Request) {
       firstName: first_name,
       lastName: last_name,
       photo: image_url,
+      role: "student",
+      class: "66207be86158c0a046d55438",
     });
+    console.log(user);
 
     const update = await clerkClient.users.updateUserMetadata(id, {
       publicMetadata: {
@@ -77,7 +80,7 @@ export async function POST(req: Request) {
         name: `${first_name} ${last_name}`,
         userId: user._id,
         role: "student",
-        class: "Beginner",
+        class: "66207be86158c0a046d55438",
       },
     });
     return NextResponse.json({ message: "OK", user: user });
