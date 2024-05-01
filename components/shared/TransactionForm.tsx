@@ -35,10 +35,7 @@ const formSchema = z.object({
   expenseCategory: z.string().optional(),
   incomeSource: z.string().optional(),
   remarks: z.string().optional(),
-  amount: z.string().refine((value) => !isNaN(Number(value)), {
-    message: "Amount must be a number",
-    path: ["amount"],
-  }),
+  amount: z.union([z.number(), z.string()]),
   transactionDate: z.date(),
   paidIn: z.string(),
   transactionType: z.string(),
@@ -54,7 +51,6 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
     ? {
         ...transaction,
         transactionDate: new Date(transaction.transactionDate),
-        amount: transaction.amount.toString(),
       }
     : transactionDefaultValues;
 
@@ -82,7 +78,6 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
       form.reset({
         ...transaction,
         transactionDate: new Date(transaction.transactionDate),
-        amount: transaction.amount.toString(),
       });
     }
   }, [transaction, form]);
