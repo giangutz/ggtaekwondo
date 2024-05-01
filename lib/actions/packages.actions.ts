@@ -48,7 +48,7 @@ export async function getAllPackages() {
 }
 
 // GET a package by ID
-export async function getPackageById({ userId }: GetPackageByIdParams) {
+export async function getPackageById( userId : string) {
   try {
     await connectToDatabase();
     // const pkg = await Package.findById(packageId);

@@ -20,7 +20,7 @@ import { getUserMetadata } from "@/lib/utils";
 const ProfilePage = async () => {
   const user = getUserMetadata();
   console.log(user);
-  const userId = user?.userId;
+  const userId = user?.userId as string;
   let hasPackage = false;
   let numberOfSessions = null;
 
