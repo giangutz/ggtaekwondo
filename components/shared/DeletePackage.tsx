@@ -18,36 +18,35 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-import { IAttendance } from "@/lib/database/models/attendance.model";
-import { deleteAttendance } from "@/lib/actions/attendance.actions";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import { deletePackage } from "@/lib/actions/packages.actions";
+import { IPackage } from "@/lib/database/models/packages.model";
 
-type attendanceProps = {
-  attendance?: IAttendance;
+type packageProps = {
+  pkg: IPackage;
 };
 
-const DeleteAttendance = ({ attendance }: attendanceProps) => {
+const DeletePackage = ({ pkg }: packageProps) => {
   const { toast } = useToast();
   const form = useForm();
   async function onSubmit() {
     try {
-      const attendanceDeleted = await deleteAttendance(attendance?._id || "");
-      if (attendanceDeleted) {
+      const pkgDeleted = await deletePackage(pkg?._id);
+      if (pkgDeleted) {
         toast({
-          title: "Attendance deleted successfully",
-          description: "The attendance has been deleted successfully",
+          title: "Package deleted successfully",
+          description: "The package has been deleted successfully",
         });
       }
     } catch (error) {
       console.error(error);
       toast({
-        title: "Attendance deleted successfully",
-        description: "The attendance has been deleted successfully",
+        title: "Package deletion failed",
+        description: "An error occurred while deleting the package",
       });
     }
   }
-
   return (
     <>
       <Dialog>
@@ -66,9 +65,9 @@ const DeleteAttendance = ({ attendance }: attendanceProps) => {
               className="flex flex-col gap-5"
             >
               <DialogHeader>
-                <DialogTitle>Delete attendance</DialogTitle>
+                <DialogTitle>Delete package</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to delete this attendance?
+                  Are you sure you want to delete this package?
                 </DialogDescription>
               </DialogHeader>
 
@@ -90,4 +89,4 @@ const DeleteAttendance = ({ attendance }: attendanceProps) => {
   );
 };
 
-export default DeleteAttendance;
+export default DeletePackage;

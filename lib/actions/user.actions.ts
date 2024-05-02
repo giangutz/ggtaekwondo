@@ -57,9 +57,9 @@ export async function getAllUser() {
 export async function getUsersByClass(classId: string) {
   try {
     await connectToDatabase();
-
+    
     const users = await User.find({ class: classId });
-
+    
     return JSON.parse(JSON.stringify(users));
   } catch (error) {
     handleError(error);

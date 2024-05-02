@@ -8,29 +8,18 @@ type UserCheckboxProps = {
   onChangeHandler?: (
     selectedUsers: { studentId: string; status: string }[]
   ) => void;
-  selectedClass?: string;
   attendance?: IAttendance;
+  users: IUser[];
 };
 
 const UserCheckbox = ({
   value = [],
   onChangeHandler,
-  selectedClass,
   attendance,
+  users,
 }: UserCheckboxProps) => {
-  const [users, setUsers] = useState<IUser[]>([]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      if (selectedClass) {
-        const userList = await getUsersByClass(selectedClass);
-        setUsers(userList);
-      }
-    };
-
-    fetchUsers();
-  }, [selectedClass]);
-
+  console.log(attendance)
+  console.log(users)
   const handleClick = (userId: string) => {
     const index = value.findIndex((student) => student.studentId === userId);
     if (index === -1) {

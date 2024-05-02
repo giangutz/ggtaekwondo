@@ -48,7 +48,7 @@ const ProfilePage = async () => {
     const packageEndDate = new Date(currentPackage[0].endDate);
     hasPackage = today >= packageStartDate && today <= packageEndDate;
   }
-  console.log(hasPackage);
+  // console.log(hasPackage);
   if (hasPackage) {
     numberOfSessions = await computeSessionsLeft(
       userId,

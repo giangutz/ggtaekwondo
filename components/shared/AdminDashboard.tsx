@@ -25,6 +25,7 @@ import { IUser } from "@/lib/database/models/user.model";
 import { getAllPackages } from "@/lib/actions/packages.actions";
 import { IClass } from "@/lib/database/models/class.model";
 import CreatePackage from "@/components/shared/CreatePackage";
+import DeletePackage from "./DeletePackage";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -63,7 +64,7 @@ const AdminDashboard = () => {
   };
   return (
     <>
-      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+      {/* <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
           <h3 className="h3-bold text-center sm:text-left">Manage Users</h3>
         </div>
@@ -129,7 +130,7 @@ const AdminDashboard = () => {
             ))}
           </tbody>
         </table>
-      </div>
+      </div> */}
 
       <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
@@ -154,7 +155,7 @@ const AdminDashboard = () => {
             >
               <div className="absolute top-4 right-4 flex flex-col space-y-3">
                 <CreatePackage pkg={data} classId={classId} />
-                <DeleteAttendance attendance={data} />
+                <DeletePackage pkg={data} />
               </div>
               <h2 className="font-bold text-xl mb-2">
                 {
@@ -260,7 +261,7 @@ const AdminDashboard = () => {
             ))}
           </tbody>
         </table>
-      </div>
+      </div> 
     </>
   );
 };

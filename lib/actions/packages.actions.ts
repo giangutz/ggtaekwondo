@@ -80,10 +80,12 @@ export async function updatePackage({
 }
 
 // DELETE a package
-export async function deletePackage({ packageId }: DeletePackageParams) {
+export async function deletePackage(packageId: string) {
   try {
     await connectToDatabase();
-    await Package.findByIdAndDelete(packageId);
+    const pkgDeleted = await Package.findByIdAndDelete(packageId);
+    revalidatePath("/admin/dashboard");
+    return JSON.parse(JSON.stringify({ pkgDeleted}));
   } catch (error) {
     handleError(error);
   }

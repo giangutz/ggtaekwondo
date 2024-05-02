@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,6 +26,8 @@ import { attendanceDefaultValues } from "@/constants";
 import "react-datepicker/dist/react-datepicker.css";
 import { useToast } from "@/components/ui/use-toast";
 import { redirect } from "next/navigation";
+import { getUsersByClass } from "@/lib/actions/user.actions";
+import { IUser } from "@/lib/database/models/user.model";
 
 const formSchema = z.object({
   class: z.string(),
@@ -43,6 +45,7 @@ type AttendanceFormProps = {
 };
 
 const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
+  const [users, setUsers] = useState<IUser[]>([]);
   const { toast } = useToast();
   const initialValues = attendance
     ? {
@@ -58,9 +61,29 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
   const selectedClass = form.watch("class");
 
   useEffect(() => {
-    // Reset the students field in the form when the selectedClass prop changes
+    const fetchUsers = async () => {
+      if (selectedClass) {
+        const userList = await getUsersByClass(selectedClass);
+        setUsers(userList);
+      }
+    };
+
+    fetchUsers();
+  }, [selectedClass]);
+
+  useEffect(() => {
+  if (selectedClass) {
+    if (!attendance) {
+      const defaultAttendance = users.map((user) => ({
+        studentId: user._id,
+        status: "absent",
+      }));
+      form.setValue("students", defaultAttendance);
+    }
+  } else {
     form.setValue("students", []);
-  }, [selectedClass, form]);
+  }
+}, [selectedClass, users, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (attendance) {
@@ -81,12 +104,12 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
           });
         }
       } catch (error) {
+        console.error(error);
         toast({
           title: "Error updating an attendance!",
           description:
             "An error occurred while updating the attendance. Please try again.",
         });
-        console.error(error);
       }
     } else {
       try {
@@ -99,14 +122,14 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
             description: "You have successfully created an attendance record",
           });
         }
-        redirect("/managegym");
+        // redirect("/");
       } catch (error) {
+        console.error(error);
         toast({
           title: "Error creating an attendance!",
           description:
             "An error occurred while creating the attendance record. Please try again.",
         });
-        console.error(error);
       }
     }
   }
@@ -172,8 +195,8 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
                   <UserCheckbox
                     onChangeHandler={field.onChange}
                     value={field.value}
-                    selectedClass={selectedClass}
                     attendance={attendance}
+                    users={users}
                   />
                 </FormControl>
                 <FormMessage />

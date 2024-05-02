@@ -56,6 +56,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
+    mode: 'all',
   });
   const selectedClassId = form.watch("classId");
 
@@ -65,6 +66,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
         ...pkg,
         startDateTime: new Date(pkg.startDate),
         endDateTime: new Date(pkg.endDate),
+        availPackage: pkg.name,
       });
     }
   }, [pkg, form]);
