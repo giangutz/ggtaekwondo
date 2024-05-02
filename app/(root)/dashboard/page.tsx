@@ -102,17 +102,23 @@ const ProfilePage = async () => {
                 <div className="text-2xl font-bold">
                   {numberOfSessions?.sessionsLeft}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  last session availed{" "}
-                  {new Date(
-                    numberOfSessions?.lastAttendance
-                  ).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </p>
-                <div className="text-2xl font-bold">No Active Package</div>
+                {numberOfSessions?.lastAttendance &&
+                new Date(numberOfSessions.lastAttendance) >=
+                  new Date(currentPackage[0].startDate) &&
+                new Date(numberOfSessions.lastAttendance) <=
+                  new Date(currentPackage[0].endDate) ? (
+                  <p className="text-xs text-muted-foreground">
+                    last session availed{" "}
+                    {new Date(
+                      numberOfSessions.lastAttendance
+                    ).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+                ) : null}
+                {/* <div className="text-2xl font-bold">No Active Package</div> */}
               </CardContent>
             </Card>
             <Card x-chunk="dashboard-01-chunk-2">
@@ -129,7 +135,7 @@ const ProfilePage = async () => {
                     { month: "long", day: "numeric", year: "numeric" }
                   )}
                 </div>
-                <div className="text-2xl font-bold">No Active Package</div>
+                {/* <div className="text-2xl font-bold">No Active Package</div> */}
               </CardContent>
             </Card>
           </section>
