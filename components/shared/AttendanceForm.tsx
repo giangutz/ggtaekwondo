@@ -17,11 +17,14 @@ import { z } from "zod";
 import ClassDropdown from "@/components/shared/ClassDropdown";
 import UserCheckbox from "@/components/shared/UserCheckbox";
 import Image from "next/image";
-import { createAttendance, updateAttendance } from "@/lib/actions/attendance.actions";
+import {
+  createAttendance,
+  updateAttendance,
+} from "@/lib/actions/attendance.actions";
 import { IAttendance } from "@/lib/database/models/attendance.model";
 import { attendanceDefaultValues } from "@/constants";
 import "react-datepicker/dist/react-datepicker.css";
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast";
 import { redirect } from "next/navigation";
 
 const formSchema = z.object({
@@ -72,9 +75,17 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
         };
         const attendanceData = await updateAttendance(newData);
         if (attendanceData) {
-          alert("Attendance updated successfully");
+          toast({
+            title: "Attendance updated successfully",
+            description: "You have successfully updated an attendance record",
+          });
         }
       } catch (error) {
+        toast({
+          title: "Error updating an attendance!",
+          description:
+            "An error occurred while updating the attendance. Please try again.",
+        });
         console.error(error);
       }
     } else {
@@ -83,17 +94,21 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
 
         if (attendance) {
           form.reset();
-          // alert("Attendance created successfully");
           toast({
-            description: "Attendance created successfully.",
-          })
+            title: "Attendance created successfully",
+            description: "You have successfully created an attendance record",
+          });
         }
-        redirect('/managegym');
+        redirect("/managegym");
       } catch (error) {
+        toast({
+          title: "Error creating an attendance!",
+          description:
+            "An error occurred while creating the attendance record. Please try again.",
+        });
         console.error(error);
       }
     }
-
   }
   return (
     <>

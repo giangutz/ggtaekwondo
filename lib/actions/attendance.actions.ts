@@ -14,7 +14,8 @@ export async function createAttendance(attendanceData: CreateAttendanceParams) {
   try {
     await connectToDatabase();
     const newAttendance = await Attendance.create(attendanceData);
-    revalidatePath("/managegym");
+    revalidatePath("/dashboard");
+    revalidatePath("/admin/dashboard");
     return JSON.parse(JSON.stringify(newAttendance));
   } catch (error) {
     handleError(error);

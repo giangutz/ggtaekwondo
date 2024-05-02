@@ -14,7 +14,7 @@ export default async function AdminDashboard(params: {
   const query = params.searchParams.search;
 
   // Fetch all users if no search query is provided, otherwise fetch users based on the search query
-  const users = await clerkClient.users.getUserList({ query });
+  const users = query ? await clerkClient.users.getUserList({ query }) : [];
 
   return (
     <div className="bg-gray-100 min-h-screen p-5">
@@ -25,61 +25,37 @@ export default async function AdminDashboard(params: {
 
       <SearchUsers />
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left table-auto">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Class</th>
-              <th className="px-4 py-2">Role</th>
-              <th className="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => {
-              return (
-                <tr key={user.id} className="border-b border-gray-200">
-                  <td className="px-4 py-2">
-                    {user.publicMetadata.name as string}
-                  </td>
-                  <td className="px-4 py-2">
-                    {user.publicMetadata.class as string}
-                  </td>
-                  <td className="px-4 py-2">
-                    {user.publicMetadata.role as string}
-                  </td>
-                  <td className="px-4 py-2">
-                    {user.publicMetadata.role === "student" && (
-                      <form action={setRole} className="inline">
-                        <input type="hidden" value={user.id} name="id" />
-                        <input type="hidden" value="admin" name="role" />
-                        <button
-                          type="submit"
-                          className="bg-orange-500 text-white rounded px-2 py-1 mr-2"
-                        >
-                          Make Admin
-                        </button>
-                      </form>
-                    )}
-                    {user.publicMetadata.role === "admin" && (
-                      <form action={setRole} className="inline">
-                        <input type="hidden" value={user.id} name="id" />
-                        <input type="hidden" value="student" name="role" />
-                        <button
-                          type="submit"
-                          className="bg-green-500 text-white rounded px-2 py-1"
-                        >
-                          Make Student
-                        </button>
-                      </form>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {users.map((user) => {
+        return (
+          <div key={user.id}>
+            <div>
+              {user.firstName} {user.lastName}
+            </div>
+            <div>
+              {
+                user.emailAddresses.find(
+                  (email) => email.id === user.primaryEmailAddressId
+                )?.emailAddress
+              }
+            </div>
+            <div>{user.publicMetadata.role as string}</div>
+            <div>
+              <form action={setRole}>
+                <input type="hidden" value={user.id} name="id" />
+                <input type="hidden" value="admin" name="role" />
+                <button type="submit">Make Admin</button>
+              </form>
+            </div>
+            <div>
+              <form action={setRole}>
+                <input type="hidden" value={user.id} name="id" />
+                <input type="hidden" value="moderator" name="role" />
+                <button type="submit">Make Moderator</button>
+              </form>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

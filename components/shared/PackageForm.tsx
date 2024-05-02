@@ -26,6 +26,7 @@ import { packageDefaultValues } from "@/constants";
 import ClassDropdown from "./ClassDropdown";
 import { getClassById } from "@/lib/actions/class.actions";
 import { IPackage } from "@/lib/database/models/packages.model";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   classId: z.string().optional(),
@@ -41,6 +42,7 @@ type packageProps = {
 };
 
 const PackageForm = ({ pkg, classId }: packageProps) => {
+  const { toast } = useToast();
   const initialValues = pkg
     ? {
         ...pkg,
@@ -68,24 +70,63 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
   }, [pkg, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const hasExistingPackage = await checkExistingPackage(
-        values.studentId,
-        values.startDateTime
-      );
-      if (hasExistingPackage) {
-        // Replace this with your preferred method of user feedback
-        alert("User already has an existing package for this class.");
-        return;
+    if (pkg) {
+      try {
+        let packageData = {
+          studentId: values.studentId,
+          name: values.availPackage,
+          startDate: values.startDateTime,
+          endDate: values.endDateTime,
+          isActive: true,
+          path: "/dashboard",
+        };
+
+        if (pkg) {
+          const updatedPackage = await updatePackage({
+            packageId: pkg._id,
+            updatedPackageData: packageData,
+          });
+          if (updatedPackage) {
+            form.reset();
+            toast({
+              title: "Package updated successfully!",
+              description:
+                "You have successfully updated a package for a student.",
+            });
+          }
+        }
+      } catch (error) {
+        toast({
+          title: "Error updating package!",
+          description:
+            "An error occurred while updating the package. Please try again.",
+        });
+        console.log(error);
       }
-      // Rest of the code...
-    } catch (error) {
-      console.error("Failed to check for existing package:", error);
-      // Replace this with your preferred method of error feedback
-      alert(
-        "An error occurred while checking for existing package. Please try again."
-      );
-    }
+    } else {
+      try {
+        const hasExistingPackage = await checkExistingPackage(
+          values.studentId,
+          values.startDateTime
+        );
+        if (hasExistingPackage) {
+          // Replace this with your preferred method of user feedback
+          alert("User already has an existing package for this class.");
+          toast({
+            title: "Existing package found!",
+            description: "Student already has an existing package.",
+          });
+          return;
+        }
+        // Rest of the code...
+      } catch (error) {
+        console.error("Failed to check for existing package:", error);
+        // Replace this with your preferred method of error feedback
+        toast({
+          title: "Error checking for existing package!",
+          description: "An error occurred while checking for existing package.",
+        });
+      }
       let endDate = new Date(values.startDateTime);
 
       // Fetch the class data from MongoDB
@@ -127,26 +168,34 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
         }
       }
 
-      const packageData = {
-        studentId: values.studentId,
-        name: values.availPackage,
-        startDate: values.startDateTime,
-        endDate: endDate,
-        isActive: true,
-        path: "/profile",
-      };
-      // console.log(packageData);
       try {
+        let packageData = {
+          studentId: values.studentId,
+          name: values.availPackage,
+          startDate: values.startDateTime,
+          endDate: endDate,
+          isActive: true,
+          path: "/dashboard",
+        };
         const newPackage = await createPackage(packageData);
 
         if (newPackage) {
           form.reset();
-          alert("Student package updated successfully");
+          toast({
+            title: "Package created successfully!",
+            description:
+              "You have successfully created a package for a student.",
+          });
         }
       } catch (error) {
+        toast({
+          title: "Error creating package!",
+          description:
+            "An error occurred while creating the package. Please try again.",
+        });
         console.log(error);
       }
-    // }
+    }
   }
 
   return (

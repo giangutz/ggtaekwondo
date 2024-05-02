@@ -94,12 +94,29 @@ export async function updateUser(clerkId: string, user: UpdateUserParams) {
   }
 }
 
-export async function deleteUser(userId: string) {
+export async function updateUserRole(clerkId: string, role: string) {
+  try {
+    await connectToDatabase();
+    console.log(clerkId, role);
+    const updated = await User.findOneAndUpdate(
+      { clerkId: clerkId },
+      { role: role },
+      { new: true }
+    );
+
+    if (!updated) throw new Error("User update failed");
+    return JSON.parse(JSON.stringify(updated));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function deleteUser(clerkId: string) {
   try {
     await connectToDatabase();
 
     // Find user to delete
-    const userToDelete = await User.findById(userId);
+    const userToDelete = await User.findOne({ clerkId: clerkId });
     if (!userToDelete) {
       throw new Error("User not found");
     }
@@ -120,10 +137,9 @@ export async function deleteUser(userId: string) {
     // ]);
 
     // Delete user
-    await clerkClient.users.deleteUser(userToDelete.clerkId);
+    await clerkClient.users.deleteUser(clerkId);
     const deletedUser = await User.findByIdAndDelete(userToDelete._id);
-    revalidatePath("/");
-    revalidatePath("/users");
+    revalidatePath("/admin/manageusers");
 
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
   } catch (error) {

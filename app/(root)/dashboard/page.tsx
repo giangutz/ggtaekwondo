@@ -19,7 +19,6 @@ import { getUserMetadata } from "@/lib/utils";
 
 const ProfilePage = async () => {
   const user = getUserMetadata();
-  console.log(user);
   const userId = user?.userId as string;
   let hasPackage = false;
   let numberOfSessions = null;
@@ -49,7 +48,7 @@ const ProfilePage = async () => {
     const packageEndDate = new Date(currentPackage[0].endDate);
     hasPackage = today >= packageStartDate && today <= packageEndDate;
   }
-
+  console.log(hasPackage);
   if (hasPackage) {
     numberOfSessions = await computeSessionsLeft(
       userId,

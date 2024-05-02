@@ -1,5 +1,5 @@
 "use client";
-import ChangeUserType from "@/components/shared/ChangeUserType";
+import { ChangeUserType } from "@/components/shared/ChangeUserType";
 import CreateAttendance from "@/components/shared/CreateAttendance";
 import DeleteAttendance from "@/components/shared/DeleteAttendance";
 import { deleteUser, getAllUser } from "@/lib/actions/user.actions";
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
           <thead>
             <tr className="p-medium-14 border-b text-grey-500">
               <th className="w-1/2 sm:w-3/8 py-3">Name</th>
-              <th className="w-1/2 sm:w-3/8 py-3">User Type</th>
+              <th className="w-1/2 sm:w-3/8 py-3">Role</th>
               <th className="w-1/4 sm:w-1/8 py-3 text-center pr-4">Delete</th>
             </tr>
           </thead>

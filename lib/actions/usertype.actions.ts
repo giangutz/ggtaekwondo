@@ -18,7 +18,7 @@ export async function getAllUserTypes() {
 export async function updateUserType(userId: string, userType: string) {
   try {
     await connectToDatabase();
-    await User.findByIdAndUpdate(userId, { userType });
+    await User.findByIdAndUpdate(userId, { role: userType });
     revalidatePath("/users");
     revalidatePath("/");
   } catch (error) {
