@@ -20,17 +20,21 @@ import { useEffect, useState } from "react";
 // import { Input } from "@/components/ui/input";
 import { IUser } from "@/lib/database/models/user.model";
 import { getAllUser } from "@/lib/actions/user.actions";
+import { ITransaction } from "@/lib/database/models/transactions.model";
+import { Input } from "@/components/ui/input";
 
 type UserDropdownProps = {
   value?: string;
   onChangeHandler?: () => void;
   classId?: string;
+  transac: ITransaction;
 };
 
 const UserDropdown = ({
   value,
   onChangeHandler,
   classId,
+  transac,
 }: UserDropdownProps) => {
   const [users, setUsers] = useState<IUser[]>([]);
 
@@ -38,7 +42,8 @@ const UserDropdown = ({
     const getUsers = async () => {
       const userList = await getAllUser();
       const filteredUsers = userList.filter(
-        (user: IUser) => user.class === classId
+        (user: IUser) =>
+          user.class === classId || user._id === transac.studentId
       );
       setUsers(filteredUsers as IUser[]);
     };
@@ -47,60 +52,47 @@ const UserDropdown = ({
   }, [classId]); // Add classId to the dependency array
 
   return (
-    <Select onValueChange={onChangeHandler} defaultValue={value}>
-      <SelectTrigger className="select-field">
-        <SelectValue placeholder="Select a Student" />
-      </SelectTrigger>
-      <SelectContent>
-        {users.length > 0 ? (
-          users.map((user) => (
-            <SelectItem
-              key={user._id}
-              value={user._id}
-              className="select-item p-regular-14"
-            >
-              {user.firstName} {user.lastName}
-            </SelectItem>
-          ))
-        ) : (
-          <SelectItem
-            value="noStudents"
-            className="select-item p-regular-14"
-            disabled
-          >
-            No students found
-          </SelectItem>
-        )}
-
-        {/* <AlertDialog>
-          <AlertDialogTrigger className="p-medium-14 flex w-full rounded-sm py-3 pl-8 text-primary-500 hover:bg-primary-50 focus:text-primary-500">
-            Add new category
-          </AlertDialogTrigger>
-          <AlertDialogContent className="bg-white">
-            <AlertDialogHeader>
-              <AlertDialogTitle>New Category</AlertDialogTitle>
-              <AlertDialogDescription>
-                <Input
-                  type="text"
-                  placeholder="Category name"
-                  className="input-field mt-3"
-                //   onChange={(e) => setNewCategory(e.target.value)}
-                  onChange={(e) => (e.target.value)}
-                />
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => startTransition(handleAddCategory)}
+    <>
+      {transac ? (
+        (() => {
+          const user = users.find((user) => user._id === transac.studentId);
+          return (
+            <Input
+              value={user ? `${user.firstName} ${user.lastName}` : ""}
+              disabled
+              className="select-field"
+            />
+          );
+        })()
+      ) : (
+        <Select onValueChange={onChangeHandler} defaultValue={value}>
+          <SelectTrigger className="select-field">
+            <SelectValue placeholder="Select a Student" />
+          </SelectTrigger>
+          <SelectContent>
+            {users.length > 0 ? (
+              users.map((user) => (
+                <SelectItem
+                  key={user._id}
+                  value={user._id}
+                  className="select-item p-regular-14"
+                >
+                  {user.firstName} {user.lastName}
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem
+                value="noStudents"
+                className="select-item p-regular-14"
+                disabled
               >
-                Add
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog> */}
-      </SelectContent>
-    </Select>
+                No students found
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      )}
+    </>
   );
 };
 

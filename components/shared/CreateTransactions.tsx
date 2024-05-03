@@ -51,7 +51,7 @@ const CreateTransactions = ({ transaction, createdBy }: transactionsProps) => {
               Fill out the form below to make a transaction.
             </SheetDescription>
           </SheetHeader>
-          <TransactionForm transaction={transaction} />
+          <TransactionForm transaction={transaction} createdBy={createdBy} />
         </SheetContent>
       </Sheet>
     </>

@@ -25,7 +25,11 @@ import TransactionTypeDropdown from "./TransactionTypeDropdown";
 import { Textarea } from "../ui/textarea";
 import ExpenseDropdown from "./ExpenseDropdown";
 import ModDropdown from "./ModDropdown";
-import { createTransaction } from "@/lib/actions/transaction.actions";
+import {
+  createTransaction,
+  updateTransaction,
+} from "@/lib/actions/transaction.actions";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   classId: z.string().optional(),
@@ -50,6 +54,7 @@ type transactionsProps = {
 };
 
 const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
+  const { toast } = useToast();
   const initialValues = transaction
     ? {
         ...transaction,
@@ -113,15 +118,25 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
       try {
         const updatedTransaction = {
           _id: transaction._id,
-          ...values,
+          updatedTransactionData: {
+            ...values,
+            amount: amount,
+            createdBy: createdBy,
+          },
         };
-        console.log(updatedTransaction);
-        // const transactionData = await updateTransaction(updatedTransaction);
-        // if (transactionData) {
-        //   alert("Transaction updated successfully");
-        // }
+        const updatedTransac = await updateTransaction(updatedTransaction);
+        if (updatedTransac) {
+          toast({
+            title: "Transaction updated successfully",
+            description: "The transaction has been updated successfully",
+          });
+        }
       } catch (error) {
         console.error(error);
+        toast({
+          title: "Transaction updated successfully",
+          description: "The transaction has been updated successfully",
+        });
       }
     } else {
       try {
@@ -179,22 +194,25 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="classId"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <ClassDropdown
-                        onChangeHandler={field.onChange}
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {selectedClassId && (
+              {!transaction && (
+                <FormField
+                  control={form.control}
+                  name="classId"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <ClassDropdown
+                          onChangeHandler={field.onChange}
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {selectedClassId && transaction && (
                 <>
                   <FormField
                     control={form.control}
@@ -204,8 +222,11 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                         <FormControl>
                           <UserDropdown
                             onChangeHandler={field.onChange}
-                            value={field.value}
+                            value={
+                              transaction ? transaction.studentId : field.value
+                            }
                             classId={selectedClassId} // Pass the selected class ID to the UserDropdown
+                            transac={transaction}
                           />
                         </FormControl>
                         <FormMessage />
