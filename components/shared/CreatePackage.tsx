@@ -23,7 +23,7 @@ const CreatePackage = ({ pkg, classId }: packageProps) => {
   return (
     <>
       <Sheet key={"bottom"}>
-        <SheetTrigger asChild>
+        <SheetTrigger className="cursor-pointer" asChild>
           {pkg ? (
             <Image
               src="/assets/icons/edit.svg"
@@ -36,7 +36,7 @@ const CreatePackage = ({ pkg, classId }: packageProps) => {
               variant="outline"
               className="rounded-full border-2 border-orange-500 p-2 flex items-center justify-center hover:bg-slate-100"
             >
-              <Package2 className="s-8 text-muted-foreground" color="#f97316" />
+              <Package2 className="s-8 text-muted-foreground" color="#f97316" height={20} width={20} />
             </Button>
           )}
         </SheetTrigger>

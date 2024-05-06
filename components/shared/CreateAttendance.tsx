@@ -39,6 +39,7 @@ const CreateAttendance = ({ attendance }: attendanceProps) => {
               <UserRoundCheck
                 className="s-8 text-muted-foreground"
                 color="#f97316"
+                height={20} width={20}
               />
             </Button>
           )}

@@ -316,6 +316,109 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                   />
                 </>
               )}
+
+              {selectedClassId && !transaction && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="studentId"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormControl>
+                          <UserDropdown
+                            onChangeHandler={field.onChange}
+                            value={field.value}
+                            classId={selectedClassId} // Pass the selected class ID to the UserDropdown
+                            transac={transaction}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            placeholder="Amount"
+                            className="input-field"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex flex-col items-center sm:flex-row">
+                    <FormField
+                      control={form.control}
+                      name="paidIn"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <ModDropdown
+                              onChangeHandler={field.onChange}
+                              value={field.value}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="transactionDate"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                              <Image
+                                src="/assets/icons/calendar.svg"
+                                alt="calendar"
+                                width={24}
+                                height={24}
+                                className="filter-grey"
+                              />
+                              <p className="ml-3 whitespace-nowrap text-grey-600">
+                                Transaction Date:
+                              </p>
+                              <DatePicker
+                                selected={field.value}
+                                onChange={(date: Date) => field.onChange(date)}
+                                // showTimeSelect
+                                // timeInputLabel="Time:"
+                                dateFormat="MM/dd/yyyy"
+                                wrapperClassName="datePicker"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="remarks"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormControl>
+                          <Textarea
+                            placeholder="Remarks"
+                            {...field}
+                            className="textarea rounded-2xl"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
             </>
           )}
 

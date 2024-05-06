@@ -19,16 +19,16 @@ export const headerLinks = [
     route: "/admin/dashboard",
     allowedUsers: ["admin"],
   },
-  {
-    label: "Manage Users",
-    route: "/admin/manageusers",
-    allowedUsers: ["admin"],
-  },
-  {
-    label: "Manage Gym",
-    route: "/managegym",
-    allowedUsers: ["admin"],
-  },
+  // {
+  //   label: "Manage Users",
+  //   route: "/admin/manageusers",
+  //   allowedUsers: ["admin"],
+  // },
+  // {
+  //   label: "Manage Gym",
+  //   route: "/managegym",
+  //   allowedUsers: ["admin"],
+  // },
 ];
 
 export const eventDefaultValues = {

@@ -40,7 +40,7 @@ export async function createPackage({
 export async function getAllPackages() {
   try {
     await connectToDatabase();
-    const packages = await Package.find();
+    const packages = await Package.find().sort({ endDate: 1 });
     return JSON.parse(JSON.stringify(packages));
   } catch (error) {
     handleError(error);

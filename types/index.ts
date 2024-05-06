@@ -231,3 +231,11 @@ export type UpdateTransactionParams = {
     paidIn: string;
   };
 };
+
+// ====== DASHBOARD PARAMS ====== //
+export type GetAttendanceByStudentParams = {
+  studentId: string;
+  query: string;
+  limit: number;
+  page: number;
+};

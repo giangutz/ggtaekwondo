@@ -23,7 +23,7 @@ const HoverLabelComponent = ({
     >
       {children}
       {isHovered && (
-        <span className={`absolute ${tooltipLeft} top-1/2 transform -translate-y-1/2 p-1 text-sm`}>
+        <span className={`absolute ${tooltipLeft} z-50 overflow-hidden rounded-md border bg-popover top-1/2 transform -translate-y-1/2 p-1 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95`}>
           {label}
         </span>
       )}

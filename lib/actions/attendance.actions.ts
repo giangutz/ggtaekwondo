@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/database";
 import { handleError } from "@/lib/utils";
 import {
   CreateAttendanceParams,
+  GetAttendanceByStudentParams,
   UpdateAttendanceParams,
   getAttendanceByIdParams,
 } from "@/types";
@@ -99,12 +100,33 @@ export async function computeSessionsLeft(
   }
 }
 
-export async function getAttendanceByStudent(studentId: string) {
+export async function getAttendanceByStudent({
+  studentId,
+  query,
+  limit = 6,
+  page,
+}: GetAttendanceByStudentParams) {
   try {
     await connectToDatabase();
-    const attendanceRecords = await Attendance.find({
+
+    const dateCondition = query
+  ? { trainingDate: new Date(query) }
+  : {};
+
+    const conditions = {
       "students.studentId": studentId,
-    });
+      ...dateCondition,
+    };
+
+    const skipAmount = (Number(page) - 1) * limit;
+    const attendanceQuery = Attendance.find(conditions)
+      .sort({ trainingDate: "desc" })
+      .skip(skipAmount)
+      .limit(limit);
+
+    const attendanceRecords = await attendanceQuery.exec();
+    const attendanceCount = await Attendance.countDocuments(conditions);
+
     const attendanceWithStatus = attendanceRecords.map((record) => {
       const student = record.students.find(
         (student: any) => student.studentId.toString() === studentId
@@ -114,7 +136,11 @@ export async function getAttendanceByStudent(studentId: string) {
         studentStatus: student ? student.status : null,
       };
     });
-    return JSON.parse(JSON.stringify(attendanceWithStatus));
+
+    return {
+      data: JSON.parse(JSON.stringify(attendanceWithStatus)),
+      totalPages: Math.ceil(attendanceCount / limit),
+    };
   } catch (error) {
     handleError(error);
   }
@@ -123,7 +149,7 @@ export async function getAttendanceByStudent(studentId: string) {
 export async function getAllAttendance() {
   try {
     await connectToDatabase();
-    const attendanceRecords = await Attendance.find();
+    const attendanceRecords = await Attendance.find().sort({ trainingDate: -1 });
     return JSON.parse(JSON.stringify(attendanceRecords));
   } catch (error) {
     handleError(error);

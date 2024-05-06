@@ -27,7 +27,7 @@ type UserDropdownProps = {
   value?: string;
   onChangeHandler?: () => void;
   classId?: string;
-  transac: ITransaction;
+  transac?: ITransaction;
 };
 
 const UserDropdown = ({
@@ -43,7 +43,7 @@ const UserDropdown = ({
       const userList = await getAllUser();
       const filteredUsers = userList.filter(
         (user: IUser) =>
-          user.class === classId || user._id === transac.studentId
+          user.class === classId || user._id === transac?.studentId
       );
       setUsers(filteredUsers as IUser[]);
     };

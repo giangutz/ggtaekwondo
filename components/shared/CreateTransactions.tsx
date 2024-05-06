@@ -24,7 +24,7 @@ const CreateTransactions = ({ transaction, createdBy }: transactionsProps) => {
   return (
     <>
       <Sheet key={"bottom"}>
-        <SheetTrigger asChild>
+        <SheetTrigger className="cursor-pointer" asChild>
           {transaction ? (
             <Image
               src="/assets/icons/edit.svg"
@@ -40,6 +40,7 @@ const CreateTransactions = ({ transaction, createdBy }: transactionsProps) => {
               <ArrowLeftRight
                 className="s-8 text-muted-foreground"
                 color="#f97316"
+                height={20} width={20}
               />
             </Button>
           )}

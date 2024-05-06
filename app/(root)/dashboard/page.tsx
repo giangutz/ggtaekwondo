@@ -16,14 +16,16 @@ import {
   getAttendanceByStudent,
 } from "@/lib/actions/attendance.actions";
 import { getUserMetadata } from "@/lib/utils";
+import Pagination from "@/components/shared/Pagination";
 
-const ProfilePage = async () => {
+const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const user = getUserMetadata();
   const userId = user?.userId as string;
   let hasPackage = false;
   let numberOfSessions = null;
 
-  // const ordersPage = Number(searchParams?.ordersPage) || 1;
+  const trainingPage = Number(searchParams?.trainingPage) || 1;
+  const searchText = (searchParams?.query as string) || "";
   // const eventsPage = Number(searchParams?.eventsPage) || 1;
 
   // const orders = await getOrdersByUser({ userId, page: ordersPage });
@@ -32,11 +34,15 @@ const ProfilePage = async () => {
   // const organizedEvents = await getEventsByUser({ userId, page: eventsPage });
 
   // get all training date and status from attendance
-  let attendance = await getAttendanceByStudent(userId);
-  attendance = attendance.sort(
-    (a: any, b: any) =>
-      new Date(b.trainingDate).getTime() - new Date(a.trainingDate).getTime()
-  );
+  // let attendance = await getAttendanceByStudent(userId);
+  const attendance = await getAttendanceByStudent({
+    studentId: userId,
+    query: searchText,
+    page: trainingPage,
+    limit: 10,
+  });
+  console.log(attendance);
+
   // get Current Package from the database
   const currentPackage = await getPackageById(userId);
   // console.log(currentPackage);
@@ -158,7 +164,7 @@ const ProfilePage = async () => {
           </Button> */}
         </div>
       </section>
-      {attendance.length > 0 ? (
+      {attendance?.data.length > 0 ? (
         <div className="wrapper overflow-x-auto">
           <table className="w-full border-collapse border-t">
             <thead>
@@ -168,7 +174,7 @@ const ProfilePage = async () => {
               </tr>
             </thead>
             <tbody>
-              {attendance.map((data: any) => (
+              {attendance?.data.map((data: any) => (
                 <tr
                   key={data._id}
                   className="p-regular-14 lg:p-regular-16 border-b justify-between hover:bg-gray-200 transition-colors duration-100 ease-in-out"
@@ -200,6 +206,13 @@ const ProfilePage = async () => {
               ))}
             </tbody>
           </table>
+          {attendance?.totalPages > 1 && (
+            <Pagination
+              urlParamName={"trainingPage"}
+              page={trainingPage}
+              totalPages={attendance?.totalPages}
+            />
+          )}
         </div>
       ) : (
         <div className="wrapper overflow-x-auto flex justify-center">
