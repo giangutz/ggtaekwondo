@@ -10,17 +10,6 @@ import {
 } from "@/lib/actions/attendance.actions";
 import { getAllClass } from "@/lib/actions/class.actions";
 import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { IUser } from "@/lib/database/models/user.model";
 import { getAllPackages } from "@/lib/actions/packages.actions";
 import { IClass } from "@/lib/database/models/class.model";

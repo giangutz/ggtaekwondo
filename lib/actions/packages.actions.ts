@@ -6,6 +6,7 @@ import { handleError } from "@/lib/utils";
 import {
   CreatePackageParams,
   DeletePackageParams,
+  GetAllPackageParams,
   GetPackageByIdParams,
   UpdatePackageParams,
 } from "@/types";
@@ -30,25 +31,69 @@ export async function createPackage({
       isActive,
     });
     revalidatePath(path);
-
+    revalidatePath("/admin/dashboard");
     return JSON.parse(JSON.stringify(newPackage));
   } catch (error) {
     handleError(error);
   }
 }
 
-export async function getAllPackages() {
+export async function getAllPackages({ query, limit = 6, page }: GetAllPackageParams) {
   try {
     await connectToDatabase();
-    const packages = await Package.find().sort({ endDate: 1 });
-    return JSON.parse(JSON.stringify(packages));
+
+    const conditions = query ? { trainingDate: new Date(query) } : {};
+
+    const skipAmount = (Number(page) - 1) * limit;
+    const today = new Date();
+
+    const packageQuery = Package.aggregate([
+      {
+        $addFields: {
+          distance: {
+            $abs: {
+              $subtract: [today, "$endDate"],
+            },
+          },
+          isExpired: {
+            $cond: [{ $lt: ["$endDate", today] }, 1, 0],
+          },
+        },
+      },
+      {
+        $sort: {
+          isExpired: 1,
+          distance: 1,
+        },
+      },
+      {
+        $skip: skipAmount,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $project: {
+          distance: 0,
+          isExpired: 0,
+        },
+      },
+    ]);
+
+    const packages = await packageQuery.exec();
+    const packageCount = await Package.countDocuments(conditions);
+
+    return {
+      data: JSON.parse(JSON.stringify(packages)),
+      totalPages: Math.ceil(packageCount / limit),
+    };
   } catch (error) {
     handleError(error);
   }
 }
 
 // GET a package by ID
-export async function getPackageById( userId : string) {
+export async function getPackageById(userId: string) {
   try {
     await connectToDatabase();
     // const pkg = await Package.findById(packageId);
@@ -73,6 +118,8 @@ export async function updatePackage({
       { new: true }
     );
     if (!updatedPackage) throw new Error("Package not found");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/dashboard");
     return JSON.parse(JSON.stringify(updatedPackage));
   } catch (error) {
     handleError(error);
@@ -85,7 +132,8 @@ export async function deletePackage(packageId: string) {
     await connectToDatabase();
     const pkgDeleted = await Package.findByIdAndDelete(packageId);
     revalidatePath("/admin/dashboard");
-    return JSON.parse(JSON.stringify({ pkgDeleted}));
+    revalidatePath("/dashboard");
+    return JSON.parse(JSON.stringify({ pkgDeleted }));
   } catch (error) {
     handleError(error);
   }

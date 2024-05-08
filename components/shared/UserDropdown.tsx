@@ -49,7 +49,7 @@ const UserDropdown = ({
     };
 
     getUsers();
-  }, [classId]); // Add classId to the dependency array
+  }, [classId, transac?.studentId]); // Add classId to the dependency array
 
   return (
     <>

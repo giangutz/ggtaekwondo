@@ -30,41 +30,99 @@ import CreateAttendance from "@/components/shared/CreateAttendance";
 import DeleteAttendance from "@/components/shared/DeleteAttendance";
 import { getAllUser } from "@/lib/actions/user.actions";
 import { getAllUserTypes } from "@/lib/actions/usertype.actions";
-import {
-  getAllAttendance,
-} from "@/lib/actions/attendance.actions";
+import { getAllAttendance } from "@/lib/actions/attendance.actions";
 import { getAllClass } from "@/lib/actions/class.actions";
 import { getAllTransactions } from "@/lib/actions/transaction.actions";
 import CreateTransactions from "@/components/shared/CreateTransactions";
 import DeleteTransaction from "@/components/shared/DeleteTransaction";
+import { SearchParamProps } from "@/types";
+import Pagination from "@/components/shared/Pagination";
 
-const AdminDBoard = () => {
+const AdminDBoard = ({ searchParams }: SearchParamProps) => {
   const [users, setUsers] = useState([]);
   const [userTypes, setUserTypes] = useState([]);
-  const [attendance, setAttendance] = useState([]);
+  const [attendance, setAttendance] = useState<{
+    data: any;
+    totalPages: number;
+  }>({ data: [], totalPages: 0 });
   const [classes, setClasses] = useState([]);
-  const [packages, setPackages] = useState([]);
-  const [transactions, setTransactions] = useState([]);
+  const [packages, setPackages] = useState<{ data: any; totalPages: number }>({
+    data: [],
+    totalPages: 0,
+  });
+  const [transactions, setTransactions] = useState<{
+    data: any;
+    totalPages: number;
+  }>({ data: [], totalPages: 0 });
+
+  const attendancePage = Number(searchParams?.attendancePage) || 1;
+  const transactionPage = Number(searchParams?.transactionPage) || 1;
+  const packagePage = Number(searchParams?.packagePage) || 1;
+  const searchText = (searchParams?.query as string) || "";
 
   useEffect(() => {
     const fetchData = async () => {
       const fetchedUserTypes = await getAllUserTypes();
       const fetchedUsers = await getAllUser();
-      const fetchedAttendance = await getAllAttendance();
+      // const fetchedAttendance = await getAllAttendance({
+      //   query: searchText,
+      //   page: attendancePage,
+      //   limit: 8,
+      // });
       const fetchedClasses = await getAllClass();
-      const fetchedPackages = await getAllPackages();
-      const fetchTransactions = await getAllTransactions();
-      
+      // const fetchedPackages = await getAllPackages();
+      // const fetchTransactions = await getAllTransactions();
+
       setUsers(fetchedUsers);
       setUserTypes(fetchedUserTypes);
-      setAttendance(fetchedAttendance);
+      // setAttendance(fetchedAttendance);
       setClasses(fetchedClasses);
-      setPackages(fetchedPackages);
-      setTransactions(fetchTransactions);
+      // setPackages(fetchedPackages);
+      // setTransactions(fetchTransactions);
     };
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedAttendance = await getAllAttendance({
+        query: searchText,
+        page: attendancePage,
+        limit: 10,
+      });
+
+      setAttendance(fetchedAttendance as { data: any; totalPages: number });
+    };
+
+    fetchData();
+  }, [attendancePage, searchText]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedPackages = await getAllPackages({
+        query: searchText,
+        page: packagePage,
+        limit: 10,
+      });
+      setPackages(fetchedPackages as { data: any; totalPages: number });
+    };
+
+    fetchData();
+  }, [packagePage, searchText]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedTransactions = await getAllTransactions({
+        query: searchText,
+        page: transactionPage,
+        limit: 5,
+      });
+      setTransactions(fetchedTransactions as { data: any; totalPages: number });
+    };
+
+    fetchData();
+  }, [transactionPage, searchText]);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -215,45 +273,62 @@ const AdminDBoard = () => {
               <h3 className="h3-bold text-center sm:text-left">Attendance</h3>
             </div>
           </section>
-
-          <div className="md:wrapper overflow-x-auto">
-            <Table>
-              {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead className="w-[50px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {attendance.map((data: any) => (
-                  <TableRow key={data._id}>
-                    <TableCell className="font-medium">
-                      {new Date(data.trainingDate).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      {
-                        (
-                          classes.find(
-                            (cls: any) => cls._id === data.class
-                          ) as any
-                        )?.name
-                      }
-                    </TableCell>
-                    <TableCell className="flex justify-between">
-                      <CreateAttendance attendance={data} />
-                      <DeleteAttendance attendance={data} />
-                    </TableCell>
+          {attendance?.data.length > 0 ? (
+            <div className="md:wrapper overflow-x-auto">
+              <Table>
+                {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Class</TableHead>
+                    <TableHead className="w-[50px]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {attendance.data.map((data: any) => (
+                    <TableRow key={data._id}>
+                      <TableCell className="font-medium">
+                        {new Date(data.trainingDate).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          }
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {
+                          (
+                            classes.find(
+                              (cls: any) => cls._id === data.class
+                            ) as any
+                          )?.name
+                        }
+                      </TableCell>
+                      <TableCell className="flex justify-between">
+                        <CreateAttendance attendance={data} />
+                        <DeleteAttendance attendance={data} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {attendance?.totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                  <Pagination
+                    urlParamName={"attendancePage"}
+                    page={attendancePage}
+                    totalPages={attendance?.totalPages}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="wrapper overflow-x-auto flex justify-center">
+              <p>There is no training session held yet in the system.</p>
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="packages" className="space-y-4">
           <section className="sm:hidden bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
@@ -263,107 +338,130 @@ const AdminDBoard = () => {
               </h3>
             </div>
           </section>
+          {packages?.data.length > 0 ? (
+            <div className="md:wrapper overflow-x-auto">
+              <Table>
+                {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Student Name</TableHead>
+                    <TableHead className="hidden sm:table-cell">
+                      Package
+                    </TableHead>
+                    <TableHead className="hidden sm:table-cell">
+                      Start Date
+                    </TableHead>
+                    <TableHead>End Date</TableHead>
+                    <TableHead className="w-[50px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {packages.data.map((data: any) => {
+                    const user = users.find(
+                      (user: IUser) => user._id === data.studentId
+                    ) as IUser | undefined;
+                    const userClass = classes.find(
+                      (cls: IClass) => cls._id === user?.class
+                    ) as IClass | undefined;
+                    const classId = userClass?._id;
+                    const isExpired = new Date(data.endDate) < new Date();
 
-          <div className="md:wrapper overflow-x-auto">
-            <Table>
-              {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Student Name</TableHead>
-                  <TableHead className="hidden sm:table-cell">
-                    Package
-                  </TableHead>
-                  <TableHead className="hidden sm:table-cell">
-                    Start Date
-                  </TableHead>
-                  <TableHead>End Date</TableHead>
-                  <TableHead className="w-[50px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {packages.map((data: any) => {
-                  const user = users.find(
-                    (user: IUser) => user._id === data.studentId
-                  ) as IUser | undefined;
-                  const userClass = classes.find(
-                    (cls: IClass) => cls._id === user?.class
-                  ) as IClass | undefined;
-                  const classId = userClass?._id;
-
-                  return (
-                    <TableRow key={data._id}>
-                      <TableCell className="font-medium">
-                        {
-                          (
-                            users.find(
-                              (user: IUser) => user._id === data.studentId
-                            ) as IUser | undefined
-                          )?.firstName
-                        }{" "}
-                        {
-                          (
-                            users.find(
-                              (user: IUser) => user._id === data.studentId
-                            ) as IUser | undefined
-                          )?.lastName
-                        }
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        {packages.map((pkg: any) => {
-                          if (pkg.studentId === data.studentId) {
-                            return pkg.name;
+                    return (
+                      <TableRow
+                        key={data._id}
+                        className={isExpired ? "bg-gray-200" : ""}
+                      >
+                        <TableCell className="font-medium">
+                          {
+                            (
+                              users.find(
+                                (user: IUser) => user._id === data.studentId
+                              ) as IUser | undefined
+                            )?.firstName
+                          }{" "}
+                          {
+                            (
+                              users.find(
+                                (user: IUser) => user._id === data.studentId
+                              ) as IUser | undefined
+                            )?.lastName
                           }
-                          return null;
-                        })}
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <span className="sm:hidden">
-                          {new Date(data.startDate).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "numeric",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </span>
-                        <span className="hidden sm:inline">
-                          {new Date(data.startDate).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "long",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="sm:hidden">
-                          {new Date(data.endDate).toLocaleDateString("en-US", {
-                            month: "numeric",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
-                        <span className="hidden sm:inline">
-                          {new Date(data.endDate).toLocaleDateString("en-US", {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </TableCell>
-                      <TableCell className="flex justify-between align-middle">
-                        <CreatePackage pkg={data} classId={classId} />
-                        <DeletePackage pkg={data} />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          {
+                            packages.data.find(
+                              (pkg: any) => pkg.studentId === data.studentId
+                            )?.name
+                          }{" "}
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <span className="sm:hidden">
+                            {new Date(data.startDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "numeric",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
+                          </span>
+                          <span className="hidden sm:inline">
+                            {new Date(data.startDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="sm:hidden">
+                            {new Date(data.endDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "numeric",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
+                          </span>
+                          <span className="hidden sm:inline">
+                            {new Date(data.endDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
+                          </span>
+                        </TableCell>
+                        <TableCell className="flex justify-between align-middle">
+                          <CreatePackage pkg={data} classId={classId} />
+                          <DeletePackage pkg={data} />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+              {packages?.totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                  <Pagination
+                    urlParamName={"packagePage"}
+                    page={packagePage}
+                    totalPages={packages?.totalPages}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="wrapper overflow-x-auto flex justify-center">
+              <p>There is no package registered in the system yet.</p>
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="transactions" className="space-y-4">
           <section className="sm:hidden bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
@@ -371,58 +469,82 @@ const AdminDBoard = () => {
               <h3 className="h3-bold text-center sm:text-left">Transactions</h3>
             </div>
           </section>
-
-          <div className="md:wrapper overflow-x-auto">
-            <Table>
-              <TableCaption>A list of Expenses made from the gym.</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Paid</TableHead>
-                  <TableHead className="w-[50px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {transactions.map((transaction: any) => (
-                  <TableRow key={transaction._id}>
-                    <TableCell className="font-medium">
-                      <span className="sm:hidden">
-                        {new Date(
-                          transaction.transactionDate
-                        ).toLocaleDateString("en-US", {
-                          month: "numeric",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </span>
-                      <span className="hidden sm:inline">
-                        {new Date(
-                          transaction.transactionDate
-                        ).toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      {transaction.incomeSource || transaction.expenseCategory}
-                    </TableCell>
-                    <TableCell>
-                      ₱{parseFloat(transaction.amount).toFixed(2)}
-                    </TableCell>
-                    <TableCell>{transaction.paidIn}</TableCell>
-                    <TableCell className="flex justify-between align-middle">
-                      <CreateTransactions transaction={transaction} />
-                      <DeleteTransaction transaction={transaction} />
-                    </TableCell>
+          {transactions?.data.length > 0 ? (
+            <div className="md:wrapper overflow-x-auto">
+              <Table>
+                {/* <TableCaption>
+                  A list of Expenses made from the gym.
+                </TableCaption> */}
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Paid</TableHead>
+                    <TableHead className="w-[50px]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {transactions.data.map((transaction: any) => (
+                    <TableRow key={transaction._id}>
+                      <TableCell className="font-medium">
+                        <span className="sm:hidden">
+                          {new Date(
+                            transaction.transactionDate
+                          ).toLocaleDateString("en-US", {
+                            month: "numeric",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+                        <span className="hidden sm:inline">
+                          {new Date(
+                            transaction.transactionDate
+                          ).toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        {transaction.incomeSource ||
+                          transaction.expenseCategory}
+                      </TableCell>
+                      <TableCell>
+                        ₱
+                        {parseFloat(transaction.amount).toLocaleString(
+                          "en-US",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}
+                      </TableCell>
+                      <TableCell>{transaction.paidIn}</TableCell>
+                      <TableCell className="flex justify-between align-middle">
+                        <CreateTransactions transaction={transaction} />
+                        <DeleteTransaction transaction={transaction} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {transactions?.totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                  <Pagination
+                    urlParamName={"transactionPage"}
+                    page={transactionPage}
+                    totalPages={transactions?.totalPages}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="wrapper overflow-x-auto flex justify-center">
+              <p>There is no transactions made in the system yet.</p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

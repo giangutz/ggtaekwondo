@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/database";
 import { handleError } from "@/lib/utils";
 import {
   CreateAttendanceParams,
+  GetAllAttendanceParams,
   GetAttendanceByStudentParams,
   UpdateAttendanceParams,
   getAttendanceByIdParams,
@@ -16,6 +17,7 @@ export async function createAttendance(attendanceData: CreateAttendanceParams) {
     await connectToDatabase();
     const newAttendance = await Attendance.create(attendanceData);
     revalidatePath("/dashboard");
+    revalidatePath("/admin/dashboard");
     return JSON.parse(JSON.stringify(newAttendance));
   } catch (error) {
     handleError(error);
@@ -64,7 +66,8 @@ export async function updateAttendance({
       { new: true }
     );
     if (!updatedAttendance) throw new Error("Attendance not found");
-    revalidatePath("/managegym");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/dashboard");
     return JSON.parse(JSON.stringify(updatedAttendance));
   } catch (error) {
     handleError(error);
@@ -146,11 +149,29 @@ export async function getAttendanceByStudent({
   }
 }
 
-export async function getAllAttendance() {
+export async function getAllAttendance({
+  query,
+  limit = 6,
+  page,
+}: GetAllAttendanceParams) {
   try {
     await connectToDatabase();
-    const attendanceRecords = await Attendance.find().sort({ trainingDate: -1 });
-    return JSON.parse(JSON.stringify(attendanceRecords));
+
+    const conditions = query ? { trainingDate: new Date(query) } : {};
+
+    const skipAmount = (Number(page) - 1) * limit;
+    const attendanceQuery = Attendance.find(conditions)
+      .sort({ trainingDate: "desc" })
+      .skip(skipAmount)
+      .limit(limit);
+
+    const attendanceRecords = await attendanceQuery.exec();
+    const attendanceCount = await Attendance.countDocuments(conditions);
+
+    return {
+      data: JSON.parse(JSON.stringify(attendanceRecords)),
+      totalPages: Math.ceil(attendanceCount / limit),
+    };
   } catch (error) {
     handleError(error);
   }
@@ -162,6 +183,7 @@ export async function deleteAttendance(attendanceId: string) {
     const deletedAttendance = await Attendance.findByIdAndDelete(attendanceId);
     if (!deletedAttendance) throw new Error("Attendance not found");
     revalidatePath("/admin/dashboard");
+    revalidatePath("/dashboard");
     return JSON.parse(JSON.stringify(deletedAttendance));
   } catch (error) {
     handleError(error);

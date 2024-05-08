@@ -52,6 +52,12 @@ export type DeletePackageParams = {
   packageId: string;
 };
 
+export type GetAllPackageParams = {
+  query: string;
+  limit: number;
+  page: number;
+};
+
 // ====== ATTENDANCE PARAMS
 export type CreateAttendanceParams = {
   class: string;
@@ -216,6 +222,19 @@ export type CreateTransactionParams = {
   paidIn: string;
 };
 
+export type GetTransactionByStudentParams = {
+  studentId: string;
+  query: string;
+  limit: number;
+  page: number;
+};
+
+export type GetAllTransactionsParams = {
+  query: string;
+  limit: number;
+  page: number;
+};
+
 export type UpdateTransactionParams = {
   _id: string;
   updatedTransactionData: {
@@ -235,6 +254,12 @@ export type UpdateTransactionParams = {
 // ====== DASHBOARD PARAMS ====== //
 export type GetAttendanceByStudentParams = {
   studentId: string;
+  query: string;
+  limit: number;
+  page: number;
+};
+
+export type GetAllAttendanceParams = {
   query: string;
   limit: number;
   page: number;

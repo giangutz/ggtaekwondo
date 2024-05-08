@@ -8,6 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableCaption,
+} from "@/components/ui/table";
 
 import { Activity, CreditCard, Hash } from "lucide-react";
 import { getPackageById } from "@/lib/actions/packages.actions";
@@ -17,6 +26,7 @@ import {
 } from "@/lib/actions/attendance.actions";
 import { getUserMetadata } from "@/lib/utils";
 import Pagination from "@/components/shared/Pagination";
+import { getTransactionByStudent } from "@/lib/actions/transaction.actions";
 
 const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const user = getUserMetadata();
@@ -25,6 +35,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   let numberOfSessions = null;
 
   const trainingPage = Number(searchParams?.trainingPage) || 1;
+  const transactionPage = Number(searchParams?.transactionPage) || 1;
   const searchText = (searchParams?.query as string) || "";
   // const eventsPage = Number(searchParams?.eventsPage) || 1;
 
@@ -35,17 +46,24 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
 
   // get all training date and status from attendance
   // let attendance = await getAttendanceByStudent(userId);
-  const attendance = await getAttendanceByStudent({
+  const attendance = (await getAttendanceByStudent({
     studentId: userId,
     query: searchText,
     page: trainingPage,
-    limit: 10,
-  });
-  console.log(attendance);
+    limit: 5,
+  })) as { data: any; totalPages: number };
+  // console.log(attendance);
+
+  const transactions = (await getTransactionByStudent({
+    studentId: userId,
+    query: searchText,
+    page: transactionPage,
+    limit: 5,
+  })) as { data: any; totalPages: number };
 
   // get Current Package from the database
   const currentPackage = await getPackageById(userId);
-  // console.log(currentPackage);
+  console.log(currentPackage);
 
   // create a variable to track if the user has a package or not based on todays date and the package start date and end date
   if (currentPackage.length > 0) {
@@ -165,29 +183,25 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
         </div>
       </section>
       {attendance?.data.length > 0 ? (
-        <div className="wrapper overflow-x-auto">
-          <table className="w-full border-collapse border-t">
-            <thead>
-              <tr className="p-medium-14 border-b text-grey-500">
-                <th className="py-3">Date</th>
-                <th className="py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="md:wrapper overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {attendance?.data.map((data: any) => (
-                <tr
-                  key={data._id}
-                  className="p-regular-14 lg:p-regular-16 border-b justify-between hover:bg-gray-200 transition-colors duration-100 ease-in-out"
-                  style={{ boxSizing: "border-box" }}
-                >
-                  <td className="py-4 text-center">
+                <TableRow key={data._id}>
+                  <TableCell className="font-medium">
                     {new Date(data.trainingDate).toLocaleDateString("en-US", {
                       month: "long",
                       day: "numeric",
                       year: "numeric",
                     })}
-                  </td>
-                  <td className="py-4 text-center">
+                  </TableCell>
+                  <TableCell>
                     {data.studentStatus === "present" ? (
                       <span className="text-green-500 bg-green-100 px-2 py-1 rounded-full border border-green-500">
                         Present
@@ -201,17 +215,19 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                         Absent
                       </span>
                     )}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
           {attendance?.totalPages > 1 && (
-            <Pagination
-              urlParamName={"trainingPage"}
-              page={trainingPage}
-              totalPages={attendance?.totalPages}
-            />
+            <div className="flex justify-center mt-4">
+              <Pagination
+                urlParamName={"trainingPage"}
+                page={trainingPage}
+                totalPages={attendance?.totalPages}
+              />
+            </div>
           )}
         </div>
       ) : (
@@ -219,6 +235,69 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           <p>You have not attended a training session yet.</p>
         </div>
       )}
+
+      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+        <div className="wrapper flex items-center justify-center sm:justify-between">
+          <h3 className="h3-bold text-center sm:text-left">Transactions</h3>
+          {/* <Button asChild size="lg" className="button hidden sm:flex">
+            <Link href="/#training">Explore More Training</Link>
+          </Button> */}
+        </div>
+      </section>
+
+      {transactions.data.length > 0 ? (
+        <div className="md:wrapper overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Payment Method</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {transactions.data.map((data: any) => (
+                <TableRow key={data._id}>
+                  <TableCell className="font-medium">
+                    {new Date(data.transactionDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      }
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    ₱
+                    {parseFloat(data.amount).toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </TableCell>
+                  <TableCell>{data.paidIn}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {transactions.totalPages > 1 && (
+            <div className="flex justify-center mt-4">
+              <Pagination
+                urlParamName={"transactionPage"}
+                page={transactionPage}
+                totalPages={transactions.totalPages}
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="wrapper overflow-x-auto flex justify-center">
+          <p>You have no transactions yet.</p>
+        </div>
+      )}
+
+      {/* My Tickets */}
+
       {/* <section className="wrapper my-4">
         <Collection
           data={orderedEvents}
