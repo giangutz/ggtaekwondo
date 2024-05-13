@@ -8,7 +8,7 @@ type ChangeUserTypeProps = {
   onUserTypeChanged: () => void;
 };
 
-export const ChangeUserType: React.FC<ChangeUserTypeProps> = ({ userType, userId, userTypes, onUserTypeChanged }) => {
+const ChangeUserType: React.FC<ChangeUserTypeProps> = ({ userType, userId, userTypes, onUserTypeChanged }) => {
   const [selectedUserType, setSelectedUserType] = useState(userType);
 
   const handleChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -27,3 +27,5 @@ export const ChangeUserType: React.FC<ChangeUserTypeProps> = ({ userType, userId
     </select>
   );
 };
+
+export default ChangeUserType;
