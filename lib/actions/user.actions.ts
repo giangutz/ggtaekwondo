@@ -111,6 +111,57 @@ export async function updateUserRole(clerkId: string, role: string) {
   }
 }
 
+export async function updateUserClassById(userId: string, newClass: string) {
+  try {
+    await connectToDatabase();
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { class: newClass },
+      { new: true }
+    );
+
+    await clerkClient.users.updateUserMetadata(updatedUser.clerkId, {
+      publicMetadata: {
+        class: newClass,
+      },
+    });
+
+    if (!updatedUser) throw new Error("User update failed");
+    revalidatePath("/admin/users");
+    return JSON.parse(JSON.stringify(updatedUser));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function updateUserRoleById(userId: string, newRole: string) {
+  try {
+    await connectToDatabase();
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { role: newRole },
+      { new: true }
+    );
+
+    await clerkClient.users.updateUserMetadata(updatedUser.clerkId, {
+      publicMetadata: {
+        role: newRole,
+      },
+    });
+
+    if (!updatedUser) throw new Error("User update failed");
+    revalidatePath("/admin/users");
+    revalidatePath("/");
+    return JSON.parse(JSON.stringify(updatedUser));
+  }
+  catch (error) {
+    handleError(error
+    );
+  }
+}
+
 export async function deleteUser(clerkId: string) {
   try {
     await connectToDatabase();
@@ -139,7 +190,7 @@ export async function deleteUser(clerkId: string) {
     // Delete user
     await clerkClient.users.deleteUser(clerkId);
     const deletedUser = await User.findByIdAndDelete(userToDelete._id);
-    revalidatePath("/admin/manageusers");
+    revalidatePath("/admin/users");
 
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
   } catch (error) {

@@ -72,18 +72,18 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
   }, [selectedClass]);
 
   useEffect(() => {
-  if (selectedClass) {
-    if (!attendance) {
-      const defaultAttendance = users.map((user) => ({
-        studentId: user._id,
-        status: "absent",
-      }));
-      form.setValue("students", defaultAttendance);
+    if (selectedClass) {
+      if (!attendance) {
+        const defaultAttendance = users.map((user) => ({
+          studentId: user._id,
+          status: "absent",
+        }));
+        form.setValue("students", defaultAttendance);
+      }
+    } else {
+      form.setValue("students", []);
     }
-  } else {
-    form.setValue("students", []);
-  }
-}, [selectedClass, users, form]);
+  }, [selectedClass, users, form, attendance]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (attendance) {
@@ -104,7 +104,7 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
           });
         }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         toast({
           title: "Error updating an attendance!",
           description:
@@ -124,7 +124,7 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
         }
         // redirect("/");
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         toast({
           title: "Error creating an attendance!",
           description:
@@ -192,12 +192,14 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
             render={({ field }) => (
               <FormItem className="w-full mt-4">
                 <FormControl>
-                  <UserCheckbox
-                    onChangeHandler={field.onChange}
-                    value={field.value}
-                    attendance={attendance}
-                    users={users}
-                  />
+                  <div className="max-h-[300px] overflow-auto">
+                    <UserCheckbox
+                      onChangeHandler={field.onChange}
+                      value={field.value}
+                      attendance={attendance}
+                      users={users}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

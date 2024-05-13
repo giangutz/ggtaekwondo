@@ -64,21 +64,11 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
     const fetchData = async () => {
       const fetchedUserTypes = await getAllUserTypes();
       const fetchedUsers = await getAllUser();
-      // const fetchedAttendance = await getAllAttendance({
-      //   query: searchText,
-      //   page: attendancePage,
-      //   limit: 8,
-      // });
       const fetchedClasses = await getAllClass();
-      // const fetchedPackages = await getAllPackages();
-      // const fetchTransactions = await getAllTransactions();
 
       setUsers(fetchedUsers);
       setUserTypes(fetchedUserTypes);
-      // setAttendance(fetchedAttendance);
       setClasses(fetchedClasses);
-      // setPackages(fetchedPackages);
-      // setTransactions(fetchTransactions);
     };
 
     fetchData();
@@ -279,15 +269,15 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                 {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Class</TableHead>
-                    <TableHead className="w-[50px]">Actions</TableHead>
+                    <TableHead className="text-center">Date</TableHead>
+                    <TableHead className="text-center">Class</TableHead>
+                    <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {attendance.data.map((data: any) => (
                     <TableRow key={data._id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium text-center">
                         {new Date(data.trainingDate).toLocaleDateString(
                           "en-US",
                           {
@@ -297,7 +287,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                           }
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         {
                           (
                             classes.find(
@@ -306,7 +296,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                           )?.name
                         }
                       </TableCell>
-                      <TableCell className="flex justify-between">
+                      <TableCell className="flex justify-center gap-4">
                         <CreateAttendance attendance={data} />
                         <DeleteAttendance attendance={data} />
                       </TableCell>
@@ -344,15 +334,15 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                 {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Student Name</TableHead>
-                    <TableHead className="hidden sm:table-cell">
+                    <TableHead className="text-center">Student Name</TableHead>
+                    <TableHead className="text-center hidden sm:table-cell">
                       Package
                     </TableHead>
-                    <TableHead className="hidden sm:table-cell">
+                    <TableHead className="text-center hidden sm:table-cell">
                       Start Date
                     </TableHead>
-                    <TableHead>End Date</TableHead>
-                    <TableHead className="w-[50px]">Actions</TableHead>
+                    <TableHead className="text-center">End Date</TableHead>
+                    <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -371,7 +361,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                         key={data._id}
                         className={isExpired ? "bg-gray-200" : ""}
                       >
-                        <TableCell className="font-medium">
+                        <TableCell className="font-medium text-center">
                           {
                             (
                               users.find(
@@ -387,14 +377,14 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                             )?.lastName
                           }
                         </TableCell>
-                        <TableCell className="hidden sm:table-cell">
+                        <TableCell className="text-center hidden sm:table-cell">
                           {
                             packages.data.find(
                               (pkg: any) => pkg.studentId === data.studentId
                             )?.name
                           }{" "}
                         </TableCell>
-                        <TableCell className="hidden sm:table-cell">
+                        <TableCell className="text-center hidden sm:table-cell">
                           <span className="sm:hidden">
                             {new Date(data.startDate).toLocaleDateString(
                               "en-US",
@@ -405,7 +395,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                               }
                             )}
                           </span>
-                          <span className="hidden sm:inline">
+                          <span className="text-center hidden sm:inline">
                             {new Date(data.startDate).toLocaleDateString(
                               "en-US",
                               {
@@ -416,7 +406,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                             )}
                           </span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-center">
                           <span className="sm:hidden">
                             {new Date(data.endDate).toLocaleDateString(
                               "en-US",
@@ -438,7 +428,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                             )}
                           </span>
                         </TableCell>
-                        <TableCell className="flex justify-between align-middle">
+                        <TableCell className="flex justify-center items-center gap-4">
                           <CreatePackage pkg={data} classId={classId} />
                           <DeletePackage pkg={data} />
                         </TableCell>
@@ -477,17 +467,20 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                 </TableCaption> */}
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Paid</TableHead>
-                    <TableHead className="w-[50px]">Actions</TableHead>
+                    <TableHead className="text-center">Date</TableHead>
+                    <TableHead className="text-center">Type</TableHead>
+                    <TableHead className="text-center">Amount</TableHead>
+                    <TableHead className="text-center">Paid</TableHead>
+                    <TableHead className="text-center">Remarks</TableHead>
+                    <TableHead className="w-[50px] text-center">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {transactions.data.map((transaction: any) => (
                     <TableRow key={transaction._id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium text-center">
                         <span className="sm:hidden">
                           {new Date(
                             transaction.transactionDate
@@ -507,11 +500,11 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                           })}
                         </span>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         {transaction.incomeSource ||
                           transaction.expenseCategory}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         ₱
                         {parseFloat(transaction.amount).toLocaleString(
                           "en-US",
@@ -521,8 +514,24 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                           }
                         )}
                       </TableCell>
-                      <TableCell>{transaction.paidIn}</TableCell>
-                      <TableCell className="flex justify-between align-middle">
+                      <TableCell className="text-center">
+                        {transaction.paidIn}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {(() => {
+                          const user:any = users.find(
+                            (user: any) => transaction.studentId === user._id
+                          );
+                          return transaction.transactionType === "Income"
+                            ? `${user?.firstName} ${user?.lastName}${
+                                transaction.remarks
+                                  ? ` - ${transaction.remarks}`
+                                  : ""
+                              }`
+                            : transaction.remarks;
+                        })()}
+                      </TableCell>
+                      <TableCell className="flex justify-center items-center gap-4">
                         <CreateTransactions transaction={transaction} />
                         <DeleteTransaction transaction={transaction} />
                       </TableCell>

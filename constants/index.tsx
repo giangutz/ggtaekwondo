@@ -19,6 +19,11 @@ export const headerLinks = [
     route: "/admin/dashboard",
     allowedUsers: ["admin"],
   },
+  {
+    label: "Manage Users",
+    route: "/admin/users",
+    allowedUsers: ["admin"],
+  },
   // {
   //   label: "Manage Users",
   //   route: "/admin/manageusers",
@@ -94,15 +99,6 @@ export const ExpenseCategory = [
   // Add more categories as needed
 ];
 
-export const paidInList = [
-  "GCASH",
-  "Cash",
-  "Bank Transfer",
-]
+export const paidInList = ["GCASH", "Cash", "Bank Transfer"];
 
-export const classes = [
-  "Beginner",
-  "Novice",
-  "Advanced",
-  "Elite",
-]
+export const classes = ["Beginner", "Novice", "Advanced", "Elite"];

@@ -18,8 +18,8 @@ const UserCheckbox = ({
   attendance,
   users,
 }: UserCheckboxProps) => {
-  console.log(attendance)
-  console.log(users)
+  // console.log(attendance)
+  // console.log(users)
   const handleClick = (userId: string) => {
     const index = value.findIndex((student) => student.studentId === userId);
     if (index === -1) {

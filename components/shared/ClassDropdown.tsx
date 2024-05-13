@@ -11,7 +11,7 @@ import { getAllClass } from "@/lib/actions/class.actions";
 
 type ClassDropdownProps = {
   value?: string;
-  onChangeHandler?: () => void;
+  onChangeHandler?: (newClass: string) => void;
 };
 
 const ClassDropdown = ({ value, onChangeHandler }: ClassDropdownProps) => {

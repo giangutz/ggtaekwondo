@@ -30,7 +30,7 @@ export default async function Home({ searchParams }: SearchParamProps) {
               with our comprehensive system.
             </p>
             <Button size="lg" asChild className="button w-full sm:w-fit">
-              <Link href="#training">Schedule Your Training</Link>
+              <Link href="#training">See Upcoming Events</Link>
             </Button>
           </div>
 

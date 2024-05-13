@@ -96,10 +96,11 @@ export async function getAllPackages({ query, limit = 6, page }: GetAllPackagePa
 export async function getPackageById(userId: string) {
   try {
     await connectToDatabase();
-    // const pkg = await Package.findById(packageId);
-    const pkg = await Package.find({ studentId: userId });
-    if (!pkg) throw new Error("Package not found");
-    return JSON.parse(JSON.stringify(pkg));
+    const pkg = await Package.find({ studentId: userId })
+                             .sort({ startDate: -1 }) // Sort packages by startDate in descending order
+                             .limit(1); // Limit the result to 1 document
+    if (!pkg || pkg.length === 0) return null; // Return null if no package is found
+    return JSON.parse(JSON.stringify(pkg[0])); // Return the first (and only) package
   } catch (error) {
     handleError(error);
   }

@@ -13,17 +13,17 @@ const UserType = models.UserType || model("UserType", UserTypeSchema);
 
 export default UserType;
 
-async function createDefaultUserTypes() {
-  const userTypes = ["Student", "Parent", "Admin"];
+// async function createDefaultUserTypes() {
+//   const userTypes = ["Student", "Parent", "Admin"];
 
-  for (const name of userTypes) {
-    let userType = await UserType.findOne({ name });
+//   for (const name of userTypes) {
+//     let userType = await UserType.findOne({ name });
 
-    if (!userType) {
-      userType = new UserType({ name });
-      await userType.save();
-    }
-  }
-}
+//     if (!userType) {
+//       userType = new UserType({ name });
+//       await userType.save();
+//     }
+//   }
+// }
 
-createDefaultUserTypes().catch(console.error);
+// createDefaultUserTypes().catch(console.error);

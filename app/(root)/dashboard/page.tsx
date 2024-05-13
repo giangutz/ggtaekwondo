@@ -66,19 +66,20 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   console.log(currentPackage);
 
   // create a variable to track if the user has a package or not based on todays date and the package start date and end date
-  if (currentPackage.length > 0) {
+  if (currentPackage !== null) {
     const today = new Date();
-    const packageStartDate = new Date(currentPackage[0].startDate);
-    const packageEndDate = new Date(currentPackage[0].endDate);
+    const packageStartDate = new Date(currentPackage.startDate);
+    const packageEndDate = new Date(currentPackage.endDate);
     hasPackage = today >= packageStartDate && today <= packageEndDate;
   }
-  // console.log(hasPackage);
+
+  console.log(hasPackage);
   if (hasPackage) {
     numberOfSessions = await computeSessionsLeft(
       userId,
-      new Date(currentPackage[0].startDate),
-      new Date(currentPackage[0].endDate),
-      currentPackage[0].name
+      new Date(currentPackage.startDate),
+      new Date(currentPackage.endDate),
+      currentPackage.name
     );
   }
   // console.log(hasPackage);
@@ -100,11 +101,11 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                 {hasPackage ? (
                   <>
                     <div className="text-2xl font-bold">
-                      {currentPackage[0].name}
+                      {currentPackage.name}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       availed{" "}
-                      {new Date(currentPackage[0].startDate).toLocaleDateString(
+                      {new Date(currentPackage.startDate).toLocaleDateString(
                         "en-US",
                         { month: "long", day: "numeric", year: "numeric" }
                       )}
@@ -128,9 +129,9 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                 </div>
                 {numberOfSessions?.lastAttendance &&
                 new Date(numberOfSessions.lastAttendance) >=
-                  new Date(currentPackage[0].startDate) &&
+                  new Date(currentPackage.startDate) &&
                 new Date(numberOfSessions.lastAttendance) <=
-                  new Date(currentPackage[0].endDate) ? (
+                  new Date(currentPackage.endDate) ? (
                   <p className="text-xs text-muted-foreground">
                     last session availed{" "}
                     {new Date(
@@ -145,7 +146,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                 {/* <div className="text-2xl font-bold">No Active Package</div> */}
               </CardContent>
             </Card>
-            <Card x-chunk="dashboard-01-chunk-2">
+            {/* <Card x-chunk="dashboard-01-chunk-2">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Package Expiration
@@ -154,14 +155,14 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {new Date(currentPackage[0].endDate).toLocaleDateString(
+                  {new Date(currentPackage.endDate).toLocaleDateString(
                     "en-US",
                     { month: "long", day: "numeric", year: "numeric" }
                   )}
                 </div>
-                {/* <div className="text-2xl font-bold">No Active Package</div> */}
+                
               </CardContent>
-            </Card>
+            </Card> */}
           </section>
         </>
       ) : (
@@ -251,6 +252,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Payment Method</TableHead>
               </TableRow>
@@ -267,6 +269,9 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                         year: "numeric",
                       }
                     )}
+                  </TableCell>
+                  <TableCell>
+                    {data.incomeSource}
                   </TableCell>
                   <TableCell>
                     ₱

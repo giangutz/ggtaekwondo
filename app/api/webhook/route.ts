@@ -80,7 +80,7 @@ export async function POST(req: Request) {
         // name: `${first_name} ${last_name}`,
         userId: user._id,
         role: "student",
-        // class: "66207be86158c0a046d55438",
+        class: "66207be86158c0a046d55438",
       },
     });
     return NextResponse.json({ message: "OK", user: user });

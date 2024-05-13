@@ -3,6 +3,7 @@
 import { handleError } from "../utils";
 import { connectToDatabase } from "../database";
 import Class from "../database/models/class.model";
+import { revalidatePath } from "next/cache";
 
 export async function getAllClass() {
   try {
