@@ -7,7 +7,7 @@ import { formUrlQuery } from "@/lib/utils";
 
 type PaginationProps = {
   page: number | string;
-  totalPages?: number | undefined;
+  totalPages: number;
   urlParamName?: string;
 };
 
@@ -43,7 +43,7 @@ const Pagination = ({ page, totalPages, urlParamName }: PaginationProps) => {
         variant="outline"
         className="w-28"
         onClick={() => onClick("next")}
-        disabled={Number(page) >= totalPages ?? 0}
+        disabled={Number(page) >= totalPages}
       >
         Next
       </Button>

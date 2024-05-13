@@ -519,7 +519,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                       </TableCell>
                       <TableCell className="text-center">
                         {(() => {
-                          const user:any = users.find(
+                          const user: any = users.find(
                             (user: any) => transaction.studentId === user._id
                           );
                           return transaction.transactionType === "Income"
