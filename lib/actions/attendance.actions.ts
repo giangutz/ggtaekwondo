@@ -180,6 +180,39 @@ export async function getAllAttendance({
   }
 }
 
+export async function getMostActiveStudent() {
+  try {
+    await connectToDatabase();
+
+    // Get the start and end dates for the current month
+    const start = startOfMonth(new Date());
+    const end = endOfMonth(new Date());
+
+    const mostActiveStudent = await Attendance.aggregate([
+      { $unwind: "$students" },
+      {
+        $match: {
+          trainingDate: {
+            $gte: start,
+            $lte: end
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$students.studentId",
+          total: { $sum: 1 },
+        },
+      },
+      { $sort: { total: -1 } },
+      { $limit: 5 },
+    ]);
+    return JSON.parse(JSON.stringify(mostActiveStudent));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
 export async function getMonthlyAttendanceRateForAllClasses() {
   try {
     await connectToDatabase();
@@ -205,11 +238,11 @@ export async function getMonthlyAttendanceRateForAllClasses() {
 
       // Update the class stats
       classStats[record.class].totalStudents += record.students.length;
-      classStats[record.class].presentStudents += record.students.filter(student => student.status === 'present').length;
+      classStats[record.class].presentStudents += record.students.filter((student: any) => student.status === 'present').length;
     }
 
     // Calculate the attendance rate for each class
-    const attendanceRates = Object.entries(classStats).map(([classId, stats]) => {
+    const attendanceRates = Object.entries(classStats).map(([classId, stats]: any) => {
       const attendanceRate = (stats.presentStudents / stats.totalStudents) * 100;
       return { classId, attendanceRate };
     });

@@ -8,11 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CalendarDateRangePicker } from "@/components/shared/CalendarDateRangePicker";
 import React, { useState, useEffect } from "react";
 import { getAllPackages } from "@/lib/actions/packages.actions";
 import { getAllUser } from "@/lib/actions/user.actions";
-import { getAllAttendance, getMonthlyAttendanceRateForAllClasses } from "@/lib/actions/attendance.actions";
+import {
+  getMonthlyAttendanceRateForAllClasses,
+  getMostActiveStudent,
+} from "@/lib/actions/attendance.actions";
 import { getAllClass } from "@/lib/actions/class.actions";
 import { getTransactionByMonth } from "@/lib/actions/transaction.actions";
 import { SearchParamProps } from "@/types";
@@ -28,8 +30,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
 import { Overview } from "@/components/shared/Overview";
+import { MostActiveStudent } from "@/components/shared/MostActiveStudent";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const AdminDBoard = ({ searchParams }: SearchParamProps) => {
+  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [dateRange, setDateRange] = useState<{
     startDate: Date;
@@ -38,17 +43,26 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
     startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     endDate: new Date(),
   });
-  const [attendance, setAttendance] = useState<{
-    data: any;
-    totalPages: number;
-  }>({ data: [], totalPages: 0 });
+  const [attendance, setAttendance] = useState([]);
   const [classes, setClasses] = useState([]);
   const [packages, setPackages] = useState<{ data: any; totalPages: number }>({
     data: [],
     totalPages: 0,
   });
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<
+    | {
+        totalRevenue: any;
+        revenuePercentage: number;
+        totalExpenses: any;
+        incomePercentageByCategory: {
+          [k: string]: number;
+        };
+        transactionRecords: any;
+      }
+    | undefined
+  >(undefined);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [mostActiveStudent, setMostActiveStudent] = useState([]);
 
   const attendancePage = Number(searchParams?.attendancePage) || 1;
   const transactionPage = Number(searchParams?.transactionPage) || 1;
@@ -69,20 +83,6 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedAttendance = await getAllAttendance({
-        query: searchText,
-        page: attendancePage,
-        limit: 10,
-      });
-
-      setAttendance(fetchedAttendance as { data: any; totalPages: number });
-    };
-
-    fetchData();
-  }, [attendancePage, searchText, dateRange]);
-
-  useEffect(() => {
-    const fetchData = async () => {
       const fetchedPackages = await getAllPackages({
         query: searchText,
         page: packagePage,
@@ -100,10 +100,18 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
         monthSelected: selectedMonth,
       });
 
-      const fetchAttendance: any = await getMonthlyAttendanceRateForAllClasses();
-      console.log(fetchAttendance)
+      const fetchAttendance: any =
+        await getMonthlyAttendanceRateForAllClasses();
+      const fetchMostActive: any = await getMostActiveStudent();
+
+      if (!(fetchAttendance && fetchMostActive && fetchedTransactions)) {
+        setLoading(true);
+      }
+
+      setMostActiveStudent(fetchMostActive);
       setAttendance(fetchAttendance);
       setTransactions(fetchedTransactions);
+      setLoading(false);
     };
 
     fetchData();
@@ -134,22 +142,6 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                 </Link>
               </DropdownMenuItem>
             ))}
-            {/* <DropdownMenuItem className="block px-2 md:px-4 py-1 md:py-2 text-gray-800 hover:bg-gray-200 transition-colors duration-200 ease-in-out cursor-pointer">
-              <Link
-                href="/admin/student-package"
-                onClick={(e) => e.stopPropagation()}
-              >
-                Student Package
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="block px-2 md:px-4 py-1 md:py-2 text-gray-800 hover:bg-gray-200 transition-colors duration-200 ease-in-out cursor-pointer">
-              <Link
-                href="/admin/transactions"
-                onClick={(e) => e.stopPropagation()}
-              >
-                Transactions
-              </Link>
-            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -169,12 +161,6 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
           wrapperClassName="datePicker"
         />
       </div>
-      {/* <CalendarDateRangePicker
-        dateRange={{ from: dateRange.startDate, to: dateRange.endDate }}
-        onDateRangeChange={(newRange) =>
-          setDateRange({ startDate: newRange.from, endDate: newRange.to })
-        }
-      /> */}
       <div className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -196,19 +182,28 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                ₱
-                {parseFloat(transactions?.totalRevenue).toLocaleString(
-                  "en-US",
-                  {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {transactions?.revenuePercentage}% from last month
-              </p>
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">
+                    ₱
+                    {parseFloat(transactions?.totalRevenue).toLocaleString(
+                      "en-US",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {transactions?.revenuePercentage}% from last month
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -232,19 +227,25 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                ₱
-                {parseFloat(transactions?.totalExpenses).toLocaleString(
-                  "en-US",
-                  {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }
-                )}
-              </div>
-              {/* <p className="text-xs text-muted-foreground">
-                +180.1% from last month
-              </p> */}
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">
+                    ₱
+                    {parseFloat(transactions?.totalExpenses).toLocaleString(
+                      "en-US",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )}
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -295,19 +296,55 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
             </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-4">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+  <Card className="col-span-full md:col-span-4">
             <CardHeader>
-              <CardTitle>Income Percentage by Category</CardTitle>
+              <CardTitle>Revenue by Category</CardTitle>
             </CardHeader>
-            <CardContent className="pl-2"><Overview /></CardContent>
+            <CardContent className="pl-2">
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-12 w-1/2" />
+                  <Skeleton className="h-12 w-1/4" />
+                  <Skeleton className="h-12 w-1/3" />
+                  <Skeleton className="h-12 w-2/3" />
+                  <Skeleton className="h-12 w-1/2" />
+                </div>
+              ) : (
+                <Overview
+                  data={transactions?.incomePercentageByCategory || []}
+                />
+              )}
+            </CardContent>
           </Card>
-          <Card className="col-span-3">
+          <Card className="col-span-full md:col-span-3">
             <CardHeader>
-              <CardTitle>Recent Sales</CardTitle>
-              <CardDescription>You made 265 sales this month.</CardDescription>
+              <CardTitle>Most Active Student</CardTitle>
+              {/* <CardDescription>Listed from mos</CardDescription> */}
             </CardHeader>
-            <CardContent>{/* <RecentSales /> */}</CardContent>
+            <CardContent>
+              {loading ? (
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center space-x-4 space-y-8"
+                    >
+                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <MostActiveStudent
+                  data={mostActiveStudent as { _id: string; total: number }[]}
+                  users={users}
+                />
+              )}
+            </CardContent>
           </Card>
         </div>
       </div>

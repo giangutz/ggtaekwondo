@@ -124,7 +124,7 @@ export async function getTransactionByMonth({
     const incomePercentageByCategory = Object.fromEntries(
       Object.entries(incomeByCategory).map(([category, amount]) => [
         category,
-        (amount / totalRevenue) * 100,
+        amount
       ])
     );
 

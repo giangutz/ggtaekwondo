@@ -19,9 +19,11 @@ import CreateAttendance from "@/components/shared/CreateAttendance";
 import DeleteAttendance from "@/components/shared/DeleteAttendance";
 import { getAllAttendance } from "@/lib/actions/attendance.actions";
 import { getAllClass } from "@/lib/actions/class.actions";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Page = ({ searchParams }: SearchParamProps) => {
-    const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [classes, setClasses] = useState([]);
   const [attendance, setAttendance] = useState<{
     data: any;
     totalPages: number;
@@ -48,7 +50,12 @@ const Page = ({ searchParams }: SearchParamProps) => {
         limit: 15,
       });
 
+      if (!fetchedAttendance) {
+        setLoading(true);
+      }
+
       setAttendance(fetchedAttendance as { data: any; totalPages: number });
+      setLoading(false);
     };
 
     fetchData();
@@ -59,7 +66,7 @@ const Page = ({ searchParams }: SearchParamProps) => {
       <div className="flex items-center md:space-x-4">
         <div
           className="mr-2 h-8 w-8 cursor-pointer hover:bg-gray-200 rounded-full p-1 transition-colors duration-200 ease-in-out"
-          onClick={() => router.push('/admin/dashboard')} // or onClick={() => history.goBack()}
+          onClick={() => router.push("/admin/dashboard")} // or onClick={() => history.goBack()}
         >
           <CircleChevronLeft />
         </div>
@@ -72,7 +79,13 @@ const Page = ({ searchParams }: SearchParamProps) => {
           <Search placeholder="Search by Date" />
         </div>
       </div> */}
-      {attendance?.data.length > 0 ? (
+      {loading ? (
+        <div className="wrapper overflow-x-auto justify-center space-y-4">
+        {Array.from({ length: 20 }).map((_, index) => (
+          <Skeleton key={index} className="h-8 w-full" />
+        ))}
+      </div>
+      ) : attendance?.data.length > 0 ? (
         <div className="md:wrapper overflow-x-auto">
           <Table>
             {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
@@ -86,7 +99,14 @@ const Page = ({ searchParams }: SearchParamProps) => {
             <TableBody>
               {attendance.data.map((data: any) => (
                 <TableRow key={data._id}>
-                  <TableCell className="font-medium text-center">
+                  <TableCell className="font-medium text-center sm:hidden">
+                    {new Date(data.trainingDate).toLocaleDateString("en-US", {
+                      month: "numeric",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </TableCell>
+                  <TableCell className="font-medium text-center hidden sm:table-cell">
                     {new Date(data.trainingDate).toLocaleDateString("en-US", {
                       month: "long",
                       day: "numeric",
