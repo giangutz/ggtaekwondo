@@ -1,6 +1,5 @@
 "use client";
-import { ArrowLeftRight, Package2, UserCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CirclePlus } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -9,38 +8,36 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCaption,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDateRangePicker } from "@/components/shared/CalendarDateRangePicker";
 import React, { useState, useEffect } from "react";
-import CreatePackage from "@/components/shared/CreatePackage";
-import DeletePackage from "@/components/shared/DeletePackage";
-import { IUser } from "@/lib/database/models/user.model";
 import { getAllPackages } from "@/lib/actions/packages.actions";
-import { IClass } from "@/lib/database/models/class.model";
-import CreateAttendance from "@/components/shared/CreateAttendance";
-import DeleteAttendance from "@/components/shared/DeleteAttendance";
 import { getAllUser } from "@/lib/actions/user.actions";
-import { getAllUserTypes } from "@/lib/actions/usertype.actions";
-import { getAllAttendance } from "@/lib/actions/attendance.actions";
+import { getAllAttendance, getMonthlyAttendanceRateForAllClasses } from "@/lib/actions/attendance.actions";
 import { getAllClass } from "@/lib/actions/class.actions";
-import { getAllTransactions } from "@/lib/actions/transaction.actions";
-import CreateTransactions from "@/components/shared/CreateTransactions";
-import DeleteTransaction from "@/components/shared/DeleteTransaction";
+import { getTransactionByMonth } from "@/lib/actions/transaction.actions";
 import { SearchParamProps } from "@/types";
-import Pagination from "@/components/shared/Pagination";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { adminLinks } from "@/constants";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Image from "next/image";
+import { Overview } from "@/components/shared/Overview";
 
 const AdminDBoard = ({ searchParams }: SearchParamProps) => {
   const [users, setUsers] = useState([]);
-  const [userTypes, setUserTypes] = useState([]);
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date;
+    endDate: Date;
+  }>({
+    startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    endDate: new Date(),
+  });
   const [attendance, setAttendance] = useState<{
     data: any;
     totalPages: number;
@@ -50,10 +47,8 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
     data: [],
     totalPages: 0,
   });
-  const [transactions, setTransactions] = useState<{
-    data: any;
-    totalPages: number;
-  }>({ data: [], totalPages: 0 });
+  const [transactions, setTransactions] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(new Date());
 
   const attendancePage = Number(searchParams?.attendancePage) || 1;
   const transactionPage = Number(searchParams?.transactionPage) || 1;
@@ -62,12 +57,10 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedUserTypes = await getAllUserTypes();
       const fetchedUsers = await getAllUser();
       const fetchedClasses = await getAllClass();
 
       setUsers(fetchedUsers);
-      setUserTypes(fetchedUserTypes);
       setClasses(fetchedClasses);
     };
 
@@ -86,7 +79,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
     };
 
     fetchData();
-  }, [attendancePage, searchText]);
+  }, [attendancePage, searchText, dateRange]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,463 +92,225 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
     };
 
     fetchData();
-  }, [packagePage, searchText]);
+  }, [packagePage, searchText, dateRange]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedTransactions = await getAllTransactions({
-        query: searchText,
-        page: transactionPage,
-        limit: 5,
+      const fetchedTransactions: any = await getTransactionByMonth({
+        monthSelected: selectedMonth,
       });
-      setTransactions(fetchedTransactions as { data: any; totalPages: number });
+
+      const fetchAttendance: any = await getMonthlyAttendanceRateForAllClasses();
+      console.log(fetchAttendance)
+      setAttendance(fetchAttendance);
+      setTransactions(fetchedTransactions);
     };
 
     fetchData();
-  }, [transactionPage, searchText]);
+  }, [selectedMonth]);
+
+  const handleMonthChange = (date: any) => {
+    setSelectedMonth(date);
+  };
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+      <div className="flex md:flex-row items-start md:items-center justify-between md:space-x-4">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+          Dashboard
+        </h2>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="text-sm flex items-center px-2 md:px-4 py-1 md:py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors duration-200 ease-in-out cursor-pointer">
+            <span>Manage</span> <CirclePlus className="ml-2 h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="mt-2 bg-white shadow-md rounded-md overflow-hidden">
+            {adminLinks.map((item) => (
+              <DropdownMenuItem
+                key={item.label}
+                className="block px-2 md:px-4 py-1 md:py-2 text-gray-800 hover:bg-gray-200 transition-colors duration-200 ease-in-out cursor-pointer"
+              >
+                <Link href={item.route} onClick={(e) => e.stopPropagation()}>
+                  {item.label}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+            {/* <DropdownMenuItem className="block px-2 md:px-4 py-1 md:py-2 text-gray-800 hover:bg-gray-200 transition-colors duration-200 ease-in-out cursor-pointer">
+              <Link
+                href="/admin/student-package"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Student Package
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="block px-2 md:px-4 py-1 md:py-2 text-gray-800 hover:bg-gray-200 transition-colors duration-200 ease-in-out cursor-pointer">
+              <Link
+                href="/admin/transactions"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Transactions
+              </Link>
+            </DropdownMenuItem> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger className="hover:bg-white" value="attendance">
-            <span className="hidden sm:block">Attendance</span>
-            <UserCheck className="sm:hidden" height={20} width={20} />
-          </TabsTrigger>
-          <TabsTrigger className="hover:bg-white" value="packages">
-            <span className="hidden sm:block">Packages</span>
-            <Package2 className="sm:hidden" height={20} width={20} />
-          </TabsTrigger>
-          <TabsTrigger className="hover:bg-white" value="transactions">
-            <span className="hidden sm:block">Transactions</span>
-            <ArrowLeftRight className="sm:hidden" height={20} width={20} />
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Revenue
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
-                <p className="text-xs text-muted-foreground">
-                  +20.1% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Subscriptions
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+2350</div>
-                <p className="text-xs text-muted-foreground">
-                  +180.1% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <rect width="20" height="14" x="2" y="5" rx="2" />
-                  <path d="M2 10h20" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+12,234</div>
-                <p className="text-xs text-muted-foreground">
-                  +19% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Active Now
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+573</div>
-                <p className="text-xs text-muted-foreground">
-                  +201 since last hour
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="pl-2">{/* <Overview /> */}</CardContent>
-            </Card>
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
-                <CardDescription>
-                  You made 265 sales this month.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>{/* <RecentSales /> */}</CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        <TabsContent value="attendance" className="">
-          <section className="sm:hidden bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
-            <div className="flex items-center justify-center sm:justify-between">
-              <h3 className="h3-bold text-center sm:text-left">Attendance</h3>
-            </div>
-          </section>
-          {attendance?.data.length > 0 ? (
-            <div className="md:wrapper overflow-x-auto">
-              <Table>
-                {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Date</TableHead>
-                    <TableHead className="text-center">Class</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {attendance.data.map((data: any) => (
-                    <TableRow key={data._id}>
-                      <TableCell className="font-medium text-center">
-                        {new Date(data.trainingDate).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          }
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {
-                          (
-                            classes.find(
-                              (cls: any) => cls._id === data.class
-                            ) as any
-                          )?.name
-                        }
-                      </TableCell>
-                      <TableCell className="flex justify-center gap-4">
-                        <CreateAttendance attendance={data} />
-                        <DeleteAttendance attendance={data} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              {attendance?.totalPages > 1 && (
-                <div className="flex justify-center mt-4">
-                  <Pagination
-                    urlParamName={"attendancePage"}
-                    page={attendancePage}
-                    totalPages={attendance?.totalPages}
-                  />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="wrapper overflow-x-auto flex justify-center">
-              <p>There is no training session held yet in the system.</p>
-            </div>
-          )}
-        </TabsContent>
-        <TabsContent value="packages" className="space-y-4">
-          <section className="sm:hidden bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
-            <div className="flex items-center justify-center sm:justify-between">
-              <h3 className="h3-bold text-center sm:text-left">
-                Student Packages
-              </h3>
-            </div>
-          </section>
-          {packages?.data.length > 0 ? (
-            <div className="md:wrapper overflow-x-auto">
-              <Table>
-                {/* <TableCaption>A list of Attendance of the Students</TableCaption> */}
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Student Name</TableHead>
-                    <TableHead className="text-center hidden sm:table-cell">
-                      Package
-                    </TableHead>
-                    <TableHead className="text-center hidden sm:table-cell">
-                      Start Date
-                    </TableHead>
-                    <TableHead className="text-center">End Date</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {packages.data.map((data: any) => {
-                    const user = users.find(
-                      (user: IUser) => user._id === data.studentId
-                    ) as IUser | undefined;
-                    const userClass = classes.find(
-                      (cls: IClass) => cls._id === user?.class
-                    ) as IClass | undefined;
-                    const classId = userClass?._id;
-                    const isExpired = new Date(data.endDate) < new Date();
-
-                    return (
-                      <TableRow
-                        key={data._id}
-                        className={isExpired ? "bg-gray-200" : ""}
-                      >
-                        <TableCell className="font-medium text-center">
-                          {
-                            (
-                              users.find(
-                                (user: IUser) => user._id === data.studentId
-                              ) as IUser | undefined
-                            )?.firstName
-                          }{" "}
-                          {
-                            (
-                              users.find(
-                                (user: IUser) => user._id === data.studentId
-                              ) as IUser | undefined
-                            )?.lastName
-                          }
-                        </TableCell>
-                        <TableCell className="text-center hidden sm:table-cell">
-                          {
-                            packages.data.find(
-                              (pkg: any) => pkg.studentId === data.studentId
-                            )?.name
-                          }{" "}
-                        </TableCell>
-                        <TableCell className="text-center hidden sm:table-cell">
-                          <span className="sm:hidden">
-                            {new Date(data.startDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "numeric",
-                                day: "numeric",
-                                year: "numeric",
-                              }
-                            )}
-                          </span>
-                          <span className="text-center hidden sm:inline">
-                            {new Date(data.startDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "long",
-                                day: "numeric",
-                                year: "numeric",
-                              }
-                            )}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className="sm:hidden">
-                            {new Date(data.endDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "numeric",
-                                day: "numeric",
-                                year: "numeric",
-                              }
-                            )}
-                          </span>
-                          <span className="hidden sm:inline">
-                            {new Date(data.endDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "long",
-                                day: "numeric",
-                                year: "numeric",
-                              }
-                            )}
-                          </span>
-                        </TableCell>
-                        <TableCell className="flex justify-center items-center gap-4">
-                          <CreatePackage pkg={data} classId={classId} />
-                          <DeletePackage pkg={data} />
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-              {packages?.totalPages > 1 && (
-                <div className="flex justify-center mt-4">
-                  <Pagination
-                    urlParamName={"packagePage"}
-                    page={packagePage}
-                    totalPages={packages?.totalPages}
-                  />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="wrapper overflow-x-auto flex justify-center">
-              <p>There is no package registered in the system yet.</p>
-            </div>
-          )}
-        </TabsContent>
-        <TabsContent value="transactions" className="space-y-4">
-          <section className="sm:hidden bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
-            <div className="flex items-center justify-center sm:justify-between">
-              <h3 className="h3-bold text-center sm:text-left">Transactions</h3>
-            </div>
-          </section>
-          {transactions?.data.length > 0 ? (
-            <div className="md:wrapper overflow-x-auto">
-              <Table>
-                {/* <TableCaption>
-                  A list of Expenses made from the gym.
-                </TableCaption> */}
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Date</TableHead>
-                    <TableHead className="text-center">Type</TableHead>
-                    <TableHead className="text-center">Amount</TableHead>
-                    <TableHead className="text-center">Paid</TableHead>
-                    <TableHead className="text-center">Remarks</TableHead>
-                    <TableHead className="w-[50px] text-center">
-                      Actions
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactions.data.map((transaction: any) => (
-                    <TableRow key={transaction._id}>
-                      <TableCell className="font-medium text-center">
-                        <span className="sm:hidden">
-                          {new Date(
-                            transaction.transactionDate
-                          ).toLocaleDateString("en-US", {
-                            month: "numeric",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
-                        <span className="hidden sm:inline">
-                          {new Date(
-                            transaction.transactionDate
-                          ).toLocaleDateString("en-US", {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {transaction.incomeSource ||
-                          transaction.expenseCategory}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        ₱
-                        {parseFloat(transaction.amount).toLocaleString(
-                          "en-US",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {transaction.paidIn}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {(() => {
-                          const user: any = users.find(
-                            (user: any) => transaction.studentId === user._id
-                          );
-                          return transaction.transactionType === "Income"
-                            ? `${user?.firstName} ${user?.lastName}${
-                                transaction.remarks
-                                  ? ` - ${transaction.remarks}`
-                                  : ""
-                              }`
-                            : transaction.remarks;
-                        })()}
-                      </TableCell>
-                      <TableCell className="flex justify-center items-center gap-4">
-                        <CreateTransactions transaction={transaction} />
-                        <DeleteTransaction transaction={transaction} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              {transactions?.totalPages > 1 && (
-                <div className="flex justify-center mt-4">
-                  <Pagination
-                    urlParamName={"transactionPage"}
-                    page={transactionPage}
-                    totalPages={transactions?.totalPages}
-                  />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="wrapper overflow-x-auto flex justify-center">
-              <p>There is no transactions made in the system yet.</p>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+      <div className="flex-center rounded-full bg-grey-50">
+        <Image
+          src="/assets/icons/calendar.svg"
+          alt="calendar"
+          width={24}
+          height={24}
+          className="filter-grey"
+        />
+        <DatePicker
+          selected={selectedMonth}
+          onChange={handleMonthChange}
+          dateFormat="MM/yyyy"
+          showMonthYearPicker
+          wrapperClassName="datePicker"
+        />
+      </div>
+      {/* <CalendarDateRangePicker
+        dateRange={{ from: dateRange.startDate, to: dateRange.endDate }}
+        onDateRangeChange={(newRange) =>
+          setDateRange({ startDate: newRange.from, endDate: newRange.to })
+        }
+      /> */}
+      <div className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Revenue
+              </CardTitle>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                className="h-4 w-4 text-muted-foreground"
+              >
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                ₱
+                {parseFloat(transactions?.totalRevenue).toLocaleString(
+                  "en-US",
+                  {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {transactions?.revenuePercentage}% from last month
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Expenses
+              </CardTitle>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                className="h-4 w-4 text-muted-foreground"
+              >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                ₱
+                {parseFloat(transactions?.totalExpenses).toLocaleString(
+                  "en-US",
+                  {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }
+                )}
+              </div>
+              {/* <p className="text-xs text-muted-foreground">
+                +180.1% from last month
+              </p> */}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Sales</CardTitle>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                className="h-4 w-4 text-muted-foreground"
+              >
+                <rect width="20" height="14" x="2" y="5" rx="2" />
+                <path d="M2 10h20" />
+              </svg>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">+12,234</div>
+              <p className="text-xs text-muted-foreground">
+                +19% from last month
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                className="h-4 w-4 text-muted-foreground"
+              >
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              </svg>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">+573</div>
+              <p className="text-xs text-muted-foreground">
+                +201 since last hour
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <Card className="col-span-4">
+            <CardHeader>
+              <CardTitle>Income Percentage by Category</CardTitle>
+            </CardHeader>
+            <CardContent className="pl-2"><Overview /></CardContent>
+          </Card>
+          <Card className="col-span-3">
+            <CardHeader>
+              <CardTitle>Recent Sales</CardTitle>
+              <CardDescription>You made 265 sales this month.</CardDescription>
+            </CardHeader>
+            <CardContent>{/* <RecentSales /> */}</CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };

@@ -7,9 +7,11 @@ import { revalidatePath } from "next/cache";
 import {
   CreateTransactionParams,
   GetAllTransactionsParams,
+  GetTransactionByDateParams,
   GetTransactionByStudentParams,
   UpdateTransactionParams,
 } from "@/types";
+import { startOfMonth, endOfMonth, subMonths } from "date-fns";
 
 // CREATE a new transaction record
 export async function createTransaction(
@@ -52,6 +54,86 @@ export async function getAllTransactions({
     return {
       data: JSON.parse(JSON.stringify(transactionRecords)),
       totalPages: Math.ceil(transactionCount / limit),
+    };
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function getTransactionByMonth({
+  monthSelected,
+}: GetTransactionByDateParams) {
+  try {
+    await connectToDatabase();
+
+    const startDate = startOfMonth(monthSelected);
+    const endDate = endOfMonth(monthSelected);
+
+    const conditions = {
+      transactionDate: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    };
+
+    const transactionRecords = await Transaction.find(conditions);
+
+    // Total revenue based on the selected month
+    const totalRevenue = transactionRecords
+      .filter((record) => record.transactionType === "Income")
+      .reduce((total, record) => total + record.amount, 0);
+
+    // Total expenses for the selected month
+    const totalExpenses = transactionRecords
+      .filter((record) => record.transactionType === "Expense")
+      .reduce((total, record) => total + record.amount, 0);
+
+    // Percentage of revenue based on the previous month's revenue
+    const previousMonthStartDate = startOfMonth(subMonths(monthSelected, 1));
+    const previousMonthEndDate = endOfMonth(subMonths(monthSelected, 1));
+
+    const previousMonthConditions = {
+      transactionDate: {
+        $gte: previousMonthStartDate,
+        $lt: previousMonthEndDate,
+      },
+      transactionType: "Income",
+    };
+
+    const previousMonthIncomeRecords = await Transaction.find(
+      previousMonthConditions
+    );
+    const previousMonthTotalRevenue = previousMonthIncomeRecords.reduce(
+      (total, record) => total + record.amount,
+      0
+    );
+
+    const revenuePercentage =
+      ((totalRevenue - previousMonthTotalRevenue) / previousMonthTotalRevenue) *
+      100;
+
+    // Percentage of all income from the selected month and separate on different categories
+    const incomeByCategory: { [category: string]: number } = transactionRecords
+      .filter((record) => record.transactionType === "Income")
+      .reduce((totals, record) => {
+        totals[record.incomeSource] =
+          (totals[record.incomeSource] || 0) + record.amount;
+        return totals;
+      }, {});
+
+    const incomePercentageByCategory = Object.fromEntries(
+      Object.entries(incomeByCategory).map(([category, amount]) => [
+        category,
+        (amount / totalRevenue) * 100,
+      ])
+    );
+
+    return {
+      totalRevenue,
+      revenuePercentage,
+      totalExpenses,
+      incomePercentageByCategory,
+      transactionRecords: JSON.parse(JSON.stringify(transactionRecords)),
     };
   } catch (error) {
     handleError(error);

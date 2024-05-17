@@ -235,6 +235,10 @@ export type GetAllTransactionsParams = {
   page: number;
 };
 
+export type GetTransactionByDateParams = {
+  monthSelected: Date;
+};
+
 export type UpdateTransactionParams = {
   _id: string;
   updatedTransactionData: {

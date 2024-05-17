@@ -10,6 +10,7 @@ import {
 } from "@/types";
 import Attendance from "@/lib/database/models/attendance.model";
 import { revalidatePath } from "next/cache";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 // CREATE a new attendance record
 export async function createAttendance(attendanceData: CreateAttendanceParams) {
@@ -50,6 +51,8 @@ export async function getAttendanceById({
     handleError(error);
   }
 }
+
+
 
 // UPDATE an attendance record
 export async function updateAttendance({
@@ -172,6 +175,46 @@ export async function getAllAttendance({
       data: JSON.parse(JSON.stringify(attendanceRecords)),
       totalPages: Math.ceil(attendanceCount / limit),
     };
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function getMonthlyAttendanceRateForAllClasses() {
+  try {
+    await connectToDatabase();
+
+    // Get the start and end dates for the current month
+    const start = startOfMonth(new Date());
+    const end = endOfMonth(new Date());
+
+    // Fetch all attendance records within the current month
+    const attendanceRecords = await Attendance.find({
+      trainingDate: { $gte: start, $lte: end }
+    });
+
+    // Initialize an object to store the total and present students for each class
+    const classStats:any = {};
+
+    // Process each attendance record
+    for (const record of attendanceRecords) {
+      // Initialize the class stats if they don't exist yet
+      if (!classStats[record.class]) {
+        classStats[record.class] = { totalStudents: 0, presentStudents: 0 };
+      }
+
+      // Update the class stats
+      classStats[record.class].totalStudents += record.students.length;
+      classStats[record.class].presentStudents += record.students.filter(student => student.status === 'present').length;
+    }
+
+    // Calculate the attendance rate for each class
+    const attendanceRates = Object.entries(classStats).map(([classId, stats]) => {
+      const attendanceRate = (stats.presentStudents / stats.totalStudents) * 100;
+      return { classId, attendanceRate };
+    });
+
+    return attendanceRates;
   } catch (error) {
     handleError(error);
   }

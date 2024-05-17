@@ -54,12 +54,41 @@ export async function getAllUser() {
   }
 }
 
+export async function getUsers({ query, page, limit = 10 }: any) {
+  try {
+    await connectToDatabase();
+
+    const nameCondition = query
+      ? {
+          $or: [
+            { firstName: { $regex: query, $options: "i" } },
+            { lastName: { $regex: query, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const skipAmount = (Number(page) - 1) * limit;
+    const userQuery = User.find(nameCondition).skip(skipAmount).limit(limit)
+    .sort({ class: 1 });
+
+    const usersRecords = await userQuery.exec();
+    const usersCount = await User.countDocuments(nameCondition);
+
+    return {
+      data: JSON.parse(JSON.stringify(usersRecords)),
+      totalPages: Math.ceil(usersCount / limit),
+    };
+  } catch (error) {
+    handleError(error);
+  }
+}
+
 export async function getUsersByClass(classId: string) {
   try {
     await connectToDatabase();
-    
+
     const users = await User.find({ class: classId });
-    
+
     return JSON.parse(JSON.stringify(users));
   } catch (error) {
     handleError(error);
@@ -155,10 +184,8 @@ export async function updateUserRoleById(userId: string, newRole: string) {
     revalidatePath("/admin/users");
     revalidatePath("/");
     return JSON.parse(JSON.stringify(updatedUser));
-  }
-  catch (error) {
-    handleError(error
-    );
+  } catch (error) {
+    handleError(error);
   }
 }
 

@@ -274,3 +274,21 @@ body {
 .react-datepicker__time-list-item--selected {
   background-color: #624cf5 !important;
 }
+li {
+  position: relative;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%; /* Position at the bottom of the parent */
+  left: 0; /* Align to the left of the parent */
+  background-color: #f9f9f9;
+  min-width: 200px;
+  padding: 20px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+li:hover .dropdown-menu {
+  display: block;
+}

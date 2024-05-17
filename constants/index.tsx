@@ -36,6 +36,25 @@ export const headerLinks = [
   // },
 ];
 
+export const adminLinks = [
+  {
+    label: "Attendance",
+    route: "/admin/attendance",
+  },
+  {
+    label: "Student Packages",
+    route: "/admin/student-packages",
+  },
+  {
+    label: "Transactions",
+    route: "/admin/transactions",
+  },
+  {
+    label: "Events",
+    route: "/admin/events",
+  },
+];
+
 export const eventDefaultValues = {
   title: "",
   description: "",

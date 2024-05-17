@@ -1,6 +1,6 @@
 "use client";
 
-import { getAllUser, updateUserClassById, updateUserRoleById } from "@/lib/actions/user.actions";
+import { getUsers, updateUserClassById, updateUserRoleById } from "@/lib/actions/user.actions";
 import React, { useEffect, useState } from "react";
 import {
   Table,
@@ -16,19 +16,35 @@ import { IUser } from "@/lib/database/models/user.model";
 import { useToast } from "@/components/ui/use-toast";
 import RoleDropdown from "@/components/shared/RoleDropdown";
 import { DeleteUser } from "@/components/shared/DeleteUser";
+import Pagination from "@/components/shared/Pagination";
+import { SearchParamProps } from "@/types";
+import Search from "@/components/shared/Search";
+import CategoryFilter from "@/components/shared/CategoryFilter";
 
 
-const Page = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
+const Page = ({ searchParams }: SearchParamProps) => {
+  const [users, setUsers] = useState<{
+    data: any;
+    totalPages: number;
+  }>({ data: [], totalPages: 0 });
   const { toast } = useToast();
+
+  const usersPage = Number(searchParams?.usersPage) || 1;
+  const searchText = (searchParams?.query as string) || "";
+
   useEffect(() => {
-    const getUsers = async () => {
-      const users = await getAllUser();
-      users && setUsers(users as IUser[]);
+    const fetchUsers = async () => {
+      const users = await getUsers({
+        query: searchText,
+        page: usersPage,
+        limit: 10,
+      });
+      users && setUsers(users);
+      console.log(users);
     };
 
-    getUsers();
-  }, []);
+    fetchUsers();
+  }, [searchText, usersPage]);
 
   const handleClassChange = async (userId: string, newClass: string) => {
     try {
@@ -60,49 +76,75 @@ const Page = () => {
         title: "Role update failed. Please try again.",
       });
     }
-  }
+  };
 
   return (
-    <div className="md:wrapper overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-3/6 text-center">Full Name</TableHead>
-            <TableHead className="w-1/6 text-center">Class</TableHead>
-            <TableHead className="w-1/6 text-center">Role</TableHead>
-            <TableHead className="w-1/6 text-center">Delete</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user: any) => (
-            <TableRow key={user._id}>
-              <TableCell className="text-center">
-                {user.firstName} {user.lastName}
-              </TableCell>
-              <TableCell>
-                <ClassDropdown
-                  value={user.class}
-                  onChangeHandler={(newClass: string) =>
-                    handleClassChange(user._id, newClass)
-                  }
-                />
-              </TableCell>
-              <TableCell>
-                <RoleDropdown
-                  value={user.role}
-                  onChangeHandler={(newRole: string) =>
-                    handleRoleChange(user._id, newRole)
-                  }
-                />
-              </TableCell>
-              <TableCell className="flex justify-center">
-                <DeleteUser userId={user._id} />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <>
+      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+        <div className="wrapper flex items-center justify-center sm:justify-between">
+          <h3 className="h3-bold text-center sm:text-left">Manage Users</h3>
+        </div>
+      </section>
+      {users?.data.length > 0 ? (
+        <div className="md:wrapper overflow-x-auto">
+          {/* <div className="flex w-full flex-col gap-5 md:flex-row">
+            <Search placeholder="Search a Student by Name" />
+            <CategoryFilter />
+          </div> */}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-3/6 text-center">Full Name</TableHead>
+                <TableHead className="w-1/6 text-center">Class</TableHead>
+                <TableHead className="w-1/6 text-center">Role</TableHead>
+                <TableHead className="w-1/6 text-center">Delete</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.data.map((data: any) => (
+                <TableRow key={data._id}>
+                  <TableCell className="text-center">
+                    {data.firstName} {data.lastName}
+                  </TableCell>
+                  <TableCell>
+                    <ClassDropdown
+                      value={data.class}
+                      onChangeHandler={(newClass: string) =>
+                        handleClassChange(data._id, newClass)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <RoleDropdown
+                      value={data.role}
+                      onChangeHandler={(newRole: string) =>
+                        handleRoleChange(data._id, newRole)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell className="flex justify-center">
+                    <DeleteUser userId={data._id} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {users?.totalPages > 1 && (
+            <div className="flex justify-center mt-4">
+              <Pagination
+                urlParamName={"usersPage"}
+                page={usersPage}
+                totalPages={users?.totalPages}
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="wrapper overflow-x-auto flex justify-center">
+          <p>There is no user in the system yet.</p>
+        </div>
+      )}
+    </>
   );
 };
 
