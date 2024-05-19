@@ -17,7 +17,7 @@ import {
   TableRow,
   TableCaption,
 } from "@/components/ui/table";
-import { Activity, CreditCard, Hash } from "lucide-react";
+import { Activity, CreditCard, DollarSign, Hash } from "lucide-react";
 import { getPackageById } from "@/lib/actions/packages.actions";
 import {
   computeSessionsLeft,
@@ -62,7 +62,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
 
   // get Current Package from the database
   const currentPackage = await getPackageById(userId);
-  console.log(currentPackage);
+  // console.log(currentPackage);
 
   // create a variable to track if the user has a package or not based on todays date and the package start date and end date
   if (currentPackage !== null) {
@@ -72,7 +72,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
     hasPackage = today >= packageStartDate && today <= packageEndDate;
   }
 
-  console.log(hasPackage);
+  // console.log(hasPackage);
   if (hasPackage) {
     numberOfSessions = await computeSessionsLeft(
       userId,
@@ -91,7 +91,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           <section className="wrapper grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
             <Card x-chunk="dashboard-01-chunk-0">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-sm font-medium flex">
                   Current Package
                 </CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
@@ -143,6 +143,25 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                   </p>
                 ) : null}
                 {/* <div className="text-2xl font-bold">No Active Package</div> */}
+              </CardContent>
+            </Card>
+            <Card x-chunk="dashboard-01-chunk-3">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Payment Status
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                {currentPackage.paid ? (
+                  <div className="inline-block px-4 py-2 rounded-full bg-green-500 text-white font-bold">
+                    Paid
+                  </div>
+                ) : (
+                  <div className="inline-block px-4 py-2 rounded-full bg-red-500 text-white font-bold">
+                    Unpaid
+                  </div>
+                )}
               </CardContent>
             </Card>
             {/* <Card x-chunk="dashboard-01-chunk-2">
@@ -269,9 +288,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                       }
                     )}
                   </TableCell>
-                  <TableCell>
-                    {data.incomeSource}
-                  </TableCell>
+                  <TableCell>{data.incomeSource}</TableCell>
                   <TableCell>
                     ₱
                     {parseFloat(data.amount).toLocaleString("en-US", {

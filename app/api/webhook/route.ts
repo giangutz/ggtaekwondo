@@ -72,7 +72,6 @@ export async function POST(req: Request) {
       role: "student",
       class: "66207be86158c0a046d55438",
     });
-    console.log(user);
 
     const update = await clerkClient.users.updateUserMetadata(id, {
       publicMetadata: {

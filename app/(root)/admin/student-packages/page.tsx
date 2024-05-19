@@ -84,9 +84,9 @@ const Page = ({ searchParams }: SearchParamProps) => {
         </h2>
       </div>
       <div className="md:wrapper overflow-x-auto">
-        <div className="flex w-full flex-col gap-5 md:flex-row">
+        {/* <div className="flex w-full flex-col gap-5 md:flex-row">
           <Search placeholder="Search a Student by Name" />
-        </div>
+        </div> */}
         {loading ? (
           <div className="wrapper overflow-x-auto justify-center space-y-4">
             {Array.from({ length: 20 }).map((_, index) => (
@@ -161,18 +161,24 @@ const Page = ({ searchParams }: SearchParamProps) => {
                         </TableCell>
                         <TableCell className="text-center">
                           <span className="sm:hidden">
-                            {new Date(data.endDate).toLocaleDateString("en-US", {
-                              month: "numeric",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
+                            {new Date(data.endDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "numeric",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
                           </span>
                           <span className="hidden sm:inline">
-                            {new Date(data.endDate).toLocaleDateString("en-US", {
-                              month: "long",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
+                            {new Date(data.endDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
                           </span>
                         </TableCell>
                         <TableCell className="flex justify-center items-center gap-4">

@@ -42,19 +42,12 @@ export async function getAllPackages({ query, limit = 6, page }: GetAllPackagePa
   try {
     await connectToDatabase();
 
+    const conditions = query ? { trainingDate: new Date(query) } : {};
+
     const skipAmount = (Number(page) - 1) * limit;
     const today = new Date();
 
     const packageQuery = Package.aggregate([
-      {
-        $lookup: {
-          from: 'users', // Assuming 'users' is the name of your User collection
-          localField: 'studentId',
-          foreignField: '_id',
-          as: 'student'
-        }
-      },
-      { $unwind: '$student' },
       {
         $addFields: {
           distance: {
@@ -66,9 +59,6 @@ export async function getAllPackages({ query, limit = 6, page }: GetAllPackagePa
             $cond: [{ $lt: ["$endDate", today] }, 1, 0],
           },
         },
-      },
-      {
-        $match: query ? { $or: [ { 'student.firstName': query }, { 'student.lastName': query } ] } : {},
       },
       {
         $sort: {
@@ -91,7 +81,7 @@ export async function getAllPackages({ query, limit = 6, page }: GetAllPackagePa
     ]);
 
     const packages = await packageQuery.exec();
-    const packageCount = await Package.countDocuments(query ? { $or: [ { 'student.firstName': query }, { 'student.lastName': query } ] } : {});
+    const packageCount = await Package.countDocuments(conditions);
 
     return {
       data: JSON.parse(JSON.stringify(packages)),

@@ -86,23 +86,37 @@ export async function computeSessionsLeft(
   try {
     await connectToDatabase();
     const numSessions = parseInt(totalSessions);
-    const attendanceRecords = await Attendance.find({
-      "students.studentId": studentId,
-      trainingDate: { $gte: startDate, $lte: endDate },
-    });
+    let attendanceRecords;
+
+    const targetDate = new Date('2024-05-20'); // replace with your target date
+    const currentDate = new Date();
+
+    if (currentDate < targetDate) {
+      // Old system: only count sessions where the student was present
+      attendanceRecords = await Attendance.find({
+        "students.studentId": studentId,
+        "students.status": "present",
+        trainingDate: { $gte: startDate, $lte: endDate },
+      });
+    } else {
+      // New system: count all sessions within the date range
+      attendanceRecords = await Attendance.find({
+        "students.studentId": studentId,
+        trainingDate: { $gte: startDate, $lte: endDate },
+      });
+    }
+
     const availedSessions = attendanceRecords.length;
     const sessionsLeft = numSessions - availedSessions;
-    // // find last date of attendance
+    // find last date of attendance
     let lastAttendance;
     if (attendanceRecords.length > 0) {
       lastAttendance =
         attendanceRecords[attendanceRecords.length - 1].trainingDate;
-      return { sessionsLeft, lastAttendance };
     }
-    return { sessionsLeft, lastAttendance: null };
-    // return JSON.parse(JSON.stringify(sessionsLeft));
+    return { sessionsLeft, lastAttendance };
   } catch (error) {
-    handleError(error);
+    console.error(error);
   }
 }
 
