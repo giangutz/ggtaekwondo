@@ -221,6 +221,11 @@ body {
     @apply rounded-full h-[40px] p-regular-16;
   }
 
+  /* secondary white button rounded full h-[40px] p-regular-16 */
+  .button-secondary {
+    @apply bg-white text-primary border border-primary rounded-full h-[40px] p-regular-16 hover:bg-primary hover:text-white;
+  }
+
   .select-item {
     @apply py-3 cursor-pointer  focus:bg-primary;
   }
@@ -291,4 +296,24 @@ li {
 
 li:hover .dropdown-menu {
   display: block;
+}
+
+/* ============ FONT ================ */
+@font-face {
+  font-family: 'Zuume Black';
+  src: url('/public/assets/font/Zuume\ Black.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.zuume-black {
+  font-family: 'Zuume Black';
+  font-size: 28px;
+  line-height: 1.4rem;
+}
+
+@layer utilities {
+  .heading {
+    @apply font-bold text-4xl md:text-5xl text-center;
+  }
 }
