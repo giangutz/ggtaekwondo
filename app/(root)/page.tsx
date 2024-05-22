@@ -12,8 +12,7 @@ import { getAllEvents } from "@/lib/actions/event.actions";
 import { SearchParamProps } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-
-
+import Hero from "@/components/shared/Hero";
 
 export default async function Home({ searchParams }: SearchParamProps) {
   const page = Number(searchParams?.page) || 1;
@@ -28,6 +27,8 @@ export default async function Home({ searchParams }: SearchParamProps) {
   });
   return (
     <>
+      <Hero />
+      <Affiliate />
       <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
         <div className="wrapper grid grid-cols-1 gap-5 md:grid-cols-2 2xl:gap-0">
           <div className="flex flex-col justify-center gap-8">
@@ -64,7 +65,6 @@ export default async function Home({ searchParams }: SearchParamProps) {
           />
         </div>
       </section>
-      <Affiliate />
 
       <section
         id="training"
