@@ -42,33 +42,21 @@ export const headerLinks = [
 export const testimonials = [
   {
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: "Michael Johnson",
-    title: "Director of AlphaStream Technologies",
+      "My kids absolutely love training at Grit & Glory Taekwondo! The coaches, Nica Garces (who's even on the National Team!) and Gian Carlo Gutierrez, are amazing. They have tons of experience and really focus on both my kids' physical and mental development. It's more than just learning kicks and punches - the coaches also help build confidence and teach valuable life skills. My kids are even winning competitions now, which is a huge bonus! I highly recommend Grit & Glory to any parent looking for a fantastic taekwondo program for their children.",
+    name: "Susan Gallardo",
+    title: "Parent of a Student",
   },
   {
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: "Michael Johnson",
-    title: "Director of AlphaStream Technologies",
+      "I was looking for a way to help my kids develop their physical strength and discipline, and Grit & Glory Taekwondo has been perfect! The coaches, Nica Garces and Gian Carlo Gutierrez, are incredible. They have so much experience competing at a high level, and they know exactly how to push my kids to improve. But it's not just about physical training. The coaches also focus on building confidence and teaching important values like humility. Plus, they're always encouraging my kids and telling them 'kaya mo yan' (you can do it!).  I'm so happy I found Grit & Glory - it's the perfect place for my kids to learn taekwondo!",
+    name: "Dobs Bartolini",
+    title: "Parent of a Student",
   },
   {
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
+      "As a parent, I want my kids to be strong not just physically but also mentally. That's why I enrolled them at Grit & Glory Taekwondo. Coaches Nica Garces and Gian Carlo Gutierrez are fantastic! They go beyond teaching taekwondo skills - they truly care about their students and help them build confidence and self-esteem. They also teach valuable life lessons like humility and respect.  I highly recommend Grit & Glory to any parent looking for a top-notch taekwondo program for their kids.",
     name: "Michael Johnson",
-    title: "Director of AlphaStream Technologies",
-  },
-  {
-    quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: "Michael Johnson",
-    title: "Director of AlphaStream Technologies",
-  },
-  {
-    quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: "Michael Johnson",
-    title: "Director of AlphaStream Technologies",
+    title: "Parent of a Student",
   },
 ];
 
