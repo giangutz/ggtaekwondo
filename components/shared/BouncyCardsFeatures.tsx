@@ -11,13 +11,13 @@ export const BouncyCardsFeatures = () => {
           <br />
           <span className="text-slate-400">Taekwondo Benefits</span>
         </h2>
-        <motion.button
+        {/* <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="whitespace-nowrap rounded-lg bg-slate-900 px-4 py-2 font-medium text-white shadow-xl transition-colors hover:bg-slate-700"
         >
           Learn more
-        </motion.button>
+        </motion.button> */}
       </div>
       <div className="mb-4 grid grid-cols-12 gap-4">
         <BounceCard className="col-span-12 md:col-span-4">
