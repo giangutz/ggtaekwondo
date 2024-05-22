@@ -19,7 +19,7 @@ const Header = (userType: any) => {
               alt="Grit & Glory Taekwondo logo"
             />
           </Link>
-          <div className="zuume-black text-center">GRIT&GLORY<br/>TAEKWONDO</div>
+          {/* <div className="zuume-black text-center">GRIT&GLORY<br/>TAEKWONDO</div> */}
         </div>
 
         <SignedIn>
