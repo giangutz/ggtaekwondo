@@ -1,3 +1,5 @@
+import { link } from "fs";
+
 export const headerLinks = [
   {
     label: "Home",
@@ -70,6 +72,41 @@ export const testimonials = [
   },
 ];
 
+export const socialMedia = [
+  {
+    id: 1,
+    img: "/assets/icons/fb.svg",
+    link: "https://www.facebook.com/gritandglorytkd",
+  },
+  {
+    id: 2,
+    img: "/assets/icons/ig.svg",
+    link: "https://www.instagram.com/tkd.gg",
+  },
+  {
+    id: 3,
+    img: "/assets/icons/tiktok.svg",
+    link: "https://www.tiktok.com/@gngtkd",
+  },
+];
+
+export const sampleContent = [
+  {
+    title: "Title 1",
+    description: "This is the description for Title 1",
+    content: <p>This is some sample content for Title 1</p>,
+  },
+  {
+    title: "Title 2",
+    description: "This is the description for Title 2",
+    content: <p>This is some sample content for Title 2</p>,
+  },
+  {
+    title: "Title 3",
+    description: "This is the description for Title 3",
+    content: <p>This is some sample content for Title 3</p>,
+  },
+];
 
 export const gridItems = [
   {

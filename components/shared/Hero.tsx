@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FlipWords } from "../ui/flip-words";
 import { heroWords } from "@/constants";
+import Link from "next/link";
 
 const ShuffleHero = () => {
   function getFirstSaturday(): string {
@@ -32,15 +33,15 @@ const ShuffleHero = () => {
     });
   }
   return (
-    <section className="w-full px-8 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto">
+    <section className="w-full min-h-screen px-8 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto">
       <div>
         {/* <span className="block mb-4 text-xs md:text-sm text-indigo-500 font-medium">
           Better every day
         </span> */}
-        <span className="mb-1.5 inline-block rounded-full bg-gray-300 px-3 py-1.5 text-sm text-center sm:text-left">
+        <div className="mb-1.5 inline-block rounded-full bg-white border border-black px-3 py-1.5 text-sm text-center sm:text-left">
           Next Free Trial Class on {getFirstSaturday()} 🎉
-        </span>
-        <h3 className="text-3xl md:text-4xl font-semibold">
+        </div>
+        <h3 className="h3-bold text-3xl md:text-4xl font-semibold">
           <FlipWords words={heroWords} className="text-[#ff571b] pl-0" /> Your
           Potential. <br />
           Start Taekwondo Today!
@@ -57,14 +58,14 @@ const ShuffleHero = () => {
         </button> */}
         <div className="flex justify-center md:justify-start gap-4 flex-col sm:flex-row">
           {/* w-full sm:w-fit */}
-          <button className="w-full sm:w-fit px-6 py-2 font-medium bg-indigo-500 text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+          <button className="w-full sm:w-fit px-6 py-2 font-medium bg-[#ff571b] text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
             Sign Up for a Free Trial
           </button>
-          <button className="w-full sm:w-fit px-6 py-2 font-medium bg-gray-500 text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
-  Learn More
-</button>
+          <button className="w-full sm:w-fit px-6 py-2 font-medium bg-white border border-black text-black transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+            <Link href="#benefits">Learn More</Link>
+          </button>
         </div>
-        <div className="hidden md:grid grid-cols-1 lg:grid-cols-4 gap-4 mt-8">
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
           <div className=" text-black p-4 text-center">
             <h4 className="font-bold text-xl">7+</h4>
             <p>years in the Business</p>
@@ -88,7 +89,7 @@ const ShuffleHero = () => {
   );
 };
 
-const shuffle = (array: any) => {
+const shuffle = (array: (typeof squareData)[0][]) => {
   let currentIndex = array.length,
     randomIndex;
 
@@ -157,7 +158,7 @@ const squareData = [
 ];
 
 const generateSquares = () => {
-  return shuffle(squareData).map((sq: any) => (
+  return shuffle(squareData).map((sq) => (
     <motion.div
       key={sq.id}
       layout
@@ -172,28 +173,24 @@ const generateSquares = () => {
 };
 
 const ShuffleGrid = () => {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<any>(null);
   const [squares, setSquares] = useState(generateSquares());
-
-  const shuffleSquares = useCallback(() => {
-    setSquares(generateSquares());
-
-    timeoutRef.current = setTimeout(shuffleSquares, 3000);
-  }, []);
 
   useEffect(() => {
     shuffleSquares();
 
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [shuffleSquares]);
+    return () => clearTimeout(timeoutRef.current);
+  }, []);
+
+  const shuffleSquares = () => {
+    setSquares(generateSquares());
+
+    timeoutRef.current = setTimeout(shuffleSquares, 3000);
+  };
 
   return (
-    <div className="grid grid-cols-4 grid-rows-3 h-[500px] gap-1">
-      {squares.map((sq: any) => sq)}
+    <div className="grid grid-cols-3 md:grid-cols-4 md:grid-rows-3 h-[500px] gap-1">
+      {squares.map((sq) => sq)}
     </div>
   );
 };
