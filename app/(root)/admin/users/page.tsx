@@ -1,6 +1,10 @@
 "use client";
 
-import { getUsers, updateUserClassById, updateUserRoleById } from "@/lib/actions/user.actions";
+import {
+  getUsers,
+  updateUserClassById,
+  updateUserRoleById,
+} from "@/lib/actions/user.actions";
 import React, { useEffect, useState } from "react";
 import {
   Table,
@@ -20,9 +24,10 @@ import Pagination from "@/components/shared/Pagination";
 import { SearchParamProps } from "@/types";
 import Search from "@/components/shared/Search";
 import CategoryFilter from "@/components/shared/CategoryFilter";
-
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Page = ({ searchParams }: SearchParamProps) => {
+  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<{
     data: any;
     totalPages: number;
@@ -39,8 +44,13 @@ const Page = ({ searchParams }: SearchParamProps) => {
         page: usersPage,
         limit: 10,
       });
+
+      if (!users) {
+        setLoading(true);
+      }
+
       users && setUsers(users);
-      console.log(users);
+      setLoading(false);
     };
 
     fetchUsers();
@@ -85,64 +95,68 @@ const Page = ({ searchParams }: SearchParamProps) => {
           <h3 className="h3-bold text-center sm:text-left">Manage Users</h3>
         </div>
       </section>
-      {users?.data.length > 0 ? (
-        <div className="md:wrapper overflow-x-auto">
-          {/* <div className="flex w-full flex-col gap-5 md:flex-row">
+      {loading ? (
+        <div className="wrapper overflow-x-auto justify-center space-y-4">
+          {Array.from({ length: 20 }).map((_, index) => (
+            <Skeleton key={index} className="h-8 w-full" />
+          ))}
+        </div>
+      ) : (
+        users?.data.length > 0 && (
+          <div className="md:wrapper overflow-x-auto">
+            {/* <div className="flex w-full flex-col gap-5 md:flex-row">
             <Search placeholder="Search a Student by Name" />
             <CategoryFilter />
           </div> */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-3/6 text-center">Full Name</TableHead>
-                <TableHead className="w-1/6 text-center">Class</TableHead>
-                <TableHead className="w-1/6 text-center">Role</TableHead>
-                <TableHead className="w-1/6 text-center">Delete</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.data.map((data: any) => (
-                <TableRow key={data._id}>
-                  <TableCell className="text-center">
-                    {data.firstName} {data.lastName}
-                  </TableCell>
-                  <TableCell>
-                    <ClassDropdown
-                      value={data.class}
-                      onChangeHandler={(newClass: string) =>
-                        handleClassChange(data._id, newClass)
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <RoleDropdown
-                      value={data.role}
-                      onChangeHandler={(newRole: string) =>
-                        handleRoleChange(data._id, newRole)
-                      }
-                    />
-                  </TableCell>
-                  <TableCell className="flex justify-center">
-                    <DeleteUser userId={data._id} />
-                  </TableCell>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-3/6 text-center">Full Name</TableHead>
+                  <TableHead className="w-1/6 text-center">Class</TableHead>
+                  <TableHead className="w-1/6 text-center">Role</TableHead>
+                  <TableHead className="w-1/6 text-center">Delete</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {users?.totalPages > 1 && (
-            <div className="flex justify-center mt-4">
-              <Pagination
-                urlParamName={"usersPage"}
-                page={usersPage}
-                totalPages={users?.totalPages}
-              />
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="wrapper overflow-x-auto flex justify-center">
-          <p>There is no user in the system yet.</p>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {users.data.map((data: any) => (
+                  <TableRow key={data._id}>
+                    <TableCell className="text-center">
+                      {data.firstName} {data.lastName}
+                    </TableCell>
+                    <TableCell>
+                      <ClassDropdown
+                        value={data.class}
+                        onChangeHandler={(newClass: string) =>
+                          handleClassChange(data._id, newClass)
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <RoleDropdown
+                        value={data.role}
+                        onChangeHandler={(newRole: string) =>
+                          handleRoleChange(data._id, newRole)
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className="flex justify-center">
+                      <DeleteUser userId={data._id} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {users?.totalPages > 1 && (
+              <div className="flex justify-center mt-4">
+                <Pagination
+                  urlParamName={"usersPage"}
+                  page={usersPage}
+                  totalPages={users?.totalPages}
+                />
+              </div>
+            )}
+          </div>
+        )
       )}
     </>
   );

@@ -21,11 +21,11 @@ export const headerLinks = [
     route: "/admin/dashboard",
     allowedUsers: ["admin"],
   },
-  {
-    label: "Manage Users",
-    route: "/admin/users",
-    allowedUsers: ["admin"],
-  },
+  // {
+  //   label: "Manage Users",
+  //   route: "/admin/users",
+  //   allowedUsers: ["admin"],
+  // },
   // {
   //   label: "Manage Users",
   //   route: "/admin/manageusers",
@@ -38,24 +38,29 @@ export const headerLinks = [
   // },
 ];
 
-
 export const testimonials = [
   {
     quote:
-      "My kids absolutely love training at Grit & Glory Taekwondo! The coaches, Nica Garces (who's even on the National Team!) and Gian Carlo Gutierrez, are amazing. They have tons of experience and really focus on both my kids' physical and mental development. It's more than just learning kicks and punches - the coaches also help build confidence and teach valuable life skills. My kids are even winning competitions now, which is a huge bonus! I highly recommend Grit & Glory to any parent looking for a fantastic taekwondo program for their children.",
+      "My kids love Grit & Glory! Coaches are amazing, with tons of experience. They focus on both physical & mental development, teaching valuable life skills that go beyond kicks & punches. Highly recommend!",
     name: "Susan Gallardo",
     title: "Parent of a Student",
   },
   {
     quote:
-      "I was looking for a way to help my kids develop their physical strength and discipline, and Grit & Glory Taekwondo has been perfect! The coaches, Nica Garces and Gian Carlo Gutierrez, are incredible. They have so much experience competing at a high level, and they know exactly how to push my kids to improve. But it's not just about physical training. The coaches also focus on building confidence and teaching important values like humility. Plus, they're always encouraging my kids and telling them 'kaya mo yan' (you can do it!).  I'm so happy I found Grit & Glory - it's the perfect place for my kids to learn taekwondo!",
+      "Grit & Glory builds confidence in my kids! Coaches help them develop & improve, not just physically. They even win competitions! A fantastic taekwondo program!",
     name: "Dobs Bartolini",
     title: "Parent of a Student",
   },
   {
     quote:
-      "As a parent, I want my kids to be strong not just physically but also mentally. That's why I enrolled them at Grit & Glory Taekwondo. Coaches Nica Garces and Gian Carlo Gutierrez are fantastic! They go beyond teaching taekwondo skills - they truly care about their students and help them build confidence and self-esteem. They also teach valuable life lessons like humility and respect.  I highly recommend Grit & Glory to any parent looking for a top-notch taekwondo program for their kids.",
-    name: "Michael Johnson",
+      "My kids absolutely love training at Grit & Glory Taekwondo! The coaches are amazing. They have tons of experience and really focus on both my kids' physical and mental development. It's more than just learning kicks and punches - the coaches also help build confidence and teach valuable life skills. My kids are even winning competitions now, which is a huge bonus! I highly recommend Grit & Glory to any parent looking for a fantastic taekwondo program for their children.",
+    name: "Susan Gallardo",
+    title: "Parent of a Student",
+  },
+  {
+    quote:
+      "Grit & Glory is perfect for strength & discipline! Coaches, with high-level experience, push my kids to improve. It's more than physical - they build confidence & teach humility.",
+    name: "Dobs Bartolini",
     title: "Parent of a Student",
   },
 ];
@@ -237,6 +242,10 @@ export const adminLinks = [
   {
     label: "Events",
     route: "/admin/events",
+  },
+  {
+    label: "Users",
+    route: "/admin/users",
   },
 ];
 
