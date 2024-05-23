@@ -31,7 +31,7 @@ const NavItems = ({ userType, onNavClick }: NavItemsProps) => {
               } flex-center p-medium-16 whitespace-nowrap transition-colors duration-200 ease-in-out hover:border-b-2 hover:border-[#ff571b] cursor-pointer`}
               onMouseEnter={() => {
                 if (link.label === "Admin Dashboard") {
-                  clearTimeout(closeDropdownTimeout);
+                  clearTimeout(closeDropdownTimeout as NodeJS.Timeout);
                   setDropdownOpen(true);
                 }
               }}
