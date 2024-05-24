@@ -267,6 +267,15 @@ export const attendanceDefaultValues = {
   trainingDate: new Date(),
 };
 
+export const trialDefaultValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  age: "",
+  opt: false,
+};
+
 export const packageDefaultValues = {
   classId: "", // Add this line
   studentId: "",

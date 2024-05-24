@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FlipWords } from "../ui/flip-words";
 import { heroWords } from "@/constants";
 import Link from "next/link";
+import TrialModal from "./TrialModal";
 
 const ShuffleHero = () => {
   function getFirstSaturday(): string {
@@ -42,8 +43,8 @@ const ShuffleHero = () => {
           Next Free Trial Class on {getFirstSaturday()} 🎉
         </div>
         <h3 className="h3-bold text-3xl md:text-4xl font-semibold">
-          <FlipWords words={heroWords} className="text-[#ff571b] pl-0" /> Your
-          Potential. <br />
+          {/* <FlipWords words={heroWords} className="text-[#ff571b] pl-0" /> */}
+          <span className="text-[#ff571b]">Unlock</span> Your Potential. <br />
           Start Taekwondo Today!
         </h3>
         <p className="text-base md:text-lg text-slate-700 my-4 md:my-6">
@@ -58,9 +59,10 @@ const ShuffleHero = () => {
         </button> */}
         <div className="flex justify-center md:justify-start gap-4 flex-col sm:flex-row">
           {/* w-full sm:w-fit */}
-          <button className="w-full sm:w-fit px-6 py-2 font-medium bg-[#ff571b] text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+          {/* <button className="w-full sm:w-fit px-6 py-2 font-medium bg-[#ff571b] text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
             Sign Up for a Free Trial
-          </button>
+          </button> */}
+          <TrialModal />
           <button className="w-full sm:w-fit px-6 py-2 font-medium bg-white border border-black text-black transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
             <Link href="#benefits">Learn More</Link>
           </button>

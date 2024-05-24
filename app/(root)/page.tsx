@@ -14,6 +14,7 @@ import {
   MessageCircleMore,
   PhoneCall,
 } from "lucide-react";
+import TrialModal from "@/components/shared/TrialModal";
 
 export default async function Home({ searchParams }: SearchParamProps) {
   const page = Number(searchParams?.page) || 1;
@@ -98,7 +99,10 @@ export default async function Home({ searchParams }: SearchParamProps) {
           Ready to unlock <span className="text-purple-500">your</span>{" "}
           potential with Taekwondo?
         </h1>
-        <p className="text-white-200 md:mt-10 my-5 text-center">
+        <div className="mt-4">
+        <TrialModal />
+        </div>
+        <p className="text-white-200 my-5 text-center">
           Reach out to us today and let&apos;s discuss how we can help you
           achieve your goals.
         </p>

@@ -268,3 +268,14 @@ export type GetAllAttendanceParams = {
   limit: number;
   page: number;
 };
+
+// ======= TRIAL PARAMS ====== //
+export type CreateTrialParams = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  age: number;
+  trialDate: Date;
+  createdAt: Date;
+};
