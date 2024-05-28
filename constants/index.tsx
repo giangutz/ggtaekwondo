@@ -20,6 +20,28 @@ export const headerLinks = [
     label: "Admin Dashboard",
     route: "/admin/dashboard",
     allowedUsers: ["admin"],
+    subMenu: [
+      {
+        label: "Attendance",
+        route: "/admin/attendance",
+      },
+      {
+        label: "Student Packages",
+        route: "/admin/student-packages",
+      },
+      {
+        label: "Transactions",
+        route: "/admin/transactions",
+      },
+      {
+        label: "Events",
+        route: "/admin/events",
+      },
+      {
+        label: "Users",
+        route: "/admin/users",
+      },
+    ]
   },
   // {
   //   label: "Manage Users",
@@ -44,24 +66,28 @@ export const testimonials = [
       "My kids love Grit & Glory! Coaches are amazing, with tons of experience. They focus on both physical & mental development, teaching valuable life skills that go beyond kicks & punches. Highly recommend!",
     name: "Susan Gallardo",
     title: "Parent of a Student",
+    image: "/assets/images/susan-review.png",
   },
   {
     quote:
       "Grit & Glory builds confidence in my kids! Coaches help them develop & improve, not just physically. They even win competitions! A fantastic taekwondo program!",
-    name: "Dobs Bartolini",
+    name: "Dobbie Bartolini",
     title: "Parent of a Student",
+    image: "/assets/images/dobs-review.jpg",
   },
   {
     quote:
-      "My kids absolutely love training at Grit & Glory Taekwondo! The coaches are amazing. They have tons of experience and really focus on both my kids' physical and mental development. It's more than just learning kicks and punches - the coaches also help build confidence and teach valuable life skills. My kids are even winning competitions now, which is a huge bonus! I highly recommend Grit & Glory to any parent looking for a fantastic taekwondo program for their children.",
+      "Grit & Glory is amazing! Coaches, with tons of experience, focus on both my kids' physical & mental development, building confidence & teaching valuable life skills. They're even winning competitions! Highly recommend for a fantastic taekwondo program!",
     name: "Susan Gallardo",
     title: "Parent of a Student",
+    image: "/assets/images/susan-review.png",
   },
   {
     quote:
       "Grit & Glory is perfect for strength & discipline! Coaches, with high-level experience, push my kids to improve. It's more than physical - they build confidence & teach humility.",
-    name: "Dobs Bartolini",
+    name: "Dobbie Bartolini",
     title: "Parent of a Student",
+    image: "/assets/images/dobs-review.jpg",
   },
 ];
 
@@ -209,11 +235,11 @@ export const companies = [
     name: "Philippine Olympic Committee",
     img: "/assets/images/poc.png",
   },
-  {
-    id: 3,
-    name: "Milo Philippines",
-    img: "/assets/images/milo.png",
-  },
+  // {
+  //   id: 3,
+  //   name: "Milo Philippines",
+  //   img: "/assets/images/milo.png",
+  // },
   {
     id: 4,
     name: "Philippine Taekwondo Association",

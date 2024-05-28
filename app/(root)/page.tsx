@@ -100,7 +100,7 @@ export default async function Home({ searchParams }: SearchParamProps) {
           potential with Taekwondo?
         </h1>
         <div className="mt-4">
-        <TrialModal />
+          <TrialModal />
         </div>
         <p className="text-white-200 my-5 text-center">
           Reach out to us today and let&apos;s discuss how we can help you
@@ -156,7 +156,7 @@ export default async function Home({ searchParams }: SearchParamProps) {
             </div>
             <p className="mb-4">Give us a call for any inquiries or support.</p>
             <a href="tel:09954871799">
-              <button className="flex w-full sm:w-auto px-6 py-2 font-medium bg-[#ff571b] border border-[#ff571b] text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+              <button className="flex w-full sm:w-auto px-6 py-2 font-medium bg-teal-500 border border-teal-500 text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
                 <PhoneCall className="mr-2" />
                 Call Now
               </button>

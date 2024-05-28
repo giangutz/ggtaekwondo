@@ -46,14 +46,17 @@ const NavItems = ({ userType, onNavClick }: NavItemsProps) => {
               }}
             >
               <Link href={link.route}>{link.label}</Link>
-              {link.label === "Admin Dashboard" && dropdownOpen && (
+              {link.label === "Admin Dashboard" && dropdownOpen && link.subMenu && (
                 <div className="absolute left-0 top-8 bg-white border border-gray-200 shadow-md mt-2 w-48 rounded-md overflow-hidden z-10">
-                  <Link
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-                    href="/admin/users"
-                  >
-                    Manage Users
-                  </Link>
+                  {link?.subMenu.map((subLink) => (
+                    <Link
+                      key={subLink.label}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                      href={subLink.route}
+                    >
+                      {subLink.label}
+                    </Link>
+                  ))}
                 </div>
               )}
             </li>

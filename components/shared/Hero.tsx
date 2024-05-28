@@ -67,23 +67,24 @@ const ShuffleHero = () => {
             <Link href="#benefits">Learn More</Link>
           </button>
         </div>
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        {/* <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8"> */}
+          <div className="hidden md:flex flex-row justify-between gap-4 mt-8">
           <div className=" text-black p-4 text-center">
             <h4 className="font-bold text-xl">7+</h4>
-            <p>years in the Business</p>
+            <p>Years in the Business</p>
           </div>
           <div className=" text-black p-4 text-center">
-            <h4 className="font-bold text-xl">100+</h4>
-            <p>Happy students</p>
+            <h4 className="font-bold text-xl">500+</h4>
+            <p>Students Handled</p>
           </div>
           <div className=" text-black p-4 text-center">
-            <h4 className="font-bold text-xl">20+</h4>
-            <p>Experienced instructors</p>
+            <h4 className="font-bold text-xl">1000+</h4>
+            <p>Classes Conducted</p>
           </div>
-          <div className=" text-black p-4 text-center">
+          {/* <div className=" text-black p-4 text-center">
             <h4 className="font-bold text-xl">5</h4>
             <p>Locations</p>
-          </div>
+          </div> */}
         </div>
       </div>
       <ShuffleGrid />

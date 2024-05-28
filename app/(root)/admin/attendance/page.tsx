@@ -22,13 +22,14 @@ import { getAllClass } from "@/lib/actions/class.actions";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Page = ({ searchParams }: SearchParamProps) => {
+  const router = useRouter();
+  
   const [loading, setLoading] = useState(true);
   const [classes, setClasses] = useState([]);
   const [attendance, setAttendance] = useState<{
     data: any;
     totalPages: number;
   }>({ data: [], totalPages: 0 });
-  const router = useRouter();
 
   const attendancePage = Number(searchParams?.attendancePage) || 1;
   const searchText = (searchParams?.query as string) || "";
@@ -81,10 +82,10 @@ const Page = ({ searchParams }: SearchParamProps) => {
       </div> */}
       {loading ? (
         <div className="wrapper overflow-x-auto justify-center space-y-4">
-        {Array.from({ length: 20 }).map((_, index) => (
-          <Skeleton key={index} className="h-8 w-full" />
-        ))}
-      </div>
+          {Array.from({ length: 20 }).map((_, index) => (
+            <Skeleton key={index} className="h-8 w-full" />
+          ))}
+        </div>
       ) : attendance?.data.length > 0 ? (
         <div className="md:wrapper overflow-x-auto">
           <Table>

@@ -114,14 +114,14 @@ export const getUserMetadata = () => {
   return sessionClaims?.metadata;
 }
 
-export const checkRole = (role: Roles) => {
-  const { sessionClaims } = auth();
-
-  return sessionClaims?.metadata.role === role;
-};
-
 export const getRole = () => {
   const { sessionClaims } = auth();
 
   return sessionClaims?.metadata.role;
 }
+
+export const checkRole = (role: string): boolean => {
+  const userRole = getRole();
+
+  return userRole === role;
+};

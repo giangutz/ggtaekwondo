@@ -12,7 +12,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = getUserMetadata();
-  // console.log(user);
   return (
     <div className="flex h-screen flex-col">
       <Header userType={user?.role} />
