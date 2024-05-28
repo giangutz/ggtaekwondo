@@ -194,7 +194,7 @@ export async function deleteUser(clerkId: string) {
     await connectToDatabase();
 
     // Find user to delete
-    const userToDelete = await User.findOne({ clerkId: clerkId });
+    const userToDelete = await User.findOne({_id: clerkId});
     if (!userToDelete) {
       throw new Error("User not found");
     }
@@ -215,11 +215,11 @@ export async function deleteUser(clerkId: string) {
     // ]);
 
     // Delete user
-    await clerkClient.users.deleteUser(clerkId);
+    await clerkClient.users.deleteUser(userToDelete.clerkId);
     const deletedUser = await User.findByIdAndDelete(userToDelete._id);
     revalidatePath("/admin/users");
 
-    return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
+    return JSON.parse(JSON.stringify(deletedUser));
   } catch (error) {
     handleError(error);
   }

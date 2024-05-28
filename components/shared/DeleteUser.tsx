@@ -16,8 +16,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { deleteUser } from "@/lib/actions/user.actions";
+import { useToast } from "@/components/ui/use-toast";
 
 export const DeleteUser = ({ userId }: { userId: string }) => {
+  const { toast } = useToast();
   const pathname = usePathname();
   let [isPending, startTransition] = useTransition();
 
@@ -44,10 +46,21 @@ export const DeleteUser = ({ userId }: { userId: string }) => {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
 
           <AlertDialogAction
-          className="bg-red-500 text-white hover:bg-red-600"
+            className="bg-red-500 text-white hover:bg-red-600"
             onClick={() =>
               startTransition(async () => {
-                await deleteUser(userId);
+                const user = await deleteUser(userId);
+                if (user) {
+                  toast({
+                    title: "User deleted successfully",
+                    description: "The user has been deleted successfully",
+                  });
+                } else {
+                  toast({
+                    title: "Error deleting user",
+                    description: "An error occurred while deleting the user. Please try again.",
+                  });
+                }
               })
             }
           >
