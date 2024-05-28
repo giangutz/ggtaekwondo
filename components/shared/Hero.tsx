@@ -179,17 +179,17 @@ const ShuffleGrid = () => {
   const timeoutRef = useRef<any>(null);
   const [squares, setSquares] = useState(generateSquares());
 
-  useEffect(() => {
-    shuffleSquares();
+  const shuffleSquares = useCallback(() => {
+  setSquares(generateSquares());
 
-    return () => clearTimeout(timeoutRef.current);
-  }, []);
+  timeoutRef.current = setTimeout(shuffleSquares, 3000);
+}, []); 
 
-  const shuffleSquares = () => {
-    setSquares(generateSquares());
+useEffect(() => {
+  shuffleSquares();
 
-    timeoutRef.current = setTimeout(shuffleSquares, 3000);
-  };
+  return () => clearTimeout(timeoutRef.current);
+}, [shuffleSquares]);
 
   return (
     <div className="grid grid-cols-3 md:grid-cols-4 md:grid-rows-3 h-[500px] gap-1">
