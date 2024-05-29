@@ -18,19 +18,19 @@ export default async function RootLayout({
       <main className="flex-1">{children}</main>
       {user?.role === "admin" ? (
         <>
-          <div className="fixed right-4 bottom-4">
+          <div className="fixed right-4 bottom-4 z-50">
             <HoverLabelComponent label="Make Attendance" tooltipLeft="-left-36">
               <CreateAttendance />
             </HoverLabelComponent>
           </div>
 
-          <div className="fixed right-4 bottom-16">
+          <div className="fixed right-4 bottom-16 z-50">
             <HoverLabelComponent label="Create Package" tooltipLeft="-left-32">
               <CreatePackage />
             </HoverLabelComponent>
           </div>
 
-          <div className="fixed right-4 bottom-28">
+          <div className="fixed right-4 bottom-28 z-50">
             <HoverLabelComponent label="Transactions" tooltipLeft="-left-28">
               <CreateTransactions createdBy={user?.userId} />
             </HoverLabelComponent>
