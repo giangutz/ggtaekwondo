@@ -3,6 +3,7 @@
 import {
   getUsers,
   updateUserClassById,
+  updateUserParentById,
   updateUserRoleById,
 } from "@/lib/actions/user.actions";
 import React, { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ import { SearchParamProps } from "@/types";
 import Search from "@/components/shared/Search";
 import CategoryFilter from "@/components/shared/CategoryFilter";
 import { Skeleton } from "@/components/ui/skeleton";
+import ParentDropdown from "@/components/shared/ParentDropdown";
 
 const Page = ({ searchParams }: SearchParamProps) => {
   const [loading, setLoading] = useState(true);
@@ -88,6 +90,22 @@ const Page = ({ searchParams }: SearchParamProps) => {
     }
   };
 
+  const handleParentChange = async (userId: string, newParent: string) => {
+    try {
+      const updatedUserParent = await updateUserParentById(userId, newParent);
+      if (updatedUserParent) {
+        toast({
+          title: `${updatedUserParent.firstName} ${updatedUserParent.lastName} parent updated successfully`,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Parent update failed. Please try again.",
+      });
+    }
+  }
+
   return (
     <>
       <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
@@ -114,6 +132,7 @@ const Page = ({ searchParams }: SearchParamProps) => {
                   <TableHead className="w-3/6 text-center">Full Name</TableHead>
                   <TableHead className="w-1/6 text-center">Class</TableHead>
                   <TableHead className="w-1/6 text-center">Role</TableHead>
+                  <TableHead className="w-1/6 text-center">Parent</TableHead>
                   <TableHead className="w-1/6 text-center">Delete</TableHead>
                 </TableRow>
               </TableHeader>
@@ -125,6 +144,7 @@ const Page = ({ searchParams }: SearchParamProps) => {
                     </TableCell>
                     <TableCell>
                       <ClassDropdown
+                        cls={true}
                         value={data.class}
                         onChangeHandler={(newClass: string) =>
                           handleClassChange(data._id, newClass)
@@ -136,6 +156,14 @@ const Page = ({ searchParams }: SearchParamProps) => {
                         value={data.role}
                         onChangeHandler={(newRole: string) =>
                           handleRoleChange(data._id, newRole)
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <ParentDropdown
+                        value={data.parent}
+                        onChangeHandler={(newParent: string) =>
+                          handleParentChange(data._id, newParent)
                         }
                       />
                     </TableCell>

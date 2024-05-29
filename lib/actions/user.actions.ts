@@ -54,6 +54,18 @@ export async function getAllUser() {
   }
 }
 
+export async function getAllUserByRole(role: string) {
+  try {
+    await connectToDatabase();
+
+    const users = await User.find({ role: role });
+
+    return JSON.parse(JSON.stringify(users));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
 export async function getUsers({ query, page, limit = 10 }: any) {
   try {
     await connectToDatabase();
@@ -95,18 +107,32 @@ export async function getUsersByClass(classId: string) {
   }
 }
 
-// export async function getUserById(userId: string) {
-//   try {
-//     await connectToDatabase();
+export async function getUserById(userId: string) {
+  try {
+    await connectToDatabase();
 
-//     const user = await User.findById(userId);
+    const user = await User.findById(userId);
 
-//     if (!user) throw new Error("User not found");
-//     return JSON.parse(JSON.stringify(user));
-//   } catch (error) {
-//     handleError(error);
-//   }
-// }
+    if (!user) throw new Error("User not found");
+    return JSON.parse(JSON.stringify(user));
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+export async function getChildrenByParentId(userId: string) {
+  try {
+    await connectToDatabase();
+
+    const children = await User.find({ parent: userId });
+
+    if (!children) throw new Error("Children not found");
+
+    return JSON.parse(JSON.stringify(children));
+  } catch (error) {
+    handleError(error);
+  }
+}
 
 export async function updateUser(clerkId: string, user: UpdateUserParams) {
   try {
@@ -163,6 +189,33 @@ export async function updateUserClassById(userId: string, newClass: string) {
     handleError(error);
   }
 }
+
+export async function updateUserParentById(userId: string, newParent: string) {
+  try {
+    await connectToDatabase();
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { parent: newParent },
+      { new: true }
+    );
+
+    if (!updatedUser) throw new Error("User update failed");
+
+    await clerkClient.users.updateUserMetadata(updatedUser.clerkId, {
+      publicMetadata: {
+        parent: newParent,
+      },
+    });
+
+    revalidatePath("/admin/users");
+
+    return JSON.parse(JSON.stringify(updatedUser));
+  }
+  catch (error) {
+    handleError(error)
+    }
+  };
 
 export async function updateUserRoleById(userId: string, newRole: string) {
   try {

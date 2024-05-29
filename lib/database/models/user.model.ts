@@ -8,6 +8,7 @@ export interface IUser extends Document {
   clerkId?: string;
   class?: string;
   photo?: string;
+  parent?: string;
 }
 
 const UserSchema = new Schema({
@@ -19,6 +20,7 @@ const UserSchema = new Schema({
   photo: { type: String, required: true },
   class: { type: Schema.Types.ObjectId, ref: "Class" },
   role: { type: String, required: true },
+  parent: { type: String },
 });
 
 const User = models.User || model("User", UserSchema);

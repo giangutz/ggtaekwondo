@@ -4,7 +4,7 @@ export const headerLinks = [
   {
     label: "Home",
     route: "/",
-    allowedUsers: ["admin", "student"],
+    allowedUsers: ["admin", "student", "parent"],
   },
   {
     label: "Create Event",
@@ -12,7 +12,12 @@ export const headerLinks = [
     allowedUsers: ["admin"],
   },
   {
-    label: "Dashboard",
+    label: "Parent Dashboard",
+    route: "/dashboard/parent",
+    allowedUsers: ["parent"],
+  },
+  {
+    label: "Student Dashboard",
     route: "/dashboard",
     allowedUsers: ["student"],
   },
@@ -41,23 +46,8 @@ export const headerLinks = [
         label: "Users",
         route: "/admin/users",
       },
-    ]
+    ],
   },
-  // {
-  //   label: "Manage Users",
-  //   route: "/admin/users",
-  //   allowedUsers: ["admin"],
-  // },
-  // {
-  //   label: "Manage Users",
-  //   route: "/admin/manageusers",
-  //   allowedUsers: ["admin"],
-  // },
-  // {
-  //   label: "Manage Gym",
-  //   route: "/managegym",
-  //   allowedUsers: ["admin"],
-  // },
 ];
 
 export const testimonials = [
@@ -349,4 +339,85 @@ export const ExpenseCategory = [
 
 export const paidInList = ["GCASH", "Cash", "Bank Transfer"];
 
-export const classes = ["Beginner", "Novice", "Advanced", "Elite"];
+// export const classes = ["Beginner", "Novice", "Advanced", "Elite"];
+
+export const studentClasses = [
+  {
+    _id: "66207be86158c0a046d55438",
+    name: "Beginner",
+    days: [
+      "Saturday",
+      "Sunday",
+      "Wednesday"
+    ]
+  },
+  {
+    _id: "66207c016158c0a046d55439",
+    name: "Novice",
+    days: [
+      "Tuesday",
+      "Thursday",
+      "Saturday"
+    ]
+  },
+  {
+    _id: "66207c0b6158c0a046d5543a",
+    name: "Advanced",
+    days: [
+      "Monday",
+      "Wednesday",
+      "Saturday",
+      "Sunday"
+    ]
+  }
+];
+
+export const allClasses = [
+  {
+    _id: "66207be86158c0a046d55438",
+    name: "Beginner",
+    days: [
+      "Saturday",
+      "Sunday",
+      "Wednesday"
+    ]
+  },
+  {
+    _id: "66207c016158c0a046d55439",
+    name: "Novice",
+    days: [
+      "Tuesday",
+      "Thursday",
+      "Saturday"
+    ]
+  },
+  {
+    _id: "66207c0b6158c0a046d5543a",
+    name: "Advanced",
+    days: [
+      "Monday",
+      "Wednesday",
+      "Saturday",
+      "Sunday"
+    ]
+  },
+  {
+    _id: "6656db0f29a5e96a14037962",
+    name: "N/A"
+  }
+];
+
+export const roles = [
+  {
+    _id: "6626ffe2ca9888dab9ebdd31",
+    name: "student",
+  },
+  {
+    _id: "662700b1ca9888dab9ebdd3d",
+    name: "admin",
+  },
+  {
+    _id: "662702ceca9888dab9ebdd9f",
+    name: "parent",
+  }
+];
