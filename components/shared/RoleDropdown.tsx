@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import { IUserType } from "@/lib/database/models/usertype.model";
 import { getAllUserTypes } from "@/lib/actions/usertype.actions";
+import { roles } from "@/constants";
 
 type RoleDropdownProps = {
   value?: string;
@@ -16,16 +17,16 @@ type RoleDropdownProps = {
 };
 
 const RoleDropdown = ({ value, onChangeHandler }: RoleDropdownProps) => {
-  const [role, setRole] = useState<IUserType[]>([]);
+  // const [role, setRole] = useState<IUserType[]>([]);
 
-  useEffect(() => {
-    const getRole = async () => {
-      const roles = await getAllUserTypes();
-      roles && setRole(roles as IUserType[]);
-    };
+  // useEffect(() => {
+  //   const getRole = async () => {
+  //     const roles = await getAllUserTypes();
+  //     roles && setRole(roles as IUserType[]);
+  //   };
 
-    getRole();
-  }, []);
+  //   getRole();
+  // }, []);
 
   return (
     <Select onValueChange={onChangeHandler} defaultValue={value}>
@@ -33,8 +34,8 @@ const RoleDropdown = ({ value, onChangeHandler }: RoleDropdownProps) => {
         <SelectValue placeholder="Select a Role" />
       </SelectTrigger>
       <SelectContent>
-        {role.length > 0 &&
-          role.map((rle) => (
+        {roles.length > 0 &&
+          roles.map((rle) => (
             <SelectItem
               key={rle.name}
               value={rle.name}
