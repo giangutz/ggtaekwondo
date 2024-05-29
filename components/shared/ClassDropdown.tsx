@@ -8,24 +8,26 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { IClass } from "@/lib/database/models/class.model";
-import { getAllClass } from "@/lib/actions/class.actions";
+import { studentClasses, allClasses } from "@/constants";
 
 type ClassDropdownProps = {
+  cls?: boolean;
   value?: string;
   onChangeHandler?: (newClass: string) => void;
 };
 
-const ClassDropdown = ({ value, onChangeHandler }: ClassDropdownProps) => {
-  const [classes, setClasses] = useState<IClass[]>([]);
+const ClassDropdown = ({ cls, value, onChangeHandler }: ClassDropdownProps) => {
+  let classes = cls ? allClasses : studentClasses;
+  // const [classes, setClasses] = useState<IClass[]>([]);
+  
+  // useEffect(() => {
+  //   const getClasses = async () => {
+  //     const classList = await getAllClass();
+  //     classList && setClasses(classList as IClass[]);
+  //   };
 
-  useEffect(() => {
-    const getClasses = async () => {
-      const classList = await getAllClass();
-      classList && setClasses(classList as IClass[]);
-    };
-
-    getClasses();
-  }, []);
+  //   getClasses();
+  // }, []);
 
   return (
     <Select onValueChange={onChangeHandler} defaultValue={value}>

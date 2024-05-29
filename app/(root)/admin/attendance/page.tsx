@@ -20,12 +20,13 @@ import DeleteAttendance from "@/components/shared/DeleteAttendance";
 import { getAllAttendance } from "@/lib/actions/attendance.actions";
 import { getAllClass } from "@/lib/actions/class.actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { studentClasses } from "@/constants";
 
 const Page = ({ searchParams }: SearchParamProps) => {
   const router = useRouter();
   
   const [loading, setLoading] = useState(true);
-  const [classes, setClasses] = useState([]);
+  // const [classes, setClasses] = useState([]);
   const [attendance, setAttendance] = useState<{
     data: any;
     totalPages: number;
@@ -34,14 +35,14 @@ const Page = ({ searchParams }: SearchParamProps) => {
   const attendancePage = Number(searchParams?.attendancePage) || 1;
   const searchText = (searchParams?.query as string) || "";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const fetchedClasses = await getAllClass();
-      setClasses(fetchedClasses);
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const fetchedClasses = await getAllClass();
+  //     setClasses(fetchedClasses);
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,7 +118,7 @@ const Page = ({ searchParams }: SearchParamProps) => {
                   <TableCell className="text-center">
                     {
                       (
-                        classes.find(
+                        studentClasses.find(
                           (cls: any) => cls._id === data.class
                         ) as any
                       )?.name

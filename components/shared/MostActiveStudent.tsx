@@ -10,8 +10,8 @@ type MostActiveStudentProps = {
 };
 
 export function MostActiveStudent({ data, users }: MostActiveStudentProps) {
-  console.log("data:", data);
-  console.log("users:", users);
+  // console.log("data:", data);
+  // console.log("users:", users);
   return (
     <div className="space-y-4">
       {data.map((item) => {
