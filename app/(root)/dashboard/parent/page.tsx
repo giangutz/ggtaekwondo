@@ -36,7 +36,7 @@ const page = async () => {
           <h3 className="h3-bold">Your Children</h3>
           <div>
             <p>
-              Please select your children to view their package details,
+              Select your children to view their package details,
               attendance, and transaction records.
             </p>
           </div>

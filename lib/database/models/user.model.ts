@@ -20,7 +20,7 @@ const UserSchema = new Schema({
   photo: { type: String, required: true },
   class: { type: Schema.Types.ObjectId, ref: "Class" },
   role: { type: String, required: true },
-  parent: { type: String },
+  parent: { type: String, ref: "User" },
 });
 
 const User = models.User || model("User", UserSchema);

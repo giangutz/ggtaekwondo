@@ -88,7 +88,7 @@ export async function computeSessionsLeft(
     const numSessions = parseInt(totalSessions);
     let attendanceRecords;
 
-    const targetDate = new Date('2024-05-20'); // replace with your target date
+    const targetDate = new Date('2024-06-01'); // replace with your target date
     const currentDate = new Date();
 
     if (currentDate < targetDate) {
@@ -107,7 +107,7 @@ export async function computeSessionsLeft(
     }
 
     const availedSessions = attendanceRecords.length;
-    const sessionsLeft = numSessions - availedSessions;
+    const sessionsLeft = (numSessions - availedSessions - 1);
     // find last date of attendance
     let lastAttendance;
     if (attendanceRecords.length > 0) {

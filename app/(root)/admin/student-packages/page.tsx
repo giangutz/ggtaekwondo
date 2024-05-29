@@ -22,7 +22,7 @@ import { IUser } from "@/lib/database/models/user.model";
 import { IClass } from "@/lib/database/models/class.model";
 import Pagination from "@/components/shared/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { classes } from "@/constants";
+import { studentClasses as classes } from "@/constants";
 
 const Page = ({ searchParams }: SearchParamProps) => {
   const router = useRouter();

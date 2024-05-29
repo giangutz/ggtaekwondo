@@ -31,12 +31,16 @@ const UserCheckbox = ({
         newStudents[index].status = "present";
       } else if (newStudents[index].status === "present") {
         newStudents[index].status = "late";
+      } else if (newStudents[index].status === "late") {
+        newStudents[index].status = "excused";
       } else {
         newStudents[index].status = "absent";
       }
       onChangeHandler && onChangeHandler(newStudents);
     }
   };
+
+  console.log(attendance)
 
   return (
     <div className="flex flex-wrap">
@@ -58,6 +62,8 @@ const UserCheckbox = ({
               bgColor = "bg-green-500";
             } else if (userStatus === "late") {
               bgColor = "bg-yellow-500";
+            } else if (userStatus === "excused") {
+              bgColor = "bg-blue-500";
             }
 
             return (
@@ -81,6 +87,8 @@ const UserCheckbox = ({
               bgColor = "bg-green-500";
             } else if (userStatus === "late") {
               bgColor = "bg-yellow-500";
+            } else if (userStatus === "excused") {
+              bgColor = "bg-blue-500";
             }
 
             return (
