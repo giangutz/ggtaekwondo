@@ -49,7 +49,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
     studentId: userId,
     query: searchText,
     page: trainingPage,
-    limit: 5,
+    limit: 8,
   })) as { data: any; totalPages: number };
   // console.log(attendance);
 

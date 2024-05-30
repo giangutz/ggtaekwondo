@@ -94,8 +94,12 @@ export async function computeSessionsLeft(
     if (currentDate < targetDate) {
       // Old system: only count sessions where the student was present
       attendanceRecords = await Attendance.find({
-        "students.studentId": studentId,
-        "students.status": "present",
+        students: {
+          $elemMatch: {
+            studentId: studentId,
+            status: "present"
+          }
+        },
         trainingDate: { $gte: startDate, $lte: endDate },
       });
     } else {
@@ -108,11 +112,11 @@ export async function computeSessionsLeft(
 
     const availedSessions = attendanceRecords.length;
     const sessionsLeft = (numSessions - availedSessions - 1);
+    console.log(numSessions, availedSessions)
     // find last date of attendance
     let lastAttendance;
     if (attendanceRecords.length > 0) {
-      lastAttendance =
-        attendanceRecords[attendanceRecords.length - 1].trainingDate;
+      attendanceRecords.sort((a, b) => new Date(b.trainingDate).getTime() - new Date(a.trainingDate).getTime());      lastAttendance = attendanceRecords[0].trainingDate;
     }
     return { sessionsLeft, lastAttendance };
   } catch (error) {
