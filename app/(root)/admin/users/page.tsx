@@ -17,18 +17,17 @@ import {
   TableCaption,
 } from "@/components/ui/table";
 import ClassDropdown from "@/components/shared/ClassDropdown";
-import { IUser } from "@/lib/database/models/user.model";
 import { useToast } from "@/components/ui/use-toast";
 import RoleDropdown from "@/components/shared/RoleDropdown";
 import { DeleteUser } from "@/components/shared/DeleteUser";
 import Pagination from "@/components/shared/Pagination";
 import { SearchParamProps } from "@/types";
-import Search from "@/components/shared/Search";
-import CategoryFilter from "@/components/shared/CategoryFilter";
 import { Skeleton } from "@/components/ui/skeleton";
 import ParentDropdown from "@/components/shared/ParentDropdown";
+import { useRouter } from "next/navigation";
 
 const Page = ({ searchParams }: SearchParamProps) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<{
     data: any;
@@ -139,7 +138,7 @@ const Page = ({ searchParams }: SearchParamProps) => {
               <TableBody>
                 {users.data.map((data: any) => (
                   <TableRow key={data._id}>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center cursor-pointer" onClick={() => router.push(`/dashboard/${data._id}`)}>
                       {data.firstName} {data.lastName}
                     </TableCell>
                     <TableCell>

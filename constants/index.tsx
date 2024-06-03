@@ -281,6 +281,7 @@ export const eventDefaultValues = {
 export const attendanceDefaultValues = {
   students: [],
   trainingDate: new Date(),
+  paid: false,
 };
 
 export const trialDefaultValues = {

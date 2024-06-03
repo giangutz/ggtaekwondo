@@ -17,7 +17,7 @@ import {
   TableRow,
   TableCaption,
 } from "@/components/ui/table";
-import { Activity, CreditCard, DollarSign, Hash } from "lucide-react";
+import { Activity, CalendarClock, CreditCard, DollarSign, Hash } from "lucide-react";
 import { getPackageById } from "@/lib/actions/packages.actions";
 import {
   computeSessionsLeft,
@@ -26,6 +26,7 @@ import {
 import { getUserMetadata } from "@/lib/utils";
 import Pagination from "@/components/shared/Pagination";
 import { getTransactionByStudent } from "@/lib/actions/transaction.actions";
+import { Badge } from "@/components/ui/badge";
 
 const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const user = getUserMetadata();
@@ -69,10 +70,11 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
     const today = new Date();
     const packageStartDate = new Date(currentPackage.startDate);
     const packageEndDate = new Date(currentPackage.endDate);
+    // Add a grace period of 14 days to the package end date
+    packageEndDate.setDate(packageEndDate.getDate() + 31);
     hasPackage = today >= packageStartDate && today <= packageEndDate;
   }
 
-  // console.log(hasPackage);
   if (hasPackage) {
     numberOfSessions = await computeSessionsLeft(
       userId,
@@ -100,7 +102,15 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                 {hasPackage ? (
                   <>
                     <div className="text-2xl font-bold">
-                      {currentPackage.name}
+                      {currentPackage.name}{" "}
+                      {new Date().setHours(0, 0, 0, 0) <
+                      new Date(currentPackage.endDate).setHours(0, 0, 0, 0) ? (
+                        <Badge className="ml-2">Active</Badge>
+                      ) : (
+                        <Badge variant="destructive" className="ml-2">
+                          Expired
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       availed{" "}
@@ -125,6 +135,13 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
               <CardContent>
                 <div className="text-2xl font-bold">
                   {numberOfSessions?.sessionsLeft}
+                  {numberOfSessions &&
+                    numberOfSessions.sessionsLeft !== undefined &&
+                    numberOfSessions.sessionsLeft < 0 && (
+                      <Badge variant="destructive" className="ml-2">
+                        Session Overused
+                      </Badge>
+                    )}
                 </div>
                 {numberOfSessions?.lastAttendance &&
                 new Date(numberOfSessions.lastAttendance) >=
@@ -143,6 +160,26 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                   </p>
                 ) : null}
                 {/* <div className="text-2xl font-bold">No Active Package</div> */}
+              </CardContent>
+            </Card>
+            <Card x-chunk="dashboard-01-chunk-3">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Package Expiration
+                </CardTitle>
+                <CalendarClock className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {new Date(currentPackage.endDate).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    }
+                  )}
+                </div>
               </CardContent>
             </Card>
             <Card x-chunk="dashboard-01-chunk-3">
@@ -228,6 +265,10 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                     ) : data.studentStatus === "late" ? (
                       <span className="text-yellow-500 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-500">
                         Late
+                      </span>
+                    ) : data.studentStatus === "excused" ? (
+                      <span className="text-blue-500 bg-blue-100 px-2 py-1 rounded-full border border-blue-500">
+                        Excused
                       </span>
                     ) : (
                       <span className="text-red-500 bg-red-100 px-2 py-1 rounded-full border border-red-500">

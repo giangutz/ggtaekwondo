@@ -124,7 +124,10 @@ const Page = ({ searchParams }: SearchParamProps) => {
                   key={data._id}
                   className={isExpired ? "bg-gray-200" : ""}
                 >
-                  <TableCell className="font-medium text-center">
+                  <TableCell
+                    className="font-medium text-center cursor-pointer"
+                    onClick={() => router.push(`/dashboard/${user?._id}`)}
+                  >
                     {user?.firstName} {user?.lastName}
                   </TableCell>
                   <TableCell className="text-center hidden sm:table-cell">
@@ -136,46 +139,34 @@ const Page = ({ searchParams }: SearchParamProps) => {
                   </TableCell>
                   <TableCell className="text-center hidden sm:table-cell">
                     <span className="sm:hidden">
-                      {new Date(data.startDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "numeric",
-                          day: "numeric",
-                          year: "numeric",
-                        }
-                      )}
+                      {new Date(data.startDate).toLocaleDateString("en-US", {
+                        month: "numeric",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </span>
                     <span className="text-center hidden sm:inline">
-                      {new Date(data.startDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        }
-                      )}
+                      {new Date(data.startDate).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </span>
                   </TableCell>
                   <TableCell className="text-center">
                     <span className="sm:hidden">
-                      {new Date(data.endDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "numeric",
-                          day: "numeric",
-                          year: "numeric",
-                        }
-                      )}
+                      {new Date(data.endDate).toLocaleDateString("en-US", {
+                        month: "numeric",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </span>
                     <span className="hidden sm:inline">
-                      {new Date(data.endDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        }
-                      )}
+                      {new Date(data.endDate).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </span>
                   </TableCell>
                   <TableCell className="flex justify-center items-center gap-4">

@@ -18,6 +18,7 @@ export async function createPackage({
   name,
   startDate,
   endDate,
+  paid,
   isActive,
   path,
 }: CreatePackageParams) {
@@ -27,6 +28,7 @@ export async function createPackage({
       studentId,
       name,
       startDate,
+      paid,
       endDate,
       isActive,
     });

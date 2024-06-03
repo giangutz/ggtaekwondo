@@ -18,6 +18,7 @@ const PackageSchema = new Schema({
   // classesPerWeek: { type: Number, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
+  paid: { type: Boolean, required: true, default: false },
   isActive: { type: Boolean, required: true, default: true },
 });
 

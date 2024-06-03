@@ -16,7 +16,7 @@ import {
   TableRow,
   TableCaption,
 } from "@/components/ui/table";
-import { Activity, DollarSign, Hash } from "lucide-react";
+import { Activity, DollarSign, Hash, CalendarClock } from "lucide-react";
 import { getPackageById } from "@/lib/actions/packages.actions";
 import {
   computeSessionsLeft,
@@ -27,9 +27,8 @@ import { getTransactionByStudent } from "@/lib/actions/transaction.actions";
 import Image from "next/image";
 import { getUserById } from "@/lib/actions/user.actions";
 import { CircleChevronLeft } from "lucide-react";
-import { redirect } from "next/navigation";
 import Link from "next/link";
-
+import { Badge } from "@/components/ui/badge";
 
 const Page = async ({ params: { id }, searchParams }: SearchParamProps) => {
   const userId = id;
@@ -65,6 +64,8 @@ const Page = async ({ params: { id }, searchParams }: SearchParamProps) => {
     const today = new Date();
     const packageStartDate = new Date(currentPackage.startDate);
     const packageEndDate = new Date(currentPackage.endDate);
+    // Add a grace period of 14 days to the package end date
+    packageEndDate.setDate(packageEndDate.getDate() + 31);
     hasPackage = today >= packageStartDate && today <= packageEndDate;
   }
 
@@ -108,7 +109,7 @@ const Page = async ({ params: { id }, searchParams }: SearchParamProps) => {
             </div>
           </div>
 
-          <section className="wrapper grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+          <section className="wrapper grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
             <Card x-chunk="dashboard-01-chunk-0">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium flex">
@@ -117,22 +118,28 @@ const Page = async ({ params: { id }, searchParams }: SearchParamProps) => {
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                {hasPackage ? (
-                  <>
-                    <div className="text-2xl font-bold">
-                      {currentPackage.name}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      availed{" "}
-                      {new Date(currentPackage.startDate).toLocaleDateString(
-                        "en-US",
-                        { month: "long", day: "numeric", year: "numeric" }
-                      )}
-                    </p>
-                  </>
-                ) : (
+                {/* {hasPackage ? ( */}
+                  <div className="text-2xl font-bold flex items-center">
+                    {currentPackage.name}{" "}
+                    {new Date().setHours(0, 0, 0, 0) <
+                    new Date(currentPackage.endDate).setHours(0, 0, 0, 0) ? (
+                      <Badge className="ml-2">Active</Badge>
+                    ) : (
+                      <Badge variant="destructive" className="ml-2">
+                        Expired
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    availed{" "}
+                    {new Date(currentPackage.startDate).toLocaleDateString(
+                      "en-US",
+                      { month: "long", day: "numeric", year: "numeric" }
+                    )}
+                  </p>
+                {/* ) : (
                   <div className="text-2xl font-bold">No Active Package</div>
-                )}
+                )} */}
               </CardContent>
             </Card>
             <Card x-chunk="dashboard-01-chunk-1">
@@ -143,8 +150,15 @@ const Page = async ({ params: { id }, searchParams }: SearchParamProps) => {
                 <Hash className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-bold flex items-center">
                   {numberOfSessions?.sessionsLeft}
+                  {numberOfSessions &&
+                    numberOfSessions.sessionsLeft !== undefined &&
+                    numberOfSessions.sessionsLeft < 0 && (
+                      <Badge variant="destructive" className="ml-2">
+                        Session Overused
+                      </Badge>
+                    )}
                 </div>
                 {numberOfSessions?.lastAttendance &&
                 new Date(numberOfSessions.lastAttendance) >=
@@ -162,13 +176,32 @@ const Page = async ({ params: { id }, searchParams }: SearchParamProps) => {
                     })}
                   </p>
                 ) : null}
-                {/* <div className="text-2xl font-bold">No Active Package</div> */}
               </CardContent>
             </Card>
             <Card x-chunk="dashboard-01-chunk-3">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Payment Status
+                  Package Expiration
+                </CardTitle>
+                <CalendarClock className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {new Date(currentPackage.endDate).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    }
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            <Card x-chunk="dashboard-01-chunk-3">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Package Status
                 </CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
@@ -228,6 +261,10 @@ const Page = async ({ params: { id }, searchParams }: SearchParamProps) => {
                     ) : data.studentStatus === "late" ? (
                       <span className="text-yellow-500 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-500">
                         Late
+                      </span>
+                    ) : data.studentStatus === "excused" ? (
+                      <span className="text-blue-500 bg-blue-100 px-2 py-1 rounded-full border border-blue-500">
+                        Excused
                       </span>
                     ) : (
                       <span className="text-red-500 bg-red-100 px-2 py-1 rounded-full border border-red-500">

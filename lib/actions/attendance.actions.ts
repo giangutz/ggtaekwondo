@@ -52,8 +52,6 @@ export async function getAttendanceById({
   }
 }
 
-
-
 // UPDATE an attendance record
 export async function updateAttendance({
   _id,
@@ -88,8 +86,12 @@ export async function computeSessionsLeft(
     const numSessions = parseInt(totalSessions);
     let attendanceRecords;
 
-    const targetDate = new Date('2024-06-01'); // replace with your target date
+    const targetDate = new Date("2024-06-20"); // replace with your target date
     const currentDate = new Date();
+
+    // Set the time part of the startDate to the start of the day and endDate to the end of the day
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
 
     if (currentDate < targetDate) {
       // Old system: only count sessions where the student was present
@@ -97,26 +99,38 @@ export async function computeSessionsLeft(
         students: {
           $elemMatch: {
             studentId: studentId,
-            status: "present"
-          }
+            status: "present",
+          },
         },
-        trainingDate: { $gte: startDate, $lte: endDate },
+        // trainingDate: { $gte: startDate, $lte: endDate },
+        trainingDate: { $gte: startDate },
       });
     } else {
       // New system: count all sessions within the date range
       attendanceRecords = await Attendance.find({
         "students.studentId": studentId,
         trainingDate: { $gte: startDate, $lte: endDate },
+        // "students.status": "excused",
       });
     }
 
+    // Log all trainingDate from attendanceRecords
+    attendanceRecords.forEach((record) => {
+      console.log(record.trainingDate);
+    });
+
     const availedSessions = attendanceRecords.length;
-    const sessionsLeft = (numSessions - availedSessions - 1);
-    console.log(numSessions, availedSessions)
+    const sessionsLeft = numSessions - availedSessions;
+
     // find last date of attendance
     let lastAttendance;
     if (attendanceRecords.length > 0) {
-      attendanceRecords.sort((a, b) => new Date(b.trainingDate).getTime() - new Date(a.trainingDate).getTime());      lastAttendance = attendanceRecords[0].trainingDate;
+      attendanceRecords.sort(
+        (a, b) =>
+          new Date(b.trainingDate).getTime() -
+          new Date(a.trainingDate).getTime()
+      );
+      lastAttendance = attendanceRecords[0].trainingDate;
     }
     return { sessionsLeft, lastAttendance };
   } catch (error) {
@@ -133,9 +147,7 @@ export async function getAttendanceByStudent({
   try {
     await connectToDatabase();
 
-    const dateCondition = query
-  ? { trainingDate: new Date(query) }
-  : {};
+    const dateCondition = query ? { trainingDate: new Date(query) } : {};
 
     const conditions = {
       "students.studentId": studentId,
@@ -212,9 +224,9 @@ export async function getMostActiveStudent() {
         $match: {
           trainingDate: {
             $gte: start,
-            $lte: end
-          }
-        }
+            $lte: end,
+          },
+        },
       },
       {
         $group: {
@@ -241,11 +253,11 @@ export async function getMonthlyAttendanceRateForAllClasses() {
 
     // Fetch all attendance records within the current month
     const attendanceRecords = await Attendance.find({
-      trainingDate: { $gte: start, $lte: end }
+      trainingDate: { $gte: start, $lte: end },
     });
 
     // Initialize an object to store the total and present students for each class
-    const classStats:any = {};
+    const classStats: any = {};
 
     // Process each attendance record
     for (const record of attendanceRecords) {
@@ -256,14 +268,19 @@ export async function getMonthlyAttendanceRateForAllClasses() {
 
       // Update the class stats
       classStats[record.class].totalStudents += record.students.length;
-      classStats[record.class].presentStudents += record.students.filter((student: any) => student.status === 'present').length;
+      classStats[record.class].presentStudents += record.students.filter(
+        (student: any) => student.status === "present"
+      ).length;
     }
 
     // Calculate the attendance rate for each class
-    const attendanceRates = Object.entries(classStats).map(([classId, stats]: any) => {
-      const attendanceRate = (stats.presentStudents / stats.totalStudents) * 100;
-      return { classId, attendanceRate };
-    });
+    const attendanceRates = Object.entries(classStats).map(
+      ([classId, stats]: any) => {
+        const attendanceRate =
+          (stats.presentStudents / stats.totalStudents) * 100;
+        return { classId, attendanceRate };
+      }
+    );
 
     return attendanceRates;
   } catch (error) {

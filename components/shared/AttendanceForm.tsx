@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -25,9 +24,9 @@ import { IAttendance } from "@/lib/database/models/attendance.model";
 import { attendanceDefaultValues } from "@/constants";
 import "react-datepicker/dist/react-datepicker.css";
 import { useToast } from "@/components/ui/use-toast";
-import { redirect } from "next/navigation";
 import { getUsersByClass } from "@/lib/actions/user.actions";
 import { IUser } from "@/lib/database/models/user.model";
+import { Switch } from "../ui/switch";
 
 const formSchema = z.object({
   class: z.string(),
@@ -87,7 +86,6 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (attendance) {
-      // console.log(values);
       // Update attendance
       try {
         const newData = {
@@ -104,7 +102,6 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
           });
         }
       } catch (error) {
-        // console.error(error);
         toast({
           title: "Error updating an attendance!",
           description:
@@ -174,7 +171,15 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
                     </p>
                     <DatePicker
                       selected={field.value}
-                      onChange={(date: Date) => field.onChange(date)}
+                      onChange={(date: Date) => {
+                        const manilaDate = new Date(
+                          date.toLocaleString("en-PH", {
+                            timeZone: "Asia/Manila",
+                          })
+                        );
+                        console.log(manilaDate);
+                        field.onChange(manilaDate);
+                      }}
                       // showTimeSelect
                       // timeInputLabel="Time:"
                       dateFormat="MM/dd/yyyy"
@@ -221,7 +226,7 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
               </FormItem>
             )}
           /> */}
-
+          
           <Button
             type="submit"
             size="lg"

@@ -24,6 +24,7 @@ export type CreatePackageParams = {
   name: string;
   startDate: Date;
   endDate: Date;
+  paid: boolean;
   isActive: boolean;
   path: string;
 };
@@ -34,6 +35,7 @@ export type UpdatePackageParams = {
     name: string;
     startDate: Date;
     endDate: Date | undefined;
+    paid: boolean;
     isActive: boolean;
     studentId: string;
     path: string;

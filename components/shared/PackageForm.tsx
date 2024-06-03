@@ -27,6 +27,7 @@ import ClassDropdown from "./ClassDropdown";
 import { getClassById } from "@/lib/actions/class.actions";
 import { IPackage } from "@/lib/database/models/packages.model";
 import { useToast } from "@/components/ui/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 const formSchema = z.object({
   classId: z.string().optional(),
@@ -34,6 +35,7 @@ const formSchema = z.object({
   availPackage: z.string().nonempty("Package is required"),
   startDateTime: z.date(),
   endDateTime: z.date().optional(),
+  paid: z.boolean().default(false),
 });
 
 type packageProps = {
@@ -56,7 +58,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
-    mode: 'all',
+    mode: "all",
   });
   const selectedClassId = form.watch("classId");
 
@@ -79,6 +81,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
           name: values.availPackage,
           startDate: values.startDateTime,
           endDate: values.endDateTime,
+          paid: values.paid,
           isActive: true,
           path: "/dashboard",
         };
@@ -176,6 +179,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
           name: values.availPackage,
           startDate: values.startDateTime,
           endDate: endDate,
+          paid: values.paid,
           isActive: true,
           path: "/dashboard",
         };
@@ -303,7 +307,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
                             className="filter-grey"
                           />
                           <p className="ml-3 whitespace-nowrap text-grey-600">
-                            Start Date:
+                            End Date:
                           </p>
                           <DatePicker
                             selected={field.value}
@@ -320,6 +324,21 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
                   )}
                 />
               )}
+              <FormField
+                control={form.control}
+                name="paid"
+                render={({ field }) => (
+                  <FormItem className="w-full flex items-center">
+                    <p className="ml-3 mr-4">Paid</p>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </>
           )}
 
