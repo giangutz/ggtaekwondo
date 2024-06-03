@@ -71,15 +71,17 @@ const UserDropdown = ({
           </SelectTrigger>
           <SelectContent>
             {users.length > 0 ? (
-              users.map((user) => (
-                <SelectItem
-                  key={user._id}
-                  value={user._id}
-                  className="select-item p-regular-14"
-                >
-                  {user.firstName} {user.lastName}
-                </SelectItem>
-              ))
+              users
+                .sort((a, b) => a.firstName.localeCompare(b.firstName))
+                .map((user) => (
+                  <SelectItem
+                    key={user._id}
+                    value={user._id}
+                    className="select-item p-regular-14"
+                  >
+                    {user.firstName} {user.lastName}
+                  </SelectItem>
+                ))
             ) : (
               <SelectItem
                 value="noStudents"

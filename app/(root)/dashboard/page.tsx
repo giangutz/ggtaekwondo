@@ -17,7 +17,13 @@ import {
   TableRow,
   TableCaption,
 } from "@/components/ui/table";
-import { Activity, CalendarClock, CreditCard, DollarSign, Hash } from "lucide-react";
+import {
+  Activity,
+  CalendarClock,
+  CreditCard,
+  DollarSign,
+  Hash,
+} from "lucide-react";
 import { getPackageById } from "@/lib/actions/packages.actions";
 import {
   computeSessionsLeft,
@@ -64,7 +70,6 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   // get Current Package from the database
   const currentPackage = await getPackageById(userId);
   // console.log(currentPackage);
-
   // create a variable to track if the user has a package or not based on todays date and the package start date and end date
   if (currentPackage !== null) {
     const today = new Date();
