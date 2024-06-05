@@ -4,65 +4,48 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
+    --background: 16 0% 100%;
+    --foreground: 16 0% 10%;
+    --card: 16 0% 100%;
+    --card-foreground: 16 0% 15%;
+    --popover: 16 0% 100%;
+    --popover-foreground: 16 95% 10%;
+    --primary: 16 100% 55.3%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 16 10% 90%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: -22 10% 95%;
+    --muted-foreground: 16 0% 40%;
+    --accent: -22 10% 90%;
+    --accent-foreground: 16 0% 15%;
+    --destructive: 0 50% 50%;
+    --destructive-foreground: 16 0% 100%;
+    --border: 16 20% 82%;
+    --input: 16 20% 50%;
+    --ring: 16 100% 55.3%;
     --radius: 0.5rem;
   }
-
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 16 10% 10%;
+    --foreground: 16 0% 100%;
+    --card: 16 0% 10%;
+    --card-foreground: 16 0% 100%;
+    --popover: 16 10% 5%;
+    --popover-foreground: 16 0% 100%;
+    --primary: 16 100% 55.3%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 16 10% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: -22 10% 25%;
+    --muted-foreground: 16 0% 65%;
+    --accent: -22 10% 25%;
+    --accent-foreground: 16 0% 95%;
+    --destructive: 0 50% 50%;
+    --destructive-foreground: 16 0% 100%;
+    --border: 16 20% 50%;
+    --input: 16 20% 50%;
+    --ring: 16 100% 55.3%;
+    --radius: 0.5rem;
   }
 }
 
@@ -74,7 +57,7 @@
 }
 
 body {
-  font-family: var(--font-poppins)
+  font-family: var(--font-poppins);
 }
 
 .filter-gray {
@@ -85,67 +68,67 @@ body {
 /* ========================================== TAILWIND STYLES */
 @layer utilities {
   .wrapper {
-    @apply max-w-7xl lg:mx-auto p-5 md:px-10 xl:px-0 w-full;
+    @apply w-full max-w-7xl p-5 md:px-10 lg:mx-auto xl:px-0;
   }
 
   .flex-center {
-    @apply flex justify-center items-center;
+    @apply flex items-center justify-center;
   }
 
   .flex-between {
-    @apply flex justify-between items-center;
+    @apply flex items-center justify-between;
   }
 
   /* TYPOGRAPHY */
   /* 64 */
   .h1-bold {
-    @apply font-bold text-[40px] leading-[48px] lg:text-[48px] lg:leading-[60px]  xl:text-[58px] xl:leading-[74px];
+    @apply text-[40px] font-bold leading-[48px] lg:text-[48px] lg:leading-[60px] xl:text-[58px] xl:leading-[74px];
   }
 
   /* 40 */
   .h2-bold {
-    @apply font-bold text-[32px] leading-[40px] lg:text-[36px] lg:leading-[44px] xl:text-[40px] xl:leading-[48px];
+    @apply text-[32px] font-bold leading-[40px] lg:text-[36px] lg:leading-[44px] xl:text-[40px] xl:leading-[48px];
   }
 
   .h2-medium {
-    @apply font-medium text-[32px] leading-[40px] lg:text-[36px] lg:leading-[44px] xl:text-[40px] xl:leading-[48px];
+    @apply text-[32px] font-medium leading-[40px] lg:text-[36px] lg:leading-[44px] xl:text-[40px] xl:leading-[48px];
   }
 
   /* 36 */
   .h3-bold {
-    @apply font-bold text-[28px] leading-[36px] md:text-[36px] md:leading-[44px];
+    @apply text-[28px] font-bold leading-[36px] md:text-[36px] md:leading-[44px];
   }
 
   .h3-medium {
-    @apply font-medium text-[28px] leading-[36px] md:text-[36px] md:leading-[44px];
+    @apply text-[28px] font-medium leading-[36px] md:text-[36px] md:leading-[44px];
   }
 
   /* 32 */
   .h4-medium {
-    @apply font-medium text-[32px] leading-[40px];
+    @apply text-[32px] font-medium leading-[40px];
   }
 
   /* 28 */
   .h5-bold {
-    @apply font-bold text-[28px] leading-[36px];
+    @apply text-[28px] font-bold leading-[36px];
   }
 
   /* 24 */
   .p-bold-24 {
-    @apply font-bold text-[24px] leading-[36px];
+    @apply text-[24px] font-bold leading-[36px];
   }
 
   .p-medium-24 {
-    @apply font-medium text-[24px] leading-[36px];
+    @apply text-[24px] font-medium leading-[36px];
   }
 
   .p-regular-24 {
-    @apply font-normal text-[24px] leading-[36px];
+    @apply text-[24px] font-normal leading-[36px];
   }
 
   /* 20 */
   .p-bold-20 {
-    @apply font-bold text-[20px] leading-[30px] tracking-[2%];
+    @apply text-[20px] font-bold leading-[30px] tracking-[2%];
   }
 
   .p-semibold-20 {
@@ -206,28 +189,28 @@ body {
 
   /* SHADCN OVERRIDES */
   .select-field {
-    @apply w-full bg-gray-100 h-[40px] placeholder:text-gray-500 rounded-full p-regular-16 px-5 py-3 border-none focus-visible:ring-transparent focus:ring-transparent !important;
+    @apply p-regular-16 h-[40px] w-full rounded-full border-none bg-gray-100 px-5 py-3 placeholder:text-gray-500 focus:ring-transparent focus-visible:ring-transparent !important;
   }
 
   .input-field {
-    @apply bg-gray-100 h-[40px] focus-visible:ring-offset-0 placeholder:text-gray-500 rounded-full p-regular-16 px-4 py-3 border-none focus-visible:ring-transparent !important;
+    @apply p-regular-16 h-[40px] rounded-full border-none bg-gray-100 px-4 py-3 placeholder:text-gray-500 focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
   }
 
   .textarea {
-    @apply bg-gray-100 flex flex-1 placeholder:text-gray-500 p-regular-16 px-5 py-3 border-none focus-visible:ring-transparent !important;
+    @apply p-regular-16 flex flex-1 border-none bg-gray-100 px-5 py-3 placeholder:text-gray-500 focus-visible:ring-transparent !important;
   }
 
   .button {
-    @apply rounded-full h-[40px] p-regular-16;
+    @apply p-regular-16 h-[40px] rounded-full;
   }
 
   /* secondary white button rounded full h-[40px] p-regular-16 */
   .button-secondary {
-    @apply bg-white text-primary border border-primary rounded-full h-[40px] p-regular-16 hover:bg-primary hover:text-white;
+    @apply p-regular-16 h-[40px] rounded-full border border-primary bg-white text-primary hover:bg-primary hover:text-white;
   }
 
   .select-item {
-    @apply py-3 cursor-pointer  focus:bg-primary;
+    @apply cursor-pointer py-3 focus:bg-primary;
   }
 
   .toggle-switch {
@@ -244,6 +227,19 @@ body {
   flex-direction: row-reverse;
 }
 
+.cl-formButtonPrimary {
+    background: #ff571b;
+}
+
+.cl-logoBox {
+    display: flex;
+    justify-content: center;
+}
+
+.cl-header {
+    text-align: center;
+}
+
 .cl-userButtonOuterIdentifier {
   font-size: 16px;
 }
@@ -255,7 +251,7 @@ body {
 .cl-formButtonPrimary:hover,
 .cl-formButtonPrimary:focus,
 .cl-formButtonPrimary:active {
-  background-color: #705CF7
+  background-color: #705cf7;
 }
 
 /* ========================================== REACT-DATEPICKER STYLES */
@@ -290,7 +286,7 @@ li {
   background-color: #f9f9f9;
   min-width: 200px;
   padding: 20px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
 
@@ -300,20 +296,20 @@ li:hover .dropdown-menu {
 
 /* ============ FONT ================ */
 @font-face {
-  font-family: 'Zuume Black';
-  src: url('/public/assets/font/Zuume\ Black.ttf') format('truetype');
+  font-family: "Zuume Black";
+  src: url("/public/assets/font/Zuume\ Black.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 .zuume-black {
-  font-family: 'Zuume Black';
+  font-family: "Zuume Black";
   font-size: 28px;
   line-height: 1.4rem;
 }
 
 @layer utilities {
   .heading {
-    @apply font-bold text-4xl md:text-5xl text-center;
+    @apply text-center text-4xl font-bold md:text-5xl;
   }
 }
