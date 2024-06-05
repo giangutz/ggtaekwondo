@@ -5,6 +5,9 @@ import { FlipWords } from "../ui/flip-words";
 import { heroWords } from "@/constants";
 import Link from "next/link";
 import TrialModal from "./TrialModal";
+import AnimatedGradientText from "../magicui/animated-gradient-text";
+import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const ShuffleHero = () => {
   function getFirstSaturday(): string {
@@ -34,20 +37,29 @@ const ShuffleHero = () => {
     });
   }
   return (
-    <section className="w-full min-h-screen px-8 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto">
+    <section className="mx-auto grid min-h-screen w-full max-w-6xl grid-cols-1 items-center gap-8 px-8 py-12 md:grid-cols-2">
       <div>
         {/* <span className="block mb-4 text-xs md:text-sm text-indigo-500 font-medium">
           Better every day
         </span> */}
-        <div className="mb-1.5 inline-block rounded-full bg-white border border-black px-3 py-1.5 text-sm text-center sm:text-left">
-          Next Free Trial Class on {getFirstSaturday()} 🎉
-        </div>
-        <h3 className="h3-bold text-3xl md:text-4xl font-semibold">
+        <AnimatedGradientText>
+          🎉 <hr className="mx-2 h-4 w-[1px] shrink-0 bg-gray-300" />{" "}
+          <span
+            className={cn(
+              `animate-gradient inline bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent`,
+            )}
+          >
+            Next Free Trial Class on {getFirstSaturday()}
+          </span>
+          <ChevronRight className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
+        </AnimatedGradientText>
+
+        <h3 className="h3-bold text-3xl font-semibold md:text-4xl">
           {/* <FlipWords words={heroWords} className="text-[#ff571b] pl-0" /> */}
           <span className="text-[#ff571b]">Unlock</span> Your Potential. <br />
           Start Taekwondo Today!
         </h3>
-        <p className="text-base md:text-lg text-slate-700 my-4 md:my-6">
+        <p className="my-4 text-base text-slate-700 md:my-6 md:text-lg">
           World-Class Instructors. Fun & Effective Training. Build Confidence &
           Skills. Programs for All Ages.
         </p>
@@ -57,28 +69,28 @@ const ShuffleHero = () => {
         {/* <button className="px-6 py-2 font-medium bg-indigo-500 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
           Sign Up for a Free Trial
         </button> */}
-        <div className="flex justify-center md:justify-start gap-4 flex-col sm:flex-row">
+        <div className="flex flex-col justify-center gap-4 sm:flex-row md:justify-start">
           {/* w-full sm:w-fit */}
           {/* <button className="w-full sm:w-fit px-6 py-2 font-medium bg-[#ff571b] text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
             Sign Up for a Free Trial
           </button> */}
           <TrialModal />
-          <button className="w-full sm:w-fit px-6 py-2 font-medium bg-white border border-black text-black transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+          <button className="w-full rounded-md border border-black bg-white px-6 py-2 font-medium text-black shadow-[3px_3px_0px_black] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none sm:w-fit">
             <Link href="#benefits">Learn More</Link>
           </button>
         </div>
         {/* <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8"> */}
-          <div className="hidden md:flex flex-row justify-between gap-4 mt-8">
-          <div className=" text-black p-4 text-center">
-            <h4 className="font-bold text-xl">7+</h4>
+        <div className="mt-8 hidden flex-row justify-between gap-4 md:flex">
+          <div className="p-4 text-center text-black">
+            <h4 className="text-xl font-bold">7+</h4>
             <p>Years in the Business</p>
           </div>
-          <div className=" text-black p-4 text-center">
-            <h4 className="font-bold text-xl">500+</h4>
+          <div className="p-4 text-center text-black">
+            <h4 className="text-xl font-bold">500+</h4>
             <p>Students Handled</p>
           </div>
-          <div className=" text-black p-4 text-center">
-            <h4 className="font-bold text-xl">1000+</h4>
+          <div className="p-4 text-center text-black">
+            <h4 className="text-xl font-bold">1000+</h4>
             <p>Classes Conducted</p>
           </div>
           {/* <div className=" text-black p-4 text-center">
@@ -166,7 +178,7 @@ const generateSquares = () => {
       key={sq.id}
       layout
       transition={{ duration: 1.5, type: "spring" }}
-      className="w-full h-full"
+      className="h-full w-full"
       style={{
         backgroundImage: `url(${sq.src})`,
         backgroundSize: "cover",
@@ -180,19 +192,19 @@ const ShuffleGrid = () => {
   const [squares, setSquares] = useState(generateSquares());
 
   const shuffleSquares = useCallback(() => {
-  setSquares(generateSquares());
+    setSquares(generateSquares());
 
-  timeoutRef.current = setTimeout(shuffleSquares, 3000);
-}, []); 
+    timeoutRef.current = setTimeout(shuffleSquares, 3000);
+  }, []);
 
-useEffect(() => {
-  shuffleSquares();
+  useEffect(() => {
+    shuffleSquares();
 
-  return () => clearTimeout(timeoutRef.current);
-}, [shuffleSquares]);
+    return () => clearTimeout(timeoutRef.current);
+  }, [shuffleSquares]);
 
   return (
-    <div className="grid grid-cols-3 md:grid-cols-4 md:grid-rows-3 h-[500px] gap-1">
+    <div className="grid h-[500px] grid-cols-3 gap-1 md:grid-cols-4 md:grid-rows-3">
       {squares.map((sq) => sq)}
     </div>
   );
