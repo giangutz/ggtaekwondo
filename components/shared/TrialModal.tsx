@@ -13,20 +13,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
 import { useToast } from "@/components/ui/use-toast";
 import { trialDefaultValues } from "@/constants";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 import { createTrial } from "@/lib/actions/trial.actions";
+import { Confetti } from "@/components/magicui/confetti";
 
 const phoneRegex = new RegExp("^((\\+63)|63|0)\\d{10}$");
 const ageRegex = new RegExp("^(?:[2-9]|[1-5][0-9]|60)$");
@@ -74,6 +74,10 @@ const TrialModal = () => {
     monthNames[today.getMonth()]
   } ${today.getDate()}, ${today.getFullYear()}`;
 
+  const handleClick = () => {
+    Confetti({});
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const trialDate = new Date(
@@ -102,138 +106,143 @@ const TrialModal = () => {
     }
   }
   return (
-    <Dialog>
-      <DialogTrigger className="cursor-pointer" asChild>
-        <button className="w-full sm:w-fit px-6 py-2 font-medium bg-[#ff571b] text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+    <Credenza>
+      <CredenzaTrigger className="cursor-pointer" asChild>
+        <button
+          onClick={handleClick}
+          className="w-full rounded-md bg-[#ff571b] px-6 py-2 font-medium text-white shadow-[3px_3px_0px_black] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none sm:w-fit"
+        >
           Sign Up for a Free Trial
         </button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Get Your Free Taekwondo Trial!</DialogTitle>
-          <DialogDescription>
-            Fill out the form below to register.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-5"
-          >
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="First Name"
-                      className="input-field"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Last Name"
-                      className="input-field"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Email"
-                      className="input-field"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Phone Number"
-                      className="input-field"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="age"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Age"
-                      className="input-field"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="opt"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-row items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={true}
-                      onCheckedChange={field.onChange}
-                      className="hidden"
-                    />
-                  </FormControl>
-                  <div className="p-regular-16 space-y-1 leading-none">
-                    <FormLabel>
-                      By submitting this form, you agree to receive email and
-                      SMS communications from us.
-                    </FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              size="lg"
-              disabled={form.formState.isSubmitting}
-              className="button w-full"
+      </CredenzaTrigger>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Get Your Free Taekwondo Trial!</CredenzaTitle>
+          <CredenzaDescription>
+            Fill out the form below to register.{" "}
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaBody>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-5"
             >
-              {" "}
-              {form.formState.isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="First Name"
+                        className="input-field"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Last Name"
+                        className="input-field"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Email"
+                        className="input-field"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Phone Number"
+                        className="input-field"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="age"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Age"
+                        className="input-field"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="opt"
+                render={({ field }) => (
+                  <FormItem className="flex w-full flex-row items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={true}
+                        onCheckedChange={field.onChange}
+                        className="hidden"
+                      />
+                    </FormControl>
+                    <div className="p-regular-16 space-y-1 leading-none">
+                      <FormLabel>
+                        By submitting this form, you agree to receive email and
+                        SMS communications from us.
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                size="lg"
+                disabled={form.formState.isSubmitting}
+                className="button w-full"
+              >
+                {" "}
+                {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
+            </form>
+          </Form>
+        </CredenzaBody>
+      </CredenzaContent>
+    </Credenza>
   );
 };
 

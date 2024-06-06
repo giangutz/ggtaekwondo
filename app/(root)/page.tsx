@@ -15,6 +15,8 @@ import {
   PhoneCall,
 } from "lucide-react";
 import TrialModal from "@/components/shared/TrialModal";
+import TextRevealByWord from "@/components/magicui/text-reveal";
+
 
 export default async function Home({ searchParams }: SearchParamProps) {
   const page = Number(searchParams?.page) || 1;
@@ -31,6 +33,9 @@ export default async function Home({ searchParams }: SearchParamProps) {
     <>
       <Hero />
       <Affiliate />
+      <div className="z-10 flex min-h-[16rem] items-center justify-center bg-white dark:bg-black">
+        <TextRevealByWord text="Beyond belts and trophies, we build confidence & resilience. Champions for life, on and off the mats. Start your Taekwondo journey today." />
+      </div>
       <BouncyCardsFeatures />
       {/* <TextParallaxContentExample /> */}
       {/* <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
@@ -94,7 +99,7 @@ export default async function Home({ searchParams }: SearchParamProps) {
         />
       </section>
 
-      <div className="wrapper flex flex-col items-center mb-12">
+      <div className="wrapper mb-12 flex flex-col items-center">
         <h1 className="heading lg:max-w-[45vw]">
           Ready to unlock <span className="text-purple-500">your</span>{" "}
           potential with Taekwondo?
@@ -108,10 +113,10 @@ export default async function Home({ searchParams }: SearchParamProps) {
         </p>
         {/* Create 3 cards for Chat on Messenger, Visit Us and Call Us */}
 
-        <div className="flex flex-col md:flex-row gap-4 p-4">
+        <div className="flex flex-col gap-4 p-4 md:flex-row">
           {/* Card 1: Chat on Messenger */}
-          <div className="bg-white shadow-lg rounded-lg p-8 md:p-12">
-            <div className="flex items-center mb-4">
+          <div className="rounded-lg bg-white p-8 shadow-lg md:p-12">
+            <div className="mb-4 flex items-center">
               <h3 className="text-xl font-bold">Chat on Messenger</h3>
             </div>
             <p className="mb-4">
@@ -122,7 +127,7 @@ export default async function Home({ searchParams }: SearchParamProps) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <button className="flex w-full sm:w-auto px-6 py-2 font-medium bg-sky-500 border border-sky-500 text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+              <button className="flex w-full rounded-md border border-sky-500 bg-sky-500 px-6 py-2 font-medium text-white shadow-[3px_3px_0px_black] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none sm:w-auto">
                 <MessageCircleMore className="mr-2" />
                 Chat Now
               </button>
@@ -130,8 +135,8 @@ export default async function Home({ searchParams }: SearchParamProps) {
           </div>
 
           {/* Card 2: Visit Us */}
-          <div className="bg-white shadow-lg rounded-lg p-8 md:p-12">
-            <div className="flex items-center mb-4">
+          <div className="rounded-lg bg-white p-8 shadow-lg md:p-12">
+            <div className="mb-4 flex items-center">
               <h3 className="text-xl font-bold">Visit Us</h3>
             </div>
             <p className="mb-4">
@@ -142,7 +147,7 @@ export default async function Home({ searchParams }: SearchParamProps) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <button className="flex w-full sm:w-auto px-6 py-2 font-medium bg-green-500 border border-green-500 text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+              <button className="flex w-full rounded-md border border-green-500 bg-green-500 px-6 py-2 font-medium text-white shadow-[3px_3px_0px_black] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none sm:w-auto">
                 <MapPin className="mr-2" />
                 Get Directions
               </button>
@@ -150,13 +155,13 @@ export default async function Home({ searchParams }: SearchParamProps) {
           </div>
 
           {/* Card 3: Call Us */}
-          <div className="bg-white shadow-lg rounded-lg p-8 md:p-12">
-            <div className="flex items-center mb-4">
+          <div className="rounded-lg bg-white p-8 shadow-lg md:p-12">
+            <div className="mb-4 flex items-center">
               <h3 className="text-xl font-bold">Call Us</h3>
             </div>
             <p className="mb-4">Give us a call for any inquiries or support.</p>
             <a href="tel:09954871799">
-              <button className="flex w-full sm:w-auto px-6 py-2 font-medium bg-teal-500 border border-teal-500 text-white transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+              <button className="flex w-full rounded-md border border-teal-500 bg-teal-500 px-6 py-2 font-medium text-white shadow-[3px_3px_0px_black] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none sm:w-auto">
                 <PhoneCall className="mr-2" />
                 Call Now
               </button>

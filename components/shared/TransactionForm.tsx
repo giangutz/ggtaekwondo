@@ -170,7 +170,7 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
             control={form.control}
             name="transactionType"
             render={({ field }) => (
-              <FormItem className="w-full mt-4">
+              <FormItem className="mt-4 w-full">
                 <FormControl>
                   <TransactionTypeDropdown
                     onChangeHandler={field.onChange}
@@ -259,7 +259,7 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                       render={({ field }) => (
                         <FormItem className="w-full">
                           <FormControl>
-                            <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                            <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
                               <Image
                                 src="/assets/icons/calendar.svg"
                                 alt="calendar"
@@ -267,8 +267,8 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                                 height={24}
                                 className="filter-grey"
                               />
-                              <p className="ml-3 whitespace-nowrap text-grey-600">
-                                Transaction Date:
+                              <p className="text-grey-600 ml-3 whitespace-nowrap">
+                                Date:
                               </p>
                               <DatePicker
                                 selected={field.value}
@@ -377,7 +377,7 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                           render={({ field }) => (
                             <FormItem className="w-full">
                               <FormControl>
-                                <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                                <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
                                   <Image
                                     src="/assets/icons/calendar.svg"
                                     alt="calendar"
@@ -385,8 +385,8 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                                     height={24}
                                     className="filter-grey"
                                   />
-                                  <p className="ml-3 whitespace-nowrap text-grey-600">
-                                    Transaction Date:
+                                  <p className="text-grey-600 ml-3 whitespace-nowrap">
+                                    Date:
                                   </p>
                                   <DatePicker
                                     selected={field.value}
@@ -484,7 +484,7 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
-                        <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                        <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
                           <Image
                             src="/assets/icons/calendar.svg"
                             alt="calendar"
@@ -492,7 +492,7 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                             height={24}
                             className="filter-grey"
                           />
-                          <p className="ml-3 whitespace-nowrap text-grey-600">
+                          <p className="text-grey-600 ml-3 whitespace-nowrap">
                             Transaction Date:
                           </p>
                           <DatePicker

@@ -8,6 +8,7 @@ import TrialModal from "./TrialModal";
 import AnimatedGradientText from "../magicui/animated-gradient-text";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import NumberTicker from "@/components/magicui/magic-ticker";
 
 const ShuffleHero = () => {
   function getFirstSaturday(): string {
@@ -80,17 +81,23 @@ const ShuffleHero = () => {
           </button>
         </div>
         {/* <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8"> */}
-        <div className="mt-8 hidden flex-row justify-between gap-4 md:flex">
+        <div className="mt-8 hidden md:flex md:justify-between">
           <div className="p-4 text-center text-black">
-            <h4 className="text-xl font-bold">7+</h4>
+            <h4 className="text-xl font-bold">
+              <NumberTicker value={7} />
+            </h4>
             <p>Years in the Business</p>
           </div>
           <div className="p-4 text-center text-black">
-            <h4 className="text-xl font-bold">500+</h4>
+            <h4 className="text-xl font-bold">
+              <NumberTicker value={500} />
+            </h4>
             <p>Students Handled</p>
           </div>
           <div className="p-4 text-center text-black">
-            <h4 className="text-xl font-bold">1000+</h4>
+            <h4 className="text-xl font-bold">
+              <NumberTicker value={1000} />
+            </h4>
             <p>Classes Conducted</p>
           </div>
           {/* <div className=" text-black p-4 text-center">
