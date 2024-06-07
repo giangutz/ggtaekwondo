@@ -16,13 +16,16 @@ import * as z from "zod";
 import { eventDefaultValues } from "@/constants";
 import Dropdown from "./Dropdown";
 import { Textarea } from "@/components/ui/textarea";
+import { FileUploader } from "@/components/shared/FileUploader";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
+import { useState } from "react";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
 import { createEvent, updateEvent } from "@/lib/actions/event.actions";
 import { IEvent } from "@/lib/database/models/event.model";
+import { useUploadThing } from "@/lib/uploadthing";
 
 type EventFormProps = {
   userId: string;
@@ -32,7 +35,7 @@ type EventFormProps = {
 };
 
 const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
-  // const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const initialValues =
     event && type === "Update"
       ? {
@@ -43,7 +46,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
       : eventDefaultValues;
   const router = useRouter();
 
-  // const { startUpload } = useUploadThing("imageUploader");
+  const { startUpload } = useUploadThing("imageUploader");
 
   const form = useForm<z.infer<typeof eventFormSchema>>({
     resolver: zodResolver(eventFormSchema),
@@ -51,23 +54,22 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
   });
 
   async function onSubmit(values: z.infer<typeof eventFormSchema>) {
-    // console.log(values);
-    // let uploadedImageUrl = values.imageUrl;
+    let uploadedImageUrl = values.imageUrl;
 
-    // if (files.length > 0) {
-    //   const uploadedImages = await startUpload(files);
+    if (files.length > 0) {
+      const uploadedImages = await startUpload(files);
 
-    //   if (!uploadedImages) {
-    //     return;
-    //   }
+      if (!uploadedImages) {
+        return;
+      }
 
-    //   uploadedImageUrl = uploadedImages[0].url;
-    // }
+      uploadedImageUrl = uploadedImages[0].url;
+    }
 
     if (type === "Create") {
       try {
         const newEvent = await createEvent({
-          event: { ...values },
+          event: { ...values, imageUrl: uploadedImageUrl },
           userId,
           path: "/profile",
         });
@@ -90,7 +92,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
       try {
         const updatedEvent = await updateEvent({
           userId,
-          event: { ...values, _id: eventId },
+          event: { ...values, _id: eventId, imageUrl: uploadedImageUrl },
           path: `/events/${eventId}`,
         });
 
@@ -161,7 +163,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
             name="imageUrl"
             render={({ field }) => (
@@ -176,7 +178,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
         </div>
 
         <div className="flex flex-col gap-5 md:flex-row">
@@ -186,7 +188,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormControl>
-                  <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                  <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
                     <Image
                       src="/assets/icons/location-grey.svg"
                       alt="calendar"
@@ -214,7 +216,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormControl>
-                  <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                  <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
                     <Image
                       src="/assets/icons/calendar.svg"
                       alt="calendar"
@@ -222,7 +224,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
                       height={24}
                       className="filter-grey"
                     />
-                    <p className="ml-3 whitespace-nowrap text-grey-600">
+                    <p className="text-grey-600 ml-3 whitespace-nowrap">
                       Start Date:
                     </p>
                     <DatePicker
@@ -246,7 +248,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormControl>
-                  <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                  <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
                     <Image
                       src="/assets/icons/calendar.svg"
                       alt="calendar"
@@ -254,7 +256,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
                       height={24}
                       className="filter-grey"
                     />
-                    <p className="ml-3 whitespace-nowrap text-grey-600">
+                    <p className="text-grey-600 ml-3 whitespace-nowrap">
                       End Date:
                     </p>
                     <DatePicker
