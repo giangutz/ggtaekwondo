@@ -42,9 +42,8 @@ export async function getAttendanceById({
 }: getAttendanceByIdParams) {
   try {
     await connectToDatabase();
-    const attendance = await Attendance.findById(attendanceId).populate(
-      "students.studentId"
-    ); // Populate student data
+    const attendance =
+      await Attendance.findById(attendanceId).populate("students.studentId"); // Populate student data
     if (!attendance) throw new Error("Attendance not found");
     return JSON.parse(JSON.stringify(attendance));
   } catch (error) {
@@ -64,7 +63,7 @@ export async function updateAttendance({
     const updatedAttendance = await Attendance.findByIdAndUpdate(
       _id,
       { class: classId, trainingDate, students },
-      { new: true }
+      { new: true },
     );
     if (!updatedAttendance) throw new Error("Attendance not found");
     revalidatePath("/admin/dashboard");
@@ -75,63 +74,147 @@ export async function updateAttendance({
   }
 }
 
+// export async function computeSessionsLeft(
+//   studentId: string,
+//   startDate: Date,
+//   endDate: Date,
+//   totalSessions: string
+// ) {
+//   try {
+//     await connectToDatabase();
+//     const numSessions = parseInt(totalSessions);
+//     let attendanceRecords;
+
+//     const targetDate = new Date("2024-06-02");
+//     const targetDateInPH = targetDate.toLocaleDateString("en-PH", {
+//       year: "numeric",
+//       month: "long",
+//       day: "numeric",
+//       timeZone: "Asia/Manila",
+//     });
+
+//     const currentDate = new Date();
+//     const currentDateInPH = currentDate.toLocaleDateString("en-PH", {
+//       year: "numeric",
+//       month: "long",
+//       day: "numeric",
+//       timeZone: "Asia/Manila",
+//     });
+
+//     // Set the time part of the startDate to the start of the day and endDate to the end of the day
+//     startDate.setHours(0, 0, 0, 0);
+//     endDate.setHours(23, 59, 59, 999);
+
+//     // if (currentDateInPH < targetDateInPH) {
+//     //   // Old system: only count sessions where the student was present
+//     //   attendanceRecords = await Attendance.find({
+//     //     students: {
+//     //       $elemMatch: {
+//     //         studentId: studentId,
+//     //         status: "present",
+//     //       },
+//     //     },
+//     //     // trainingDate: { $gte: startDate, $lte: endDate },
+//     //     trainingDate: { $gte: startDate },
+//     //   });
+//     // } else {
+//       // New system: count all sessions within the date range
+//       attendanceRecords = await Attendance.find({
+//         "students.studentId": studentId,
+//         trainingDate: { $gte: startDate, $lte: endDate },
+//         // "students.status": "excused",
+//       });
+//     // }
+
+//     // Log all trainingDate from attendanceRecords
+//     attendanceRecords.forEach((record) => {
+//       console.log(record.trainingDate);
+//     });
+
+//     const availedSessions = attendanceRecords.length;
+//     const sessionsLeft = numSessions - availedSessions;
+
+//     // find last date of attendance
+//     let lastAttendance;
+//     if (attendanceRecords.length > 0) {
+//       attendanceRecords.sort(
+//         (a, b) =>
+//           new Date(b.trainingDate).getTime() -
+//           new Date(a.trainingDate).getTime()
+//       );
+//       lastAttendance = attendanceRecords[0].trainingDate;
+//     }
+//     return { sessionsLeft, lastAttendance };
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
 export async function computeSessionsLeft(
   studentId: string,
   startDate: Date,
   endDate: Date,
-  totalSessions: string
+  totalSessions: string,
 ) {
   try {
     await connectToDatabase();
     const numSessions = parseInt(totalSessions);
-    let attendanceRecords;
-
-    const targetDate = new Date("2024-06-20"); // replace with your target date
-    const currentDate = new Date();
 
     // Set the time part of the startDate to the start of the day and endDate to the end of the day
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 59, 999);
 
-    if (currentDate < targetDate) {
-      // Old system: only count sessions where the student was present
-      attendanceRecords = await Attendance.find({
-        students: {
-          $elemMatch: {
-            studentId: studentId,
-            status: "present",
-          },
-        },
-        // trainingDate: { $gte: startDate, $lte: endDate },
-        trainingDate: { $gte: startDate },
-      });
-    } else {
-      // New system: count all sessions within the date range
-      attendanceRecords = await Attendance.find({
-        "students.studentId": studentId,
-        trainingDate: { $gte: startDate, $lte: endDate },
-        // "students.status": "excused",
-      });
-    }
+    // New system effective June 2, 2024: count all sessions within the date range, regardless of the student's status
+    const newSystemStartDate = new Date("2024-06-02");
+    newSystemStartDate.setHours(0, 0, 0, 0);
 
-    // Log all trainingDate from attendanceRecords
-    attendanceRecords.forEach((record) => {
-      console.log(record.trainingDate);
+    const oldSystemRecords = await Attendance.find({
+      trainingDate: { $gte: startDate, $lt: newSystemStartDate },
+      students: {
+        $elemMatch: {
+          studentId: studentId,
+          status: "present",
+        },
+      },
     });
+
+    const newSystemRecords = await Attendance.find({
+      "students.studentId": studentId,
+      trainingDate: { $gte: newSystemStartDate, $lte: endDate },
+      students: {
+        $elemMatch: {
+          studentId: studentId,
+          status: { $ne: "excused" },
+        },
+      },
+    });
+
+    const attendanceRecords = [...oldSystemRecords, ...newSystemRecords]
+      .sort((a, b) => b.trainingDate - a.trainingDate);
+      // .slice(0, numSessions);
+      console.log(attendanceRecords.length);
 
     const availedSessions = attendanceRecords.length;
     const sessionsLeft = numSessions - availedSessions;
 
-    // find last date of attendance
+    // find last date of attendance where the student is "present" or "late"
     let lastAttendance;
     if (attendanceRecords.length > 0) {
       attendanceRecords.sort(
         (a, b) =>
           new Date(b.trainingDate).getTime() -
-          new Date(a.trainingDate).getTime()
+          new Date(a.trainingDate).getTime(),
       );
       lastAttendance = attendanceRecords[0].trainingDate;
     }
+
+    attendanceRecords.forEach((record) => {
+      console.log(record.trainingDate);
+    });
+
+    console.log("sessionsLeft", sessionsLeft);
+    console.log("lastAttendance", lastAttendance);
+
     return { sessionsLeft, lastAttendance };
   } catch (error) {
     console.error(error);
@@ -165,7 +248,7 @@ export async function getAttendanceByStudent({
 
     const attendanceWithStatus = attendanceRecords.map((record) => {
       const student = record.students.find(
-        (student: any) => student.studentId.toString() === studentId
+        (student: any) => student.studentId.toString() === studentId,
       );
       return {
         ...record._doc,
@@ -269,7 +352,7 @@ export async function getMonthlyAttendanceRateForAllClasses() {
       // Update the class stats
       classStats[record.class].totalStudents += record.students.length;
       classStats[record.class].presentStudents += record.students.filter(
-        (student: any) => student.status === "present"
+        (student: any) => student.status === "present",
       ).length;
     }
 
@@ -279,7 +362,7 @@ export async function getMonthlyAttendanceRateForAllClasses() {
         const attendanceRate =
           (stats.presentStudents / stats.totalStudents) * 100;
         return { classId, attendanceRate };
-      }
+      },
     );
 
     return attendanceRates;
