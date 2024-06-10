@@ -24,6 +24,15 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <head>
+          {/* google tag */}
+          <noscript>
+            <iframe
+              src="https://www.googletagmanager.com/ns.html?id=GTM-MJ7VR759"
+              height="0"
+              width="0"
+              style="display:none;visibility:hidden"
+            ></iframe>
+          </noscript>
           <link
             rel="icon"
             href="/assets/images/favicon.ico"
