@@ -91,7 +91,7 @@ export type CreateEventParams = {
     categoryId: string;
     // price: string
     // isFree: boolean
-    // url: string
+    url?: string
   };
   path: string;
 };
@@ -109,7 +109,7 @@ export type UpdateEventParams = {
     categoryId: string;
     // price: string
     // isFree: boolean
-    // url: string
+    url?: string
   };
   path: string;
 };
@@ -145,11 +145,11 @@ export type Event = {
   description: string;
   // price: string
   // isFree: boolean
-  // imageUrl: string
+  imageUrl: string
   location: string;
   startDateTime: Date;
   endDateTime: Date;
-  // url: string
+  url: string
   organizer: {
     _id: string;
     firstName: string;

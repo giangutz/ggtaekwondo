@@ -20,7 +20,6 @@ import { FileUploader } from "@/components/shared/FileUploader";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import { useState } from "react";
-
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
 import { createEvent, updateEvent } from "@/lib/actions/event.actions";
@@ -327,32 +326,28 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
               </FormItem>
             )}
           /> */}
-        {/* <FormField
-            control={form.control}
-            name="url"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormControl>
-                  <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
-                    <Image
-                      src="/assets/icons/link.svg"
-                      alt="link"
-                      width={24}
-                      height={24}
-                    />
+        <FormField
+          control={form.control}
+          name="url"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormControl>
+                <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
+                  <Image
+                    src="/assets/icons/link.svg"
+                    alt="link"
+                    width={24}
+                    height={24}
+                  />
 
-                    <Input
-                      placeholder="URL"
-                      {...field}
-                      className="input-field"
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div> */}
+                  <Input placeholder="URL" {...field} className="input-field" />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* </div> */}
 
         <Button
           type="submit"

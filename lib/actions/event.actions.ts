@@ -1,13 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
+import { UTApi } from "uploadthing/server";
 import { connectToDatabase } from "@/lib/database";
 import Event from "@/lib/database/models/event.model";
 import User from "@/lib/database/models/user.model";
 import Category from "@/lib/database/models/category.model";
 import { handleError } from "@/lib/utils";
-
 import {
   CreateEventParams,
   UpdateEventParams,
@@ -80,7 +79,7 @@ export async function updateEvent({ userId, event, path }: UpdateEventParams) {
     const updatedEvent = await Event.findByIdAndUpdate(
       event._id,
       { ...event, category: event.categoryId },
-      { new: true }
+      { new: true },
     );
     revalidatePath(path);
 
@@ -93,9 +92,13 @@ export async function updateEvent({ userId, event, path }: UpdateEventParams) {
 // DELETE
 export async function deleteEvent({ eventId, path }: DeleteEventParams) {
   try {
+    const utapi = new UTApi();
     await connectToDatabase();
 
     const deletedEvent = await Event.findByIdAndDelete(eventId);
+    const img = await utapi.deleteFiles(`${deletedEvent.imageUrl}`);
+    console.log(img);
+
     if (deletedEvent) revalidatePath(path);
   } catch (error) {
     handleError(error);
