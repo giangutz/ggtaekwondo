@@ -85,7 +85,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
       userId,
       new Date(currentPackage.startDate),
       new Date(currentPackage.endDate),
-      currentPackage.name
+      currentPackage.name,
     );
   }
   // console.log(hasPackage);
@@ -98,7 +98,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           <section className="wrapper grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
             <Card x-chunk="dashboard-01-chunk-0">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium flex">
+                <CardTitle className="flex text-sm font-medium">
                   Current Package
                 </CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
@@ -121,7 +121,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                       availed{" "}
                       {new Date(currentPackage.startDate).toLocaleDateString(
                         "en-US",
-                        { month: "long", day: "numeric", year: "numeric" }
+                        { month: "long", day: "numeric", year: "numeric" },
                       )}
                     </p>
                   </>
@@ -156,37 +156,41 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                   <p className="text-xs text-muted-foreground">
                     last session availed{" "}
                     {new Date(
-                      numberOfSessions.lastAttendance
+                      numberOfSessions.lastAttendance,
                     ).toLocaleDateString("en-US", {
                       month: "long",
                       day: "numeric",
                       year: "numeric",
+                      timeZone: "Asia/Manila",
                     })}
                   </p>
                 ) : null}
                 {/* <div className="text-2xl font-bold">No Active Package</div> */}
               </CardContent>
             </Card>
-            <Card x-chunk="dashboard-01-chunk-3">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Package Expiration
-                </CardTitle>
-                <CalendarClock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {new Date(currentPackage.endDate).toLocaleDateString(
-                    "en-US",
-                    {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    }
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            {numberOfSessions && numberOfSessions.sessionsLeft < 0 ? (
+              <Card x-chunk="dashboard-01-chunk-3">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Package Expiration
+                  </CardTitle>
+                  <CalendarClock className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {new Date(currentPackage.endDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                        timeZone: "Asia/Manila",
+                      },
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
             <Card x-chunk="dashboard-01-chunk-3">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -196,11 +200,11 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
               </CardHeader>
               <CardContent>
                 {currentPackage.paid ? (
-                  <div className="inline-block px-4 py-2 rounded-full bg-green-500 text-white font-bold">
+                  <div className="inline-block rounded-full bg-green-500 px-4 py-2 font-bold text-white">
                     Paid
                   </div>
                 ) : (
-                  <div className="inline-block px-4 py-2 rounded-full bg-red-500 text-white font-bold">
+                  <div className="inline-block rounded-full bg-red-500 px-4 py-2 font-bold text-white">
                     Unpaid
                   </div>
                 )}
@@ -226,7 +230,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           </section>
         </>
       ) : (
-        <div className="wrapper text-center m-4">
+        <div className="wrapper m-4 text-center">
           <h4 className="h3-bold">No active package.</h4>
           <p className="mt-2">Enroll in package to get training discount.</p>
         </div>
@@ -260,23 +264,24 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                       month: "long",
                       day: "numeric",
                       year: "numeric",
+                      timeZone: "Asia/Manila",
                     })}
                   </TableCell>
                   <TableCell>
                     {data.studentStatus === "present" ? (
-                      <span className="text-green-500 bg-green-100 px-2 py-1 rounded-full border border-green-500">
+                      <span className="rounded-full border border-green-500 bg-green-100 px-2 py-1 text-green-500">
                         Present
                       </span>
                     ) : data.studentStatus === "late" ? (
-                      <span className="text-yellow-500 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-500">
+                      <span className="rounded-full border border-yellow-500 bg-yellow-100 px-2 py-1 text-yellow-500">
                         Late
                       </span>
                     ) : data.studentStatus === "excused" ? (
-                      <span className="text-blue-500 bg-blue-100 px-2 py-1 rounded-full border border-blue-500">
+                      <span className="rounded-full border border-blue-500 bg-blue-100 px-2 py-1 text-blue-500">
                         Excused
                       </span>
                     ) : (
-                      <span className="text-red-500 bg-red-100 px-2 py-1 rounded-full border border-red-500">
+                      <span className="rounded-full border border-red-500 bg-red-100 px-2 py-1 text-red-500">
                         Absent
                       </span>
                     )}
@@ -286,7 +291,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
             </TableBody>
           </Table>
           {attendance?.totalPages > 1 && (
-            <div className="flex justify-center mt-4">
+            <div className="mt-4 flex justify-center">
               <Pagination
                 urlParamName={"trainingPage"}
                 page={trainingPage}
@@ -296,7 +301,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           )}
         </div>
       ) : (
-        <div className="wrapper overflow-x-auto flex justify-center">
+        <div className="wrapper flex justify-center overflow-x-auto">
           <p>You have not attended a training session yet.</p>
         </div>
       )}
@@ -331,7 +336,8 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                         month: "long",
                         day: "numeric",
                         year: "numeric",
-                      }
+                        timeZone: "Asia/Manila",
+                      },
                     )}
                   </TableCell>
                   <TableCell>{data.incomeSource}</TableCell>
@@ -348,7 +354,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
             </TableBody>
           </Table>
           {transactions.totalPages > 1 && (
-            <div className="flex justify-center mt-4">
+            <div className="mt-4 flex justify-center">
               <Pagination
                 urlParamName={"transactionPage"}
                 page={transactionPage}
@@ -358,7 +364,7 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           )}
         </div>
       ) : (
-        <div className="wrapper overflow-x-auto flex justify-center">
+        <div className="wrapper flex justify-center overflow-x-auto">
           <p>You have no transactions yet.</p>
         </div>
       )}

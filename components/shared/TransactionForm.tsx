@@ -272,7 +272,14 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                               </p>
                               <DatePicker
                                 selected={field.value}
-                                onChange={(date: Date) => field.onChange(date)}
+                                onChange={(date: Date) => {
+                                  const manilaDate = new Date(
+                                    date.toLocaleString("en-PH", {
+                                      timeZone: "Asia/Manila",
+                                    }),
+                                  );
+                                  field.onChange(manilaDate);
+                                }}
                                 // showTimeSelect
                                 // timeInputLabel="Time:"
                                 dateFormat="MM/dd/yyyy"
@@ -390,9 +397,14 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                                   </p>
                                   <DatePicker
                                     selected={field.value}
-                                    onChange={(date: Date) =>
-                                      field.onChange(date)
-                                    }
+                                    onChange={(date: Date) => {
+                                      const manilaDate = new Date(
+                                        date.toLocaleString("en-PH", {
+                                          timeZone: "Asia/Manila",
+                                        }),
+                                      );
+                                      field.onChange(manilaDate);
+                                    }}
                                     // showTimeSelect
                                     // timeInputLabel="Time:"
                                     dateFormat="MM/dd/yyyy"
@@ -497,7 +509,14 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                           </p>
                           <DatePicker
                             selected={field.value}
-                            onChange={(date: Date) => field.onChange(date)}
+                            onChange={(date: Date) => {
+                              const manilaDate = new Date(
+                                date.toLocaleString("en-PH", {
+                                  timeZone: "Asia/Manila",
+                                }),
+                              );
+                              field.onChange(manilaDate);
+                            }}
                             // showTimeSelect
                             // timeInputLabel="Time:"
                             dateFormat="MM/dd/yyyy"

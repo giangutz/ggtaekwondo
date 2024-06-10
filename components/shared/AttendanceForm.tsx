@@ -177,7 +177,6 @@ const AttendanceForm = ({ attendance }: AttendanceFormProps) => {
                             timeZone: "Asia/Manila",
                           })
                         );
-                        console.log(manilaDate);
                         field.onChange(manilaDate);
                       }}
                       // showTimeSelect

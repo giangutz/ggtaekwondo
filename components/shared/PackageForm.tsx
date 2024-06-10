@@ -215,7 +215,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
             control={form.control}
             name="classId"
             render={({ field }) => (
-              <FormItem className="w-full mt-4">
+              <FormItem className="mt-4 w-full">
                 <FormControl>
                   <ClassDropdown
                     onChangeHandler={field.onChange}
@@ -266,7 +266,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
-                      <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                      <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
                         <Image
                           src="/assets/icons/calendar.svg"
                           alt="calendar"
@@ -274,12 +274,19 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
                           height={24}
                           className="filter-grey"
                         />
-                        <p className="ml-3 whitespace-nowrap text-grey-600">
+                        <p className="text-grey-600 ml-3 whitespace-nowrap">
                           Start Date:
                         </p>
                         <DatePicker
                           selected={field.value}
-                          onChange={(date: Date) => field.onChange(date)}
+                          onChange={(date: Date) => {
+                            const manilaDate = new Date(
+                              date.toLocaleString("en-PH", {
+                                timeZone: "Asia/Manila",
+                              }),
+                            );
+                            field.onChange(manilaDate);
+                          }}
                           // showTimeSelect
                           // timeInputLabel="Time:"
                           dateFormat="MM/dd/yyyy"
@@ -298,7 +305,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
-                        <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
+                        <div className="flex-center bg-grey-50 h-[54px] w-full overflow-hidden rounded-full px-4 py-2">
                           <Image
                             src="/assets/icons/calendar.svg"
                             alt="calendar"
@@ -306,12 +313,19 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
                             height={24}
                             className="filter-grey"
                           />
-                          <p className="ml-3 whitespace-nowrap text-grey-600">
+                          <p className="text-grey-600 ml-3 whitespace-nowrap">
                             End Date:
                           </p>
                           <DatePicker
                             selected={field.value}
-                            onChange={(date: Date) => field.onChange(date)}
+                            onChange={(date: Date) => {
+                              const manilaDate = new Date(
+                                date.toLocaleString("en-PH", {
+                                  timeZone: "Asia/Manila",
+                                }),
+                              );
+                              field.onChange(manilaDate);
+                            }}
                             // showTimeSelect
                             // timeInputLabel="Time:"
                             dateFormat="MM/dd/yyyy"
@@ -328,7 +342,7 @@ const PackageForm = ({ pkg, classId }: packageProps) => {
                 control={form.control}
                 name="paid"
                 render={({ field }) => (
-                  <FormItem className="w-full flex items-center">
+                  <FormItem className="flex w-full items-center">
                     <p className="ml-3 mr-4">Paid</p>
                     <FormControl>
                       <Switch

@@ -11,6 +11,7 @@ import {
 import Attendance from "@/lib/database/models/attendance.model";
 import { revalidatePath } from "next/cache";
 import { startOfMonth, endOfMonth } from "date-fns";
+import { start } from "repl";
 
 // CREATE a new attendance record
 export async function createAttendance(attendanceData: CreateAttendanceParams) {
@@ -168,31 +169,48 @@ export async function computeSessionsLeft(
     const newSystemStartDate = new Date("2024-06-02");
     newSystemStartDate.setHours(0, 0, 0, 0);
 
-    const oldSystemRecords = await Attendance.find({
-      trainingDate: { $gte: startDate, $lt: newSystemStartDate },
-      students: {
-        $elemMatch: {
-          studentId: studentId,
-          status: "present",
-        },
-      },
-    });
+    let oldSystemRecords = [];
+    let newSystemRecords = [];
 
-    const newSystemRecords = await Attendance.find({
-      "students.studentId": studentId,
-      trainingDate: { $gte: newSystemStartDate, $lte: endDate },
-      students: {
-        $elemMatch: {
-          studentId: studentId,
-          status: { $ne: "excused" },
+    if (startDate < newSystemStartDate) {
+      oldSystemRecords = await Attendance.find({
+        trainingDate: { $gte: startDate, $lt: newSystemStartDate },
+        students: {
+          $elemMatch: {
+            studentId: studentId,
+            status: "present",
+          },
         },
-      },
-    });
+      });
 
-    const attendanceRecords = [...oldSystemRecords, ...newSystemRecords]
-      .sort((a, b) => b.trainingDate - a.trainingDate);
-      // .slice(0, numSessions);
-      console.log(attendanceRecords.length);
+      newSystemRecords = await Attendance.find({
+        "students.studentId": studentId,
+        trainingDate: { $gte: newSystemStartDate, $lte: endDate },
+        students: {
+          $elemMatch: {
+            studentId: studentId,
+            status: { $ne: "excused" },
+          },
+        },
+      });
+    } else {
+      newSystemRecords = await Attendance.find({
+        "students.studentId": studentId,
+        trainingDate: { $gte: startDate, $lte: endDate },
+        students: {
+          $elemMatch: {
+            studentId: studentId,
+            status: { $ne: "excused" },
+          },
+        },
+      });
+    }
+
+    const attendanceRecords = [...oldSystemRecords, ...newSystemRecords].sort(
+      (a, b) => b.trainingDate - a.trainingDate,
+    );
+    // .slice(0, numSessions);
+    console.log(attendanceRecords.length);
 
     const availedSessions = attendanceRecords.length;
     const sessionsLeft = numSessions - availedSessions;
@@ -208,12 +226,12 @@ export async function computeSessionsLeft(
       lastAttendance = attendanceRecords[0].trainingDate;
     }
 
-    attendanceRecords.forEach((record) => {
-      console.log(record.trainingDate);
-    });
+    // attendanceRecords.forEach((record) => {
+    //   console.log(record.trainingDate);
+    // });
 
-    console.log("sessionsLeft", sessionsLeft);
-    console.log("lastAttendance", lastAttendance);
+    // console.log("sessionsLeft", sessionsLeft);
+    // console.log("lastAttendance", lastAttendance);
 
     return { sessionsLeft, lastAttendance };
   } catch (error) {
