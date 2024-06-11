@@ -1,6 +1,6 @@
+"use client";
 import { SearchParamProps } from "@/types";
-import { auth } from "@clerk/nextjs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -33,12 +33,29 @@ import { getUserMetadata } from "@/lib/utils";
 import Pagination from "@/components/shared/Pagination";
 import { getTransactionByStudent } from "@/lib/actions/transaction.actions";
 import { Badge } from "@/components/ui/badge";
+import { IPackage } from "@/lib/database/models/packages.model";
 
-const ProfilePage = async ({ searchParams }: SearchParamProps) => {
+const ProfilePage = ({ searchParams }: SearchParamProps) => {
   const user = getUserMetadata();
   const userId = user?.userId as string;
-  let hasPackage = false;
-  let numberOfSessions = null;
+  const [numberOfSessions, setNumberOfSessions] = useState<{
+    sessionsLeft: number;
+    lastAttendance: any;
+  } | null>(null);
+
+  const [attendance, setAttendance] = useState<{
+    data: any;
+    totalPages: number;
+  }>({ data: [], totalPages: 0 });
+  const [transactions, setTransactions] = useState<{
+    data: any;
+    totalPages: number;
+  }>({ data: [], totalPages: 0 });
+  const [hasPackage, setHasPackage] = useState(false);
+  const [currentPackage, setCurrentPackage] = useState<IPackage | undefined>(
+    undefined,
+  );
+  const [loading, setLoading] = useState(true);
 
   const trainingPage = Number(searchParams?.trainingPage) || 1;
   const transactionPage = Number(searchParams?.transactionPage) || 1;
@@ -50,125 +67,158 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   // const orderedEvents = orders?.data.map((order: IOrder) => order.event) || [];
   // const organizedEvents = await getEventsByUser({ userId, page: eventsPage });
 
-  // get all training date and status from attendance
-  // let attendance = await getAttendanceByStudent(userId);
-  const attendance = (await getAttendanceByStudent({
-    studentId: userId,
-    query: searchText,
-    page: trainingPage,
-    limit: 8,
-  })) as { data: any; totalPages: number };
-  // console.log(attendance);
+  // Fetch attendance data
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedAttendance = await getAttendanceByStudent({
+        studentId: userId,
+        query: searchText,
+        page: trainingPage,
+        limit: 10,
+      });
+      if (!fetchedAttendance) {
+        setLoading(true);
+      }
 
-  const transactions = (await getTransactionByStudent({
-    studentId: userId,
-    query: searchText,
-    page: transactionPage,
-    limit: 5,
-  })) as { data: any; totalPages: number };
+      setAttendance(fetchedAttendance as { data: any; totalPages: number });
+      setLoading(false);
+    };
 
-  // get Current Package from the database
-  const currentPackage = await getPackageById(userId);
-  // console.log(currentPackage);
-  // create a variable to track if the user has a package or not based on todays date and the package start date and end date
-  if (currentPackage !== null) {
-    const today = new Date();
-    const packageStartDate = new Date(currentPackage.startDate);
-    const packageEndDate = new Date(currentPackage.endDate);
-    // Add a grace period of 14 days to the package end date
-    packageEndDate.setDate(packageEndDate.getDate() + 31);
-    hasPackage = today >= packageStartDate && today <= packageEndDate;
-  }
+    fetchData();
+  }, [userId, trainingPage, searchText]);
 
-  if (hasPackage) {
-    numberOfSessions = await computeSessionsLeft(
-      userId,
-      new Date(currentPackage.startDate),
-      new Date(currentPackage.endDate),
-      currentPackage.name,
-    );
-  }
+  // Fetch transactions data
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedTransactions = await getTransactionByStudent({
+        studentId: userId,
+        query: searchText,
+        page: transactionPage,
+        limit: 5,
+      });
+      if (!fetchedTransactions) {
+        setLoading(true);
+      }
+
+      setTransactions(fetchedTransactions as { data: any; totalPages: number });
+      setLoading(false);
+    };
+    fetchData();
+  }, [userId, transactionPage, searchText]);
+
+  // Fetch package data
+  useEffect(() => {
+    const fetchData = async () => {
+      const currentPackage = await getPackageById(userId);
+      setCurrentPackage(currentPackage as any);
+
+      if (currentPackage !== null) {
+        const today = new Date();
+        const packageStartDate = new Date(currentPackage.startDate);
+        const packageEndDate = new Date(currentPackage.endDate);
+        // Add a grace period of 14 days to the package end date
+        packageEndDate.setDate(packageEndDate.getDate() + 31);
+        const hasPackage = today >= packageStartDate && today <= packageEndDate;
+        setHasPackage(hasPackage);
+      }
+
+      if (hasPackage) {
+        const userSessions = await computeSessionsLeft(
+          userId,
+          new Date(currentPackage.startDate),
+          new Date(currentPackage.endDate),
+          currentPackage.name,
+        );
+
+        if (userSessions) setNumberOfSessions(userSessions);
+      }
+    };
+
+    fetchData();
+  }, [userId, hasPackage]);
   // console.log(hasPackage);
   // init currentPackage to latest package based on start date
 
   return (
     <>
-      {hasPackage ? (
-        <>
-          <section className="wrapper grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-            <Card x-chunk="dashboard-01-chunk-0">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="flex text-sm font-medium">
-                  Current Package
-                </CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                {hasPackage ? (
-                  <>
-                    <div className="text-2xl font-bold">
-                      {currentPackage.name}{" "}
-                      {new Date().setHours(0, 0, 0, 0) <
-                      new Date(currentPackage.endDate).setHours(0, 0, 0, 0) ? (
-                        <Badge className="ml-2">Active</Badge>
-                      ) : (
-                        <Badge variant="destructive" className="ml-2">
-                          Expired
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      availed{" "}
-                      {new Date(currentPackage.startDate).toLocaleDateString(
-                        "en-US",
-                        { month: "long", day: "numeric", year: "numeric" },
-                      )}
-                    </p>
-                  </>
+      {currentPackage && hasPackage && (
+        <section className="wrapper grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+          <Card x-chunk="dashboard-01-chunk-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="flex text-sm font-medium">
+                Current Package
+              </CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              {/* {hasPackage ? ( */}
+
+              <div className="flex items-center text-2xl font-bold">
+                {currentPackage.name}{" "}
+                {new Date().setHours(0, 0, 0, 0) <
+                new Date(currentPackage.endDate).setHours(0, 0, 0, 0) ? (
+                  <Badge className="ml-2">Active</Badge>
                 ) : (
-                  <div className="text-2xl font-bold">No Active Package</div>
+                  <Badge variant="destructive" className="ml-2">
+                    Expired
+                  </Badge>
                 )}
-              </CardContent>
-            </Card>
-            <Card x-chunk="dashboard-01-chunk-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Number of Sessions Left
-                </CardTitle>
-                <Hash className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {numberOfSessions?.sessionsLeft}
-                  {numberOfSessions &&
-                    numberOfSessions.sessionsLeft !== undefined &&
-                    numberOfSessions.sessionsLeft < 0 && (
-                      <Badge variant="destructive" className="ml-2">
-                        Session Overused
-                      </Badge>
-                    )}
-                </div>
-                {numberOfSessions?.lastAttendance &&
-                new Date(numberOfSessions.lastAttendance) >=
-                  new Date(currentPackage.startDate) &&
-                new Date(numberOfSessions.lastAttendance) <=
-                  new Date(currentPackage.endDate) ? (
-                  <p className="text-xs text-muted-foreground">
-                    last session availed{" "}
-                    {new Date(
-                      numberOfSessions.lastAttendance,
-                    ).toLocaleDateString("en-US", {
+              </div>
+              <p className="text-xs text-muted-foreground">
+                availed{" "}
+                {new Date(currentPackage.startDate).toLocaleDateString(
+                  "en-US",
+                  {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                    timeZone: "Asia/Manila",
+                  },
+                )}
+              </p>
+              {/* ) : (
+                  <div className="text-2xl font-bold">No Active Package</div>
+                )} */}
+            </CardContent>
+          </Card>
+          <Card x-chunk="dashboard-01-chunk-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Number of Sessions Left
+              </CardTitle>
+              <Hash className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center text-2xl font-bold">
+                {numberOfSessions?.sessionsLeft}
+                {numberOfSessions &&
+                  numberOfSessions.sessionsLeft !== undefined &&
+                  numberOfSessions.sessionsLeft < 0 && (
+                    <Badge variant="destructive" className="ml-2">
+                      Session Overused
+                    </Badge>
+                  )}
+              </div>
+              {numberOfSessions?.lastAttendance && (
+                <p className="text-xs text-muted-foreground">
+                  last session availed{" "}
+                  {new Date(numberOfSessions.lastAttendance).toLocaleDateString(
+                    "en-US",
+                    {
                       month: "long",
                       day: "numeric",
                       year: "numeric",
                       timeZone: "Asia/Manila",
-                    })}
-                  </p>
-                ) : null}
-                {/* <div className="text-2xl font-bold">No Active Package</div> */}
-              </CardContent>
-            </Card>
-            {numberOfSessions && numberOfSessions.sessionsLeft < 0 ? (
+                    },
+                  )}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {numberOfSessions &&
+            numberOfSessions?.sessionsLeft >= 0 &&
+            currentPackage && (
               <Card x-chunk="dashboard-01-chunk-3">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
@@ -190,50 +240,27 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
                   </div>
                 </CardContent>
               </Card>
-            ) : null}
-            <Card x-chunk="dashboard-01-chunk-3">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Payment Status
-                </CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                {currentPackage.paid ? (
-                  <div className="inline-block rounded-full bg-green-500 px-4 py-2 font-bold text-white">
-                    Paid
-                  </div>
-                ) : (
-                  <div className="inline-block rounded-full bg-red-500 px-4 py-2 font-bold text-white">
-                    Unpaid
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            {/* <Card x-chunk="dashboard-01-chunk-2">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Package Expiration
-                </CardTitle>
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {new Date(currentPackage.endDate).toLocaleDateString(
-                    "en-US",
-                    { month: "long", day: "numeric", year: "numeric" }
-                  )}
+            )}
+          <Card x-chunk="dashboard-01-chunk-3">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Package Status
+              </CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              {currentPackage.paid ? (
+                <div className="inline-block rounded-full bg-green-500 px-4 py-2 font-bold text-white">
+                  Paid
                 </div>
-                
-              </CardContent>
-            </Card> */}
-          </section>
-        </>
-      ) : (
-        <div className="wrapper m-4 text-center">
-          <h4 className="h3-bold">No active package.</h4>
-          <p className="mt-2">Enroll in package to get training discount.</p>
-        </div>
+              ) : (
+                <div className="inline-block rounded-full bg-red-500 px-4 py-2 font-bold text-white">
+                  Unpaid
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </section>
       )}
 
       {/* My Tickets */}
@@ -242,9 +269,6 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           <h3 className="h3-bold text-center sm:text-left">
             Training Sessions
           </h3>
-          {/* <Button asChild size="lg" className="button hidden sm:flex">
-            <Link href="/#training">Explore More Training</Link>
-          </Button> */}
         </div>
       </section>
       {attendance?.data.length > 0 ? (

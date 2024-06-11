@@ -40,7 +40,6 @@ import { Badge } from "@/components/ui/badge";
 import { IUser } from "@/lib/database/models/user.model";
 import { IPackage } from "@/lib/database/models/packages.model";
 
-type DataType = { data: any; totalPages: number } | null;
 
 const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
   const [numberOfSessions, setNumberOfSessions] = useState<{
@@ -57,7 +56,9 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
     totalPages: number;
   }>({ data: [], totalPages: 0 });
   const [hasPackage, setHasPackage] = useState(false);
-  const [currentPackage, setCurrentPackage] = useState(null);
+  const [currentPackage, setCurrentPackage] = useState<IPackage | undefined>(
+    undefined,
+  );
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<IUser>();
 
@@ -241,6 +242,7 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
   //   );
   //   setNumberOfSessions(userSessions);
   // }
+
   if (loading) {
     return (
       // loaderCircle
@@ -271,7 +273,7 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
                 className="h-16 w-16 rounded-full"
                 width={128}
                 height={128}
-                src={user.photo ?? ''}
+                src={user.photo ?? ""}
                 alt={`${user.firstName} ${user.lastName} Profile Picture`}
               />
               <div>
@@ -281,93 +283,32 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
                 <p className="text-gray-500">@{user.username}</p>
               </div>
             </div>
-
-            <section className="wrapper grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-              <Card x-chunk="dashboard-01-chunk-0">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="flex text-sm font-medium">
-                    Current Package
-                  </CardTitle>
-                  <Activity className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  {/* {hasPackage ? ( */}
-                  <div className="flex items-center text-2xl font-bold">
-                    {currentPackage.name}{" "}
-                    {new Date().setHours(0, 0, 0, 0) <
-                    new Date(currentPackage.endDate).setHours(0, 0, 0, 0) ? (
-                      <Badge className="ml-2">Active</Badge>
-                    ) : (
-                      <Badge variant="destructive" className="ml-2">
-                        Expired
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    availed{" "}
-                    {new Date(currentPackage.startDate).toLocaleDateString(
-                      "en-US",
-                      {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                        timeZone: "Asia/Manila",
-                      },
-                    )}
-                  </p>
-                  {/* ) : (
-                  <div className="text-2xl font-bold">No Active Package</div>
-                )} */}
-                </CardContent>
-              </Card>
-              <Card x-chunk="dashboard-01-chunk-1">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Number of Sessions Left
-                  </CardTitle>
-                  <Hash className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center text-2xl font-bold">
-                    {numberOfSessions?.sessionsLeft}
-                    {numberOfSessions &&
-                      numberOfSessions.sessionsLeft !== undefined &&
-                      numberOfSessions.sessionsLeft < 0 && (
-                        <Badge variant="destructive" className="ml-2">
-                          Session Overused
-                        </Badge>
-                      )}
-                  </div>
-                  {numberOfSessions?.lastAttendance &&
-                  new Date(numberOfSessions.lastAttendance) >=
-                    new Date(currentPackage.startDate) &&
-                  new Date(numberOfSessions.lastAttendance) <=
-                    new Date(currentPackage.endDate) ? (
-                    <p className="text-xs text-muted-foreground">
-                      last session availed{" "}
-                      {new Date(
-                        numberOfSessions.lastAttendance,
-                      ).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                        timeZone: "Asia/Manila",
-                      })}
-                    </p>
-                  ) : null}
-                </CardContent>
-              </Card>
-              {numberOfSessions && numberOfSessions.sessionsLeft < 0 ? (
-                <Card x-chunk="dashboard-01-chunk-3">
+            {currentPackage && hasPackage && (
+              <section className="wrapper grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                <Card x-chunk="dashboard-01-chunk-0">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Package Expiration
+                    <CardTitle className="flex text-sm font-medium">
+                      Current Package
                     </CardTitle>
-                    <CalendarClock className="h-4 w-4 text-muted-foreground" />
+                    <Activity className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {new Date(currentPackage.endDate).toLocaleDateString(
+                    {/* {hasPackage ? ( */}
+
+                    <div className="flex items-center text-2xl font-bold">
+                      {currentPackage.name}{" "}
+                      {new Date().setHours(0, 0, 0, 0) <
+                      new Date(currentPackage.endDate).setHours(0, 0, 0, 0) ? (
+                        <Badge className="ml-2">Active</Badge>
+                      ) : (
+                        <Badge variant="destructive" className="ml-2">
+                          Expired
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      availed{" "}
+                      {new Date(currentPackage.startDate).toLocaleDateString(
                         "en-US",
                         {
                           month: "long",
@@ -376,31 +317,92 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
                           timeZone: "Asia/Manila",
                         },
                       )}
-                    </div>
+                    </p>
+                    {/* ) : (
+                  <div className="text-2xl font-bold">No Active Package</div>
+                )} */}
                   </CardContent>
                 </Card>
-              ) : null}
+                <Card x-chunk="dashboard-01-chunk-1">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Number of Sessions Left
+                    </CardTitle>
+                    <Hash className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center text-2xl font-bold">
+                      {numberOfSessions?.sessionsLeft}
+                      {numberOfSessions &&
+                        numberOfSessions.sessionsLeft !== undefined &&
+                        numberOfSessions.sessionsLeft < 0 && (
+                          <Badge variant="destructive" className="ml-2">
+                            Session Overused
+                          </Badge>
+                        )}
+                    </div>
+                    {numberOfSessions?.lastAttendance && (
+                      <p className="text-xs text-muted-foreground">
+                        last session availed{" "}
+                        {new Date(
+                          numberOfSessions.lastAttendance,
+                        ).toLocaleDateString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                          timeZone: "Asia/Manila",
+                        })}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
 
-              <Card x-chunk="dashboard-01-chunk-3">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Package Status
-                  </CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  {currentPackage.paid ? (
-                    <div className="inline-block rounded-full bg-green-500 px-4 py-2 font-bold text-white">
-                      Paid
-                    </div>
-                  ) : (
-                    <div className="inline-block rounded-full bg-red-500 px-4 py-2 font-bold text-white">
-                      Unpaid
-                    </div>
+                {numberOfSessions &&
+                  numberOfSessions?.sessionsLeft >= 0 &&
+                  currentPackage && (
+                    <Card x-chunk="dashboard-01-chunk-3">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          Package Expiration
+                        </CardTitle>
+                        <CalendarClock className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {new Date(currentPackage.endDate).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric",
+                              timeZone: "Asia/Manila",
+                            },
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
-                </CardContent>
-              </Card>
-            </section>
+                <Card x-chunk="dashboard-01-chunk-3">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Package Status
+                    </CardTitle>
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    {currentPackage.paid ? (
+                      <div className="inline-block rounded-full bg-green-500 px-4 py-2 font-bold text-white">
+                        Paid
+                      </div>
+                    ) : (
+                      <div className="inline-block rounded-full bg-red-500 px-4 py-2 font-bold text-white">
+                        Unpaid
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </section>
+            )}
           </>
         ) : (
           <div className="wrapper m-4 text-center">

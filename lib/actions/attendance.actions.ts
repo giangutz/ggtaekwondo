@@ -210,7 +210,6 @@ export async function computeSessionsLeft(
       (a, b) => b.trainingDate - a.trainingDate,
     );
     // .slice(0, numSessions);
-    console.log(attendanceRecords.length);
 
     const availedSessions = attendanceRecords.length;
     const sessionsLeft = numSessions - availedSessions;

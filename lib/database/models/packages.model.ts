@@ -9,6 +9,7 @@ export interface IPackage extends Document {
   startDate: Date;
   endDate: Date;
   isActive: boolean;
+  paid: boolean;
 }
 
 // Package Schema
