@@ -126,7 +126,7 @@ const TrialModal = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col gap-5"
+              className="flex flex-col gap-5 mb-4"
             >
               <FormField
                 control={form.control}
