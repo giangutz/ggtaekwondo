@@ -19,11 +19,20 @@ import {
 } from "@/components/ui/table";
 import {
   Activity,
-  CalendarClock,
-  CreditCard,
   DollarSign,
   Hash,
+  CalendarClock,
+  LoaderCircle,
 } from "lucide-react";
+import {
+  PieChart,
+  Pie,
+  Sector,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 import { getPackageById } from "@/lib/actions/packages.actions";
 import {
   computeSessionsLeft,
@@ -34,6 +43,46 @@ import Pagination from "@/components/shared/Pagination";
 import { getTransactionByStudent } from "@/lib/actions/transaction.actions";
 import { Badge } from "@/components/ui/badge";
 import { IPackage } from "@/lib/database/models/packages.model";
+import { format } from "date-fns";
+
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  index,
+}: any) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  console.log(percent);
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+    >
+      {percent !== 0 && `${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip rounded-md bg-white p-3 shadow-lg">
+        <p className="label">{`${payload[0].name} : ${payload[0].value} ${payload[0].value !== 1 ? "sessions" : "session"}`}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 const ProfilePage = ({ searchParams }: SearchParamProps) => {
   const user = getUserMetadata();
@@ -42,6 +91,13 @@ const ProfilePage = ({ searchParams }: SearchParamProps) => {
     sessionsLeft: number;
     lastAttendance: any;
   } | null>(null);
+  const [data, setData] = useState<
+    {
+      name: string;
+      value: any;
+      color: string;
+    }[]
+  >([]);
 
   const [attendance, setAttendance] = useState<{
     data: any;
@@ -68,19 +124,43 @@ const ProfilePage = ({ searchParams }: SearchParamProps) => {
   // const organizedEvents = await getEventsByUser({ userId, page: eventsPage });
 
   // Fetch attendance data
+  // Fetch attendance data
   useEffect(() => {
     const fetchData = async () => {
       const fetchedAttendance = await getAttendanceByStudent({
         studentId: userId,
         query: searchText,
         page: trainingPage,
-        limit: 10,
+        limit: 12,
       });
-      if (!fetchedAttendance) {
-        setLoading(true);
-      }
+      if (fetchedAttendance) {
+        setAttendance(fetchedAttendance as { data: any; totalPages: number });
+        // Calculate visualization data based on fetchedAttendance
+        const presentCount = fetchedAttendance.data.filter(
+          (data: any) => data.studentStatus === "present",
+        ).length;
+        const absentCount = fetchedAttendance.data.filter(
+          (data: any) => data.studentStatus === "absent",
+        ).length;
+        const excusedCount = fetchedAttendance.data.filter(
+          (data: any) => data.studentStatus === "excused",
+        ).length;
+        const lateCount = fetchedAttendance.data.filter(
+          (data: any) => data.studentStatus === "late",
+        ).length;
 
-      setAttendance(fetchedAttendance as { data: any; totalPages: number });
+        // Transforming the counts into the structure expected by the PieChart
+        const chartData = [
+          { name: "Present", value: presentCount, color: "green" },
+          { name: "Absent", value: absentCount, color: "red" },
+          { name: "Excused", value: excusedCount, color: "blue" },
+          { name: "Late", value: lateCount, color: "rgb(250 204 21)" },
+        ];
+
+        // Assuming there's a setState method for chartData
+        setData(chartData); // Update your state or context with the new chart data
+        // console.log(chartData);
+      }
       setLoading(false);
     };
 
@@ -271,6 +351,49 @@ const ProfilePage = ({ searchParams }: SearchParamProps) => {
           </h3>
         </div>
       </section>
+      <div className="mb-4 flex h-[350px] w-full flex-col items-center justify-center sm:h-[250px]">
+        <p className="p-4 italic sm:text-center">
+          Attendance Rate Overview from{" "}
+          {new Date(
+            attendance.data[attendance.data.length - 1]?.trainingDate,
+          ).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            timeZone: "Asia/Manila",
+          })}{" "}
+          to{" "}
+          {new Date(attendance.data[0]?.trainingDate).toLocaleDateString(
+            "en-US",
+            {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+              timeZone: "Asia/Manila",
+            },
+          )}
+        </p>
+        <ResponsiveContainer>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={renderCustomizedLabel}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
       {attendance?.data.length > 0 ? (
         <div className="md:wrapper overflow-x-auto">
           <Table>

@@ -22,6 +22,11 @@ export const headerLinks = [
     allowedUsers: ["student"],
   },
   {
+    label: "Learn",
+    route: "/lms/dashboard",
+    allowedUsers: ["student", "admin"],
+  },
+  {
     label: "Admin Dashboard",
     route: "/admin/dashboard",
     allowedUsers: ["admin"],
@@ -49,6 +54,29 @@ export const headerLinks = [
     ],
   },
 ];
+
+export const lmsLinks = [
+  {
+    route: "/lms/dashboard",
+    label: "Dashboard",
+  },
+  {
+    route: "/lms/courses",
+    label: "Courses",
+  },
+  {
+    route: "/lms/assignments",
+    label: "Assignments",
+  },
+  {
+    route: "/lms/grades",
+    label: "Grades",
+  },
+  {
+    route: "/lms/settings",
+    label: "Settings",
+  },
+]
 
 export const testimonials = [
   {

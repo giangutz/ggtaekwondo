@@ -326,6 +326,7 @@ export async function getMostActiveStudent() {
             $gte: start,
             $lte: end,
           },
+          "students.status": 'present',
         },
       },
       {
@@ -335,7 +336,7 @@ export async function getMostActiveStudent() {
         },
       },
       { $sort: { total: -1 } },
-      { $limit: 5 },
+      { $limit: 6 },
     ]);
     return JSON.parse(JSON.stringify(mostActiveStudent));
   } catch (error) {
