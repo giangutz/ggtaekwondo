@@ -18,16 +18,26 @@ const Footer = () => {
 
         <p>© {currentYear} Grit & Glory Taekwondo. All Rights reserved.</p>
 
-        <div className="flex items-center md:gap-3 gap-6">
-          {socialMedia.map((info) => (
-            <a key={info.id} href={info.link} target="_blank" rel="noopener noreferrer">
-              <div
-                className="w-10 h-10 cursor-pointer flex justify-center items-center backdrop-filter backdrop-blur-lg saturate-180 bg-opacity-75 bg-black-200 rounded-lg border border-black-300"
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
+          <Link
+            className="text-blue-600 hover:text-blue-800"
+            href="/privacy-policy"
+          >
+            Privacy & Policy
+          </Link>
+          <div className="flex items-center gap-4">
+            {socialMedia.map((info) => (
+              <a
+                key={info.id}
+                href={info.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black-200 border-black-300 saturate-180 hover:bg-black-300 flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-lg backdrop-filter transition duration-150 ease-in-out"
               >
-                <Image src={info.img} alt="icons" width={20} height={20} />
-              </div>
-            </a>
-          ))}
+                <Image src={info.img} alt="icons" width={24} height={24} />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
