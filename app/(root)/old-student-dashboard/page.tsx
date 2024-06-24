@@ -36,7 +36,6 @@ import { getTransactionByStudent } from "@/lib/actions/transaction.actions";
 import { Badge } from "@/components/ui/badge";
 import { IPackage } from "@/lib/database/models/packages.model";
 import { Roles } from "@/types/global";
-import { redirect, useRouter } from "next/navigation";
 
 
 // This function is for client-side usage
@@ -69,8 +68,6 @@ export const getUserMetadataUnified = () => {
 const ProfilePage = ({ searchParams }: SearchParamProps) => {
   const user = getUserMetadataUnified();
   const userId = user?.userId as string;
-  const router = useRouter();
-  router.push(`/dashboard/${userId}`);
   const [numberOfSessions, setNumberOfSessions] = useState<{
     sessionsLeft: number;
     lastAttendance: any;
