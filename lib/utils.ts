@@ -1,8 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
-
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
-
+import { auth } from "@clerk/nextjs/server";
 import { UrlQueryParams, RemoveUrlQueryParams } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -104,9 +103,6 @@ export const handleError = (error: unknown) => {
   throw new Error(typeof error === "string" ? error : JSON.stringify(error));
 };
 
-import { Roles } from "@/types/global";
-
-import { auth } from "@clerk/nextjs/server";
 
 export const getUserMetadata = () => {
   const { sessionClaims } = auth();

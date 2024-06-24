@@ -5,7 +5,6 @@ import { HoverEffect } from "@/components/ui/card-hover-effect";
 
 const page = async () => {
   let children;
-  let selectedId: any;
   try {
     const user = getUserMetadata();
 
@@ -21,13 +20,8 @@ const page = async () => {
       link: `/dashboard/${child._id}`,
       src: child.photo,
     }));
-
-    selectedId = children[0]._id; // Assuming the first child is selected by default
-
-    // Continue processing with `user` and `children`...
   } catch (error) {
     console.error("Failed to fetch user or children:", error);
-    // Handle the error appropriately...
   }
   return (
     <>
