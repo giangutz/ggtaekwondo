@@ -505,7 +505,7 @@ const TransactionForm = ({ transaction, createdBy }: transactionsProps) => {
                             className="filter-grey"
                           />
                           <p className="text-grey-600 ml-3 whitespace-nowrap">
-                            Transaction Date:
+                            Date:
                           </p>
                           <DatePicker
                             selected={field.value}
