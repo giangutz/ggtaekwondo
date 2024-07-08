@@ -21,11 +21,11 @@ export const headerLinks = [
     route: "/dashboard",
     allowedUsers: ["student"],
   },
-  {
-    label: "Learn",
-    route: "/lms/dashboard",
-    allowedUsers: ["student", "admin"],
-  },
+  // {
+  //   label: "Learn",
+  //   route: "/lms/dashboard",
+  //   allowedUsers: ["student", "admin"],
+  // },
   {
     label: "Admin Dashboard",
     route: "/admin/dashboard",
