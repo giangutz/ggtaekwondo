@@ -1,5 +1,6 @@
 "use server";
 
+import { startOfMonth } from 'date-fns';
 import { CreateUserParams, UpdateUserParams } from "@/types";
 import { connectToDatabase } from "@/lib/database";
 import User from "@/lib/database/models/user.model";
@@ -42,6 +43,34 @@ export async function getUserType(userId: string) {
   }
 }
 
+
+export async function getTotalNumberOfStudents() {
+  try {
+    await connectToDatabase();
+
+    // Get the current date and the start of the current month
+    const now = new Date();
+    const startOfThisMonth = startOfMonth(now);
+
+    // Find all students
+    const students = await User.find({ role: "student" });
+
+    // Find new sign-ups this month
+    // Assuming `_id` can be used to infer the creation timestamp
+    const newSignUpsThisMonth = students.filter(student => {
+      const creationDate = student._id.getTimestamp();
+      return creationDate >= startOfThisMonth;
+    });
+
+    // Return both counts
+    return {
+      totalNumberOfStudents: students.length,
+      newSignUpsThisMonth: newSignUpsThisMonth.length,
+    };
+  } catch (error) {
+    handleError(error);
+  }
+}
 export async function getAllUser() {
   try {
     await connectToDatabase();

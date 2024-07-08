@@ -1,5 +1,5 @@
 "use client";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, Hash, DollarSign, HandCoins } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 import { getAllPackages } from "@/lib/actions/packages.actions";
-import { getAllUser } from "@/lib/actions/user.actions";
+import {
+  getAllUser,
+  getTotalNumberOfStudents,
+} from "@/lib/actions/user.actions";
 import {
   getMonthlyAttendanceRateForAllClasses,
   getMostActiveStudent,
@@ -63,6 +66,10 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
   >(undefined);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [mostActiveStudent, setMostActiveStudent] = useState([]);
+  const [numStudents, setNumStudents] = useState({
+    totalNumberOfStudents: 0,
+    newSignUpsThisMonth: 0,
+  });
 
   const attendancePage = Number(searchParams?.attendancePage) || 1;
   const transactionPage = Number(searchParams?.transactionPage) || 1;
@@ -103,11 +110,22 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
       const fetchAttendance: any =
         await getMonthlyAttendanceRateForAllClasses();
       const fetchMostActive: any = await getMostActiveStudent();
+      const fetchedUsers = await getTotalNumberOfStudents();
 
-      if (!(fetchAttendance && fetchMostActive && fetchedTransactions)) {
+      if (
+        !(
+          fetchAttendance &&
+          fetchMostActive &&
+          fetchedTransactions &&
+          fetchedUsers
+        )
+      ) {
         setLoading(true);
       }
 
+      setNumStudents(
+        fetchedUsers ?? { totalNumberOfStudents: 0, newSignUpsThisMonth: 0 },
+      );
       setMostActiveStudent(fetchMostActive);
       setAttendance(fetchAttendance);
       setTransactions(fetchedTransactions);
@@ -123,19 +141,19 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex md:flex-row items-start md:items-center justify-between md:space-x-4">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+      <div className="flex items-start justify-between md:flex-row md:items-center md:space-x-4">
+        <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
           Dashboard
         </h2>
         <DropdownMenu>
-          <DropdownMenuTrigger className="text-sm flex items-center px-2 md:px-4 py-1 md:py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors duration-200 ease-in-out cursor-pointer">
+          <DropdownMenuTrigger className="flex cursor-pointer items-center rounded-md bg-orange-500 px-2 py-1 text-sm text-white transition-colors duration-200 ease-in-out hover:bg-orange-600 md:px-4 md:py-2">
             <span>Manage</span> <CirclePlus className="ml-2 h-4 w-4" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="mt-2 bg-white shadow-md rounded-md overflow-hidden">
+          <DropdownMenuContent className="mt-2 overflow-hidden rounded-md bg-white shadow-md">
             {adminLinks.map((item) => (
               <DropdownMenuItem
                 key={item.label}
-                className="block px-2 md:px-4 py-1 md:py-2 text-gray-800 hover:bg-gray-200 transition-colors duration-200 ease-in-out cursor-pointer"
+                className="block cursor-pointer px-2 py-1 text-gray-800 transition-colors duration-200 ease-in-out hover:bg-gray-200 md:px-4 md:py-2"
               >
                 <Link href={item.route} onClick={(e) => e.stopPropagation()}>
                   {item.label}
@@ -145,7 +163,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex-center rounded-full bg-grey-50">
+      <div className="flex-center bg-grey-50 rounded-full">
         <Image
           src="/assets/icons/calendar.svg"
           alt="calendar"
@@ -168,18 +186,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
               <CardTitle className="text-sm font-medium">
                 Total Revenue
               </CardTitle>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                className="h-4 w-4 text-muted-foreground"
-              >
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
+              <DollarSign className="h-4 w-4" />
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -196,11 +203,12 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                       {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      }
+                      },
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {transactions?.revenuePercentage}% from last month
+                    {Math.round(transactions?.revenuePercentage || 0)}% from
+                    last month
                   </p>
                 </>
               )}
@@ -211,20 +219,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
               <CardTitle className="text-sm font-medium">
                 Total Expenses
               </CardTitle>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                className="h-4 w-4 text-muted-foreground"
-              >
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
+              <HandCoins className="h-4 w-4" />
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -241,7 +236,7 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
                       {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      }
+                      },
                     )}
                   </div>
                 </>
@@ -250,31 +245,27 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Sales</CardTitle>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                className="h-4 w-4 text-muted-foreground"
-              >
-                <rect width="20" height="14" x="2" y="5" rx="2" />
-                <path d="M2 10h20" />
-              </svg>
+              <CardTitle className="text-sm font-medium">
+                Total Number of Students
+              </CardTitle>
+              <Hash className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+12,234</div>
-              <p className="text-xs text-muted-foreground">
-                +19% from last month
-              </p>
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-full" />
+                </div>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{numStudents?.totalNumberOfStudents}</div>
+                  <p className="text-xs text-muted-foreground">Overall total of students in all classes</p>
+                </>
+              )}
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+              <CardTitle className="text-sm font-medium">Number of New Students</CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -289,15 +280,15 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+573</div>
+              <div className="text-2xl font-bold">{numStudents?.newSignUpsThisMonth}</div>
               <p className="text-xs text-muted-foreground">
-                +201 since last hour
+                New students this month
               </p>
             </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
-  <Card className="col-span-full md:col-span-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <Card className="col-span-full md:col-span-4">
             <CardHeader>
               <CardTitle>Revenue by Category</CardTitle>
             </CardHeader>
@@ -319,17 +310,14 @@ const AdminDBoard = ({ searchParams }: SearchParamProps) => {
           </Card>
           <Card className="col-span-full md:col-span-3">
             <CardHeader>
-              <CardTitle>Most Active Student</CardTitle>
+              <CardTitle>Most Active Students</CardTitle>
               {/* <CardDescription>Listed from mos</CardDescription> */}
             </CardHeader>
             <CardContent>
               {loading ? (
                 <>
                   {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center space-x-4 space-y-8"
-                    >
+                    <div key={i} className="flex items-center space-x-4">
                       <Skeleton className="h-12 w-12 rounded-full" />
                       <div className="space-y-2">
                         <Skeleton className="h-4 w-[250px]" />

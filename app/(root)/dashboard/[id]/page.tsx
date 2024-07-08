@@ -39,9 +39,64 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { IUser } from "@/lib/database/models/user.model";
 import { IPackage } from "@/lib/database/models/packages.model";
+import {
+  PieChart,
+  Pie,
+  Sector,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
+import { format } from "date-fns";
 
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+  index,
+}: any) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  console.log(percent);
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+    >
+      {percent !== 0 && `${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip rounded-md bg-white p-3 shadow-lg">
+        <p className="label">{`${payload[0].name} : ${payload[0].value} ${payload[0].value !== 1 ? "sessions" : "session"}`}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
+  const [data, setData] = useState<
+    {
+      name: string;
+      value: any;
+      color: string;
+    }[]
+  >([]);
   const [numberOfSessions, setNumberOfSessions] = useState<{
     sessionsLeft: number;
     lastAttendance: any;
@@ -63,9 +118,15 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
   const [user, setUser] = useState<IUser>();
 
   const userId = id;
-  // const user = await getUserById(userId);
-  // let hasPackage = false;
-  // let numberOfSessions = null;
+
+  // Example start and end dates
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setMonth(endDate.getMonth() - 1);
+
+  // Format dates
+  const formattedStartDate = format(startDate, "MMM dd, yyyy");
+  const formattedEndDate = format(endDate, "MMM dd, yyyy");
 
   const trainingPage = Number(searchParams?.trainingPage) || 1;
   const transactionPage = Number(searchParams?.transactionPage) || 1;
@@ -93,13 +154,36 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
         studentId: userId,
         query: searchText,
         page: trainingPage,
-        limit: 10,
+        limit: 12,
       });
-      if (!fetchedAttendance) {
-        setLoading(true);
-      }
+      if (fetchedAttendance) {
+        setAttendance(fetchedAttendance as { data: any; totalPages: number });
+        // Calculate visualization data based on fetchedAttendance
+        const presentCount = fetchedAttendance.data.filter(
+          (data: any) => data.studentStatus === "present",
+        ).length;
+        const absentCount = fetchedAttendance.data.filter(
+          (data: any) => data.studentStatus === "absent",
+        ).length;
+        const excusedCount = fetchedAttendance.data.filter(
+          (data: any) => data.studentStatus === "excused",
+        ).length;
+        const lateCount = fetchedAttendance.data.filter(
+          (data: any) => data.studentStatus === "late",
+        ).length;
 
-      setAttendance(fetchedAttendance as { data: any; totalPages: number });
+        // Transforming the counts into the structure expected by the PieChart
+        const chartData = [
+          { name: "Present", value: presentCount, color: "green" },
+          { name: "Absent", value: absentCount, color: "red" },
+          { name: "Excused", value: excusedCount, color: "blue" },
+          { name: "Late", value: lateCount, color: "rgb(250 204 21)" },
+        ];
+
+        // Assuming there's a setState method for chartData
+        setData(chartData); // Update your state or context with the new chart data
+        // console.log(chartData);
+      }
       setLoading(false);
     };
 
@@ -256,12 +340,12 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
         {user && (
           <div className="flex-1 space-y-4 p-8 pt-6">
             <div className="flex items-center md:space-x-4">
-              <Link
+              <div
                 className="mr-2 h-8 w-8 cursor-pointer rounded-full p-1 transition-colors duration-200 ease-in-out hover:bg-gray-200"
-                href={`/dashboard/parent`}
+                onClick={() => window.history.back()}
               >
                 <CircleChevronLeft />
-              </Link>
+              </div>
               <h3 className="h3-bold">{user.firstName}&apos;s Dashboard</h3>
             </div>
           </div>
@@ -419,6 +503,49 @@ const Page = ({ params: { id }, searchParams }: SearchParamProps) => {
             </h3>
           </div>
         </section>
+        <div className="mb-4 flex h-[350px] w-full flex-col items-center justify-center sm:h-[250px]">
+          <p className="p-4 italic sm:text-center">
+            Attendance Rate Overview from{" "}
+            {new Date(attendance.data[attendance.data.length - 1]?.trainingDate).toLocaleDateString(
+              "en-US",
+              {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "Asia/Manila",
+              },
+            )}{" "}
+            to{" "}
+            {new Date(
+              attendance.data[0]?.trainingDate,
+            ).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+              timeZone: "Asia/Manila",
+            })}
+          </p>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
         {attendance?.data.length > 0 ? (
           <div className="md:wrapper overflow-x-auto">
             <Table>
