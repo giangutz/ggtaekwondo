@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { PlusCircle, Search, Filter } from "lucide-react";
+import { PlusCircle, Search } from "lucide-react";
 
 export default function StudentsPage() {
   // This would come from a database in a real implementation

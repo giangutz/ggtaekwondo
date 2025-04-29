@@ -116,8 +116,8 @@ export default function TrialSignupForm() {
           Thank You for Signing Up!
         </h2>
         <p className="mb-6">
-          We've received your request for a trial class. One of our team members
-          will contact you within 24 hours to confirm your appointment.
+          We&apos;ve received your request for a trial class. One of our team
+          members will contact you within 24 hours to confirm your appointment.
         </p>
         <Button onClick={() => setIsSuccess(false)} variant="outline">
           Sign Up Another Person

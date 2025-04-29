@@ -25,8 +25,7 @@ import {
   Clock,
   AlertTriangle,
   CreditCard,
-  FileText,
-  Filter
+  FileText
 } from "lucide-react";
 import {
   Select,

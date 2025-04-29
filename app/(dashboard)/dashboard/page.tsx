@@ -209,7 +209,7 @@ export default async function DashboardPage() {
                   <div className="text-xs text-gray-500">Yesterday</div>
                 </div>
                 <p className="text-sm text-gray-600">
-                  Children's class had 95% attendance
+                  Children&apos;s class had 95% attendance
                 </p>
               </div>
             </div>

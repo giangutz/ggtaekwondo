@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -84,7 +84,9 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Children's Class */}
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-3">Children's Classes</h3>
+              <h3 className="text-xl font-bold mb-3">
+                Children&apos;s Classes
+              </h3>
               <p className="text-gray-600 mb-4">
                 Fun and engaging classes designed to build coordination,
                 confidence, and focus for children ages 4-12.
