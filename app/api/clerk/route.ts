@@ -2,6 +2,15 @@ import { Webhook } from 'svix';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Define an interface for the Clerk user data structure we need
+interface ClerkUserData {
+  id: string;
+  email_addresses?: Array<{email_address: string}>;
+  first_name?: string;
+  last_name?: string;
+  phone_numbers?: Array<{phone_number: string}>;
+}
+
 export async function POST(req: Request) {
   // Get the headers directly from request
   const headersList = new Headers(req.headers);
@@ -58,9 +67,8 @@ export async function POST(req: Request) {
     // Handle different user event types
     if (type === 'user.created' || type === 'user.updated') {
       // For these events, we expect user data fields
-      // TypeScript doesn't know the exact shape based on event type,
-      // so we need to cast or handle the possibility of missing fields
-      const userData = eventData as any; // Using any as a temporary solution
+      // Cast to our interface which defines the structure we need
+      const userData = eventData as ClerkUserData;
       
       const id = userData.id;
       const email = userData.email_addresses?.[0]?.email_address || '';
