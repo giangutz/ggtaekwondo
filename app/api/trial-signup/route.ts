@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 // Validation schema for trial signup requests
@@ -28,8 +27,11 @@ export async function POST(req: Request) {
     else if (validatedData.age === "13-17") age = 15; // midpoint
     else if (validatedData.age === "18+") age = 25; // arbitrary adult age
     
-    // Initialize Supabase client
-    const supabase = createRouteHandlerClient({ cookies });
+    // Initialize Supabase client directly without cookies
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     
     // Insert into trial_signups table
     const { data, error } = await supabase
