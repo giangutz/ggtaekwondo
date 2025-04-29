@@ -1,15 +1,23 @@
 import { WebhookEvent } from "@clerk/nextjs/server";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { supabase } from "@/lib/supabase";
 
+// Define an interface for the Clerk user data structure we need
+interface ClerkUserData {
+  id: string;
+  email_addresses?: Array<{email_address: string}>;
+  first_name?: string;
+  last_name?: string;
+  phone_numbers?: Array<{phone_number: string}>;
+}
+
 export async function POST(req: Request) {
-  // Get the headers
-  const headerPayload = headers();
-  const svix_id = headerPayload.get("svix-id");
-  const svix_timestamp = headerPayload.get("svix-timestamp");
-  const svix_signature = headerPayload.get("svix-signature");
+  // Get the headers directly from request
+  const headersList = new Headers(req.headers);
+  const svix_id = headersList.get("svix-id");
+  const svix_timestamp = headersList.get("svix-timestamp");
+  const svix_signature = headersList.get("svix-signature");
 
   // If there are no svix headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
@@ -50,13 +58,16 @@ export async function POST(req: Request) {
 
   // Handle the webhook
   const eventType = evt.type;
+  const userData = evt.data as ClerkUserData;
 
   if (eventType === "user.created" || eventType === "user.updated") {
     // Extract user data from the webhook payload
-    const { id, email_addresses, first_name, last_name, phone_numbers } = evt.data;
+    const { id } = userData;
     
-    const primaryEmail = email_addresses?.[0]?.email_address;
-    const primaryPhone = phone_numbers?.[0]?.phone_number;
+    const primaryEmail = userData.email_addresses?.[0]?.email_address;
+    const primaryPhone = userData.phone_numbers?.[0]?.phone_number;
+    const firstName = userData.first_name || "";
+    const lastName = userData.last_name || "";
 
     if (!primaryEmail) {
       return new NextResponse("Error: User has no email", { status: 400 });
@@ -75,8 +86,8 @@ export async function POST(req: Request) {
         .from("users")
         .update({
           email: primaryEmail,
-          first_name: first_name || existingUser.first_name,
-          last_name: last_name || existingUser.last_name,
+          first_name: firstName || existingUser.first_name,
+          last_name: lastName || existingUser.last_name,
           phone: primaryPhone || existingUser.phone,
           updated_at: new Date().toISOString(),
         })
@@ -86,8 +97,8 @@ export async function POST(req: Request) {
       await supabase.from("users").insert({
         clerk_id: id,
         email: primaryEmail,
-        first_name: first_name || "",
-        last_name: last_name || "",
+        first_name: firstName,
+        last_name: lastName,
         phone: primaryPhone || null,
         status: "active",
         user_type: "student", // Default user type
@@ -97,7 +108,7 @@ export async function POST(req: Request) {
     }
   } else if (eventType === "user.deleted") {
     // Handle user deletion (optional)
-    const { id } = evt.data;
+    const { id } = userData;
     
     // Option 1: Delete the user from Supabase
     // await supabase.from("users").delete().eq("clerk_id", id);
