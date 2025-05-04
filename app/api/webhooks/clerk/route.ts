@@ -1,7 +1,7 @@
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase";
 import { v4 as uuidv4 } from 'uuid';
 
 // Define an interface for the Clerk user data structure we need
@@ -89,8 +89,8 @@ export async function POST(req: Request) {
         return new NextResponse("Error: User has no email", { status: 400 });
       }
 
-      // Check if user already exists in Supabase
-      const { data: existingUser, error: getUserError } = await supabase
+      // Check if user already exists in Supabase - using admin client to bypass RLS
+      const { data: existingUser, error: getUserError } = await supabaseAdmin
         .from("users")
         .select("*")
         .eq("clerk_id", id)
@@ -102,8 +102,8 @@ export async function POST(req: Request) {
 
       if (existingUser) {
         console.log("Updating existing user:", existingUser.id);
-        // Update existing user
-        const { error: updateError } = await supabase
+        // Update existing user - using admin client to bypass RLS
+        const { error: updateError } = await supabaseAdmin
           .from("users")
           .update({
             email: primaryEmail,
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
         
         if (updateError) {
           console.error("Error updating user:", updateError);
-          return new NextResponse("Error updating user in database", { status: 500 });
+          return new NextResponse(`Error updating user in database: ${updateError.message}`, { status: 500 });
         }
       } else {
         console.log("Creating new user with Clerk ID:", id);
@@ -143,8 +143,8 @@ export async function POST(req: Request) {
         
         console.log("Attempting to insert user:", newUser);
         
-        // Create new user
-        const { error: insertError } = await supabase
+        // Create new user - using admin client to bypass RLS
+        const { error: insertError } = await supabaseAdmin
           .from("users")
           .insert(newUser);
         
@@ -159,10 +159,10 @@ export async function POST(req: Request) {
       console.log("Marking user as inactive:", id);
       
       // Option 1: Delete the user from Supabase
-      // await supabase.from("users").delete().eq("clerk_id", id);
+      // await supabaseAdmin.from("users").delete().eq("clerk_id", id);
       
       // Option 2: Mark user as inactive (recommended)
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseAdmin
         .from("users")
         .update({
           status: "inactive",
@@ -172,7 +172,7 @@ export async function POST(req: Request) {
       
       if (updateError) {
         console.error("Error marking user as inactive:", updateError);
-        return new NextResponse("Error updating user status in database", { status: 500 });
+        return new NextResponse(`Error updating user status in database: ${updateError.message}`, { status: 500 });
       }
     }
 
@@ -180,6 +180,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Unhandled error in webhook handler:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse(`Internal Server Error: ${error instanceof Error ? error.message : String(error)}`, { status: 500 });
   }
 } 

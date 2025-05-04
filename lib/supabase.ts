@@ -6,6 +6,11 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Create an admin client with service role for operations that need to bypass RLS
+// This client should only be used on the server side
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
 // Types for our database tables based on the schema
 export type User = {
   id: string;
