@@ -2,6 +2,7 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { supabase } from "@/lib/supabase";
+import { v4 as uuidv4 } from 'uuid';
 
 // Define an interface for the Clerk user data structure we need
 interface ClerkUserData {
@@ -10,6 +11,7 @@ interface ClerkUserData {
   first_name?: string;
   last_name?: string;
   phone_numbers?: Array<{phone_number: string}>;
+  image_url?: string;
 }
 
 export async function POST(req: Request) {
@@ -78,6 +80,7 @@ export async function POST(req: Request) {
       const primaryPhone = userData.phone_numbers?.[0]?.phone_number;
       const firstName = userData.first_name || "";
       const lastName = userData.last_name || "";
+      const profileImageUrl = userData.image_url;
 
       console.log("User data:", { id, primaryEmail, firstName, lastName });
 
@@ -107,6 +110,7 @@ export async function POST(req: Request) {
             first_name: firstName || existingUser.first_name,
             last_name: lastName || existingUser.last_name,
             phone: primaryPhone || existingUser.phone,
+            profile_image_url: profileImageUrl || existingUser.profile_image_url,
             updated_at: new Date().toISOString(),
           })
           .eq("clerk_id", id);
@@ -117,8 +121,13 @@ export async function POST(req: Request) {
         }
       } else {
         console.log("Creating new user with Clerk ID:", id);
-        // Create new user
-        const { error: insertError } = await supabase.from("users").insert({
+        
+        // Create a UUID for Supabase
+        const supabaseId = uuidv4();
+        
+        // Create new user with all required fields
+        const newUser = {
+          id: supabaseId, // Generate UUID for primary key
           clerk_id: id,
           email: primaryEmail,
           first_name: firstName,
@@ -126,13 +135,22 @@ export async function POST(req: Request) {
           phone: primaryPhone || null,
           status: "active",
           user_type: "student", // Default user type
+          profile_image_url: profileImageUrl || null,
+          age_group: null, // Optional field
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        });
+        };
+        
+        console.log("Attempting to insert user:", newUser);
+        
+        // Create new user
+        const { error: insertError } = await supabase
+          .from("users")
+          .insert(newUser);
         
         if (insertError) {
-          console.error("Error creating user:", insertError);
-          return new NextResponse("Error creating user in database", { status: 500 });
+          console.error("Error creating user - details:", insertError);
+          return new NextResponse(`Error creating user in database: ${insertError.message}`, { status: 500 });
         }
       }
     } else if (eventType === "user.deleted") {
