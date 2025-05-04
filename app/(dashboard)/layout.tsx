@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function DashboardLayout({
   children
@@ -137,6 +138,9 @@ export default function DashboardLayout({
           </div>
         </div>
       </main>
+
+      {/* Toast notifications */}
+      <Toaster />
     </div>
   );
 }
